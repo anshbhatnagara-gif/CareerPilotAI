@@ -2,7 +2,7 @@
    CAREERPILOT AI - DARK CINEMATIC HORROR DESIGN SYSTEM
    Visual Target: Psychological horror atmosphere, cinematic environment,
    deep dark palette (#050505), dark red accents (#b91c1c / #dc2626), 
-   crisp forms, and perfect readability across Phase 1, 2 & 3.
+   crisp forms, and perfect readability across Phase 1, 2, 3 & 4.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -634,7 +634,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   10. Phase 3 AI Assessment Specific Styles
+   10. Phase 3 & Phase 4 Assessment / Readiness Specific Styles
    -------------------------------------------------------------------------- */
 .assessment-hero-header {
   margin-bottom: 1.5rem;
@@ -671,7 +671,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 320px;
+  max-width: 340px;
   margin: 0 auto;
   text-align: left;
 }
@@ -794,6 +794,7 @@ body {
 
 .focus-bullet {
   color: var(--accent-red-bright);
+  font-weight: 700;
   font-size: 1rem;
   line-height: 1.3;
 }
@@ -801,7 +802,104 @@ body {
 .focus-text {
   font-size: 0.9rem;
   color: var(--text-primary);
-  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* Phase 4 Score & Skill Gap Specifics */
+.score-display-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.score-number-large {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--accent-red-bright);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stat-highlight-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 0.4rem;
+}
+
+.priority-summary-counts {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.count-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+}
+
+.priority-badge {
+  font-size: 0.725rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.priority-high {
+  background-color: rgba(185, 28, 28, 0.25);
+  color: #f87171;
+  border: 1px solid #991b1b;
+}
+
+.priority-medium {
+  background-color: rgba(180, 83, 9, 0.25);
+  color: #fbbf24;
+  border: 1px solid #b45309;
+}
+
+.priority-low {
+  background-color: rgba(23, 23, 23, 0.8);
+  color: #a3a3a3;
+  border: 1px solid #404040;
+}
+
+.gaps-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.gap-card {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.gap-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gap-skill-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.gap-reason-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
 }
 
 /* --------------------------------------------------------------------------

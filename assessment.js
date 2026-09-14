@@ -92,16 +92,11 @@ const AssessmentApp = {
       });
     }
 
-    // Continue to Phase 4 button
+    // Continue to Phase 4 Readiness button
     const continueBtn = document.getElementById('continue-phase4-btn');
     if (continueBtn) {
       continueBtn.addEventListener('click', () => {
-        const lockedAlert = document.getElementById('phase4-locked-alert');
-        if (lockedAlert) {
-          lockedAlert.textContent = "Phase 4: Career Readiness & Skill Gap Engine — Coming in Next Phase.";
-          lockedAlert.style.display = 'block';
-          lockedAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        window.location.href = 'readiness.html';
       });
     }
   },
