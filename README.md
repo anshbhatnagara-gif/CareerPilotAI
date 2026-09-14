@@ -18,12 +18,14 @@ careerpilot-ai/
 ├── assessment.html      # Phase 3: AI Career Assessment page
 ├── readiness.html       # Phase 4: Career Readiness & Skill Gap Analysis page
 ├── roadmap.html         # Phase 5: Personalized Learning Roadmap page
+├── projects.html        # Phase 6: Projects & Project Tracker page
 ├── style.css            # Dark horror design system & responsive styling across all phases
 ├── auth.js              # Phase 1: Authentication service & localStorage session engine
 ├── onboarding.js        # Phase 2: Onboarding workflow, step validation & profile persistence
 ├── assessment.js        # Phase 3: Profile analysis & assessment engine
 ├── readiness.js         # Phase 4: Career Readiness calculation & Skill Gap engine
 ├── roadmap.js           # Phase 5: Personalized Learning Roadmap generator engine
+├── projects.js          # Phase 6: Projects recommendation & Project Tracker engine
 └── README.md            # Comprehensive project documentation
 ```
 
@@ -63,73 +65,82 @@ Phase 4 calculates a quantitative, weighted **Career Readiness Score (0–100)**
 
 ### Phase 5: Personalized Learning Roadmap Engine
 Phase 5 converts the Phase 4 Readiness Score and Skill Gap output into a structured, deterministic **Personalized Learning Roadmap**.
-
-#### Features & Engine (`roadmap.js`):
-- **Route Protection**: Verifies `careerPilotLoggedIn === "true"`, `careerPilotProfile.completed === true`, `careerPilotReadiness`, and a valid `targetCareer`.
-- **5 Learning Stages**:
-  1. `STAGE 1: FOUNDATION`: Essential baseline concepts and core tools.
-  2. `STAGE 2: CORE SKILLS`: Core working knowledge and domain competence.
-  3. `STAGE 3: DEVELOPMENT DEPTH`: Frameworks, architecture, and system integration.
-  4. `STAGE 4: ADVANCED / SPECIALIZATION`: Advanced patterns, tools, and design concepts.
-  5. `STAGE 5: JOB PREPARATION FOUNDATION`: Practical portfolio readiness and technical problem solving.
-- **Prerequisite Graph Engine**:
-  - Maps technical dependency relationships (e.g. `HTML` → `CSS` → `Responsive Design`, `JavaScript` → `React` / `APIs`, `Python` → `Pandas` → `Machine Learning`, `Linux` → `Containers` → `Deployment`, etc.).
-- **Strict Skill Completion Mapping**:
-  - Skills are marked `COMPLETED` if and only if present in normalized `profile.skills`.
-  - Unacquired skills are strictly marked `UPCOMING`.
-- **Deterministic Effort Estimation**:
-  - Assigns structured effort ranges (`3–5 hours`, `6–10 hours`, `10–20 hours`, `20–30 hours`).
-- **Milestones**:
-  - Generates outcome-focused learning milestones for every stage.
-- **Persistence & Double Fingerprinting (`careerPilotRoadmap`)**:
-  - Stores roadmap data under `careerPilotRoadmap` in `localStorage`.
-  - Uses both `profileFingerprint` and `readinessFingerprint` to automatically refresh the roadmap when profile skills or readiness gaps change.
-  - Zero password storage.
-- **Action Controls**:
-  - `[ REVIEW PROFILE ]`: Returns to `onboarding.html`.
-  - `[ BACK TO READINESS ]`: Returns to `readiness.html`.
-  - `[ CONTINUE ]`: Displays in-page locked notice for upcoming Phase 6 features.
+- **Features & Engine (`roadmap.js`)**:
+  - 5 Learning Stages: Foundation, Core Skills, Development Depth, Advanced/Specialization, Job Prep Foundation.
+  - Prerequisite dependency graph mapping and conservative skill completion verification.
+  - Double fingerprinting persistence (`careerPilotRoadmap`).
 
 ---
 
-## 💾 LocalStorage Data Schema (`careerPilotRoadmap`)
+### Phase 6: Projects & Project Tracker Engine
+Phase 6 converts the user's readiness gaps and roadmap sequences into personalized, portfolio-ready project recommendations and provides an interactive project tracker.
+
+#### Features & Engine (`projects.js`):
+- **Route Protection**: Verifies `careerPilotLoggedIn === "true"`, `careerPilotProfile.completed === true`, `careerPilotReadiness`, `careerPilotRoadmap`, and a valid `targetCareer`.
+- **Deterministic Career Catalogs (12 Roles)**:
+  - Curated catalogs containing 6–10 practical projects spanning `BEGINNER`, `INTERMEDIATE`, and `ADVANCED` difficulty.
+- **Project Personalization & Relevance**:
+  - Compares project covered skills against missing readiness skills and upcoming roadmap items.
+  - Dynamically calculates project priority (`HIGH`, `MEDIUM`, `LOW`) and generates tailored `"Why this project?"` rationales.
+- **Interactive Project Tracker**:
+  - State tracking: `NOT_STARTED` (default), `IN_PROGRESS`, `COMPLETED`.
+  - Profile skills indicate capability but do **NOT** falsely mark projects completed.
+  - Status changes update `careerPilotProjects` immediately in `localStorage` without altering readiness scores or profile skills.
+- **Interactive Detail Modal View**:
+  - Displays full objective, detailed description, why this project, skills covered, required prerequisites, tech stack, and step-by-step project milestones.
+- **Real-Time Client-Side Filtering**:
+  - Instant filtering by `ALL`, `HIGH PRIORITY`, `BEGINNER`, `INTERMEDIATE`, `ADVANCED`, `NOT STARTED`, `IN PROGRESS`, and `COMPLETED`.
+- **Persistence & Triple Fingerprinting (`careerPilotProjects`)**:
+  - Automatically regenerates recommendations when profile, readiness, or roadmap data changes, while preserving existing user project status where project IDs match.
+  - Zero password storage.
+- **Action Controls**:
+  - `[ REVIEW PROFILE ]`: Returns to `onboarding.html`.
+  - `[ BACK TO ROADMAP ]`: Returns to `roadmap.html`.
+  - `[ CONTINUE ]`: Displays in-page locked notice for upcoming Phase 7 features.
+
+---
+
+## 💾 LocalStorage Data Schema (`careerPilotProjects`)
 
 ```json
 {
   "targetCareer": "Frontend Developer",
   "readinessScore": 68,
-  "status": "DEVELOPING",
-  "stages": [
+  "projects": [
     {
-      "id": "stage-1",
-      "title": "STAGE 1 — FOUNDATION",
-      "description": "Establish essential baseline concepts...",
-      "milestone": "Master core syntax and web styling fundamentals.",
-      "items": [
-        {
-          "id": "item-1",
-          "skill": "HTML",
-          "stage": "stage-1",
-          "priority": "HIGH",
-          "status": "COMPLETED",
-          "reason": "Semantic document markup foundation for web pages.",
-          "prerequisites": [],
-          "estimatedEffort": "3–5 hours",
-          "order": 1
-        }
-      ]
+      "id": "fe-proj-1",
+      "title": "Responsive Developer Portfolio Website",
+      "career": "Frontend Developer",
+      "difficulty": "BEGINNER",
+      "priority": "HIGH",
+      "description": "A modern, accessible, mobile-first personal portfolio...",
+      "objective": "Master semantic HTML5 markup, CSS3 Flexbox/Grid layouts...",
+      "skillsCovered": ["HTML", "CSS", "Responsive Design"],
+      "requiredSkills": ["HTML", "CSS"],
+      "techStack": ["HTML5", "CSS3", "Responsive Design", "Flexbox/Grid"],
+      "estimatedEffort": "3–5 hours",
+      "whyThisProject": "This project is recommended because it strengthens Responsive Design...",
+      "milestones": [
+        "Draft wireframe and semantic HTML5 document structure",
+        "Apply modern CSS styling, custom color variables, and typography",
+        "Implement responsive navigation and media queries for mobile/tablet",
+        "Deploy to GitHub Pages with clean cross-browser compatibility"
+      ],
+      "order": 1,
+      "status": "NOT_STARTED"
     }
   ],
-  "totalItems": 8,
-  "completedItems": 3,
-  "upcomingItems": 5,
-  "highPriorityItems": 3,
-  "estimatedTotalEffort": "45–70 hours",
-  "generatedAt": "2026-09-15T01:36:00.000Z",
+  "totalProjects": 8,
+  "completedProjects": 0,
+  "inProgressProjects": 0,
+  "notStartedProjects": 8,
+  "highPriorityProjects": 5,
+  "generatedAt": "2026-09-15T01:50:00.000Z",
   "profileFingerprint": "fp_profile_12345",
-  "readinessFingerprint": "fp_readiness_67890"
+  "readinessFingerprint": "fp_readiness_67890",
+  "roadmapFingerprint": "fp_roadmap_11223"
 }
 ```
 
 > [!IMPORTANT]
-> **Phase 6 Boundary**: Phase 5 does **NOT** implement project recommendation engines, project trackers, interview simulators, resume builders, or job matching systems. Those belong strictly to Phase 6+.
+> **Phase 7 Boundary**: Phase 6 does **NOT** implement interview simulations, resume builders, GitHub analyzers, or job matching engines. Those belong strictly to Phase 7+.

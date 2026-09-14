@@ -143,16 +143,11 @@ const RoadmapApp = {
       });
     }
 
-    // Continue to Phase 6 button
+    // Continue to Phase 6 button (Projects & Project Tracker)
     const continueBtn = document.getElementById('continue-phase6-btn');
     if (continueBtn) {
       continueBtn.addEventListener('click', () => {
-        const lockedAlert = document.getElementById('phase6-locked-alert');
-        if (lockedAlert) {
-          lockedAlert.textContent = "Phase 6: Projects & Project Tracker — Coming in Next Phase.";
-          lockedAlert.style.display = 'block';
-          lockedAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        window.location.href = 'projects.html';
       });
     }
   },

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - Career Projects & Project Tracker">
+  <title>Career Projects & Tracker — CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cinematic Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="projects.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-badge">
+          <span>User:</span> <strong id="header-user-name">Student</strong>
+        </div>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+          LOGOUT
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout Container -->
+  <main class="main-wrapper">
+    <div class="onboarding-container" style="max-width: 1000px;">
+      
+      <!-- Hero Header -->
+      <div class="assessment-hero-header">
+        <div class="status-badge-wrapper">
+          <span class="status-indicator-dot"></span>
+          <span class="status-badge-text">PORTFOLIO TRACKER READY</span>
+        </div>
+        
+        <h1 class="hero-title" style="font-size: 2.5rem; margin-top: 0.5rem;">
+          PROJECTS FOR YOUR <span class="highlight-red">CAREER</span>
+        </h1>
+        
+        <p class="hero-subtitle" style="max-width: 700px; margin-top: 0.25rem;">
+          "Build the right projects to turn your skills into proof."
+        </p>
+      </div>
+
+      <!-- Projects Header Bar (Target Career & Readiness Score) -->
+      <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">TARGET CAREER</div>
+            <div id="proj-target-career" style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary);">Frontend Developer</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">READINESS SCORE</div>
+              <div id="proj-readiness-score" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
+            </div>
+            <div id="proj-tracking-status" class="alignment-badge alignment-badge-high">0 COMPLETED</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Locked Phase 7 Notice Alert -->
+      <div id="phase7-locked-alert" class="alert alert-success" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <!-- 1. PROJECT METRICS SUMMARY -->
+      <div class="form-grid-5" style="margin-bottom: 1.5rem; gap: 1rem;">
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">TOTAL PROJECTS</div>
+          <div id="metric-total-projects" class="metric-value">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">COMPLETED</div>
+          <div id="metric-completed-projects" class="metric-value text-green">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">IN PROGRESS</div>
+          <div id="metric-inprogress-projects" class="metric-value text-amber">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">NOT STARTED</div>
+          <div id="metric-notstarted-projects" class="metric-value text-muted">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">HIGH PRIORITY</div>
+          <div id="metric-high-projects" class="metric-value text-red">0</div>
+        </div>
+      </div>
+
+      <!-- 2. CURRENT POSITION BANNER -->
+      <div class="onboarding-card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--accent-red-bright);">
+        <div class="review-section-header">CURRENT PROJECT POSITION</div>
+        <p id="proj-current-position" class="assessment-paragraph-text" style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin: 0;"></p>
+      </div>
+
+      <!-- 3. NEXT RECOMMENDED PROJECT -->
+      <div id="next-project-wrapper" class="onboarding-card" style="margin-bottom: 1.5rem; background: linear-gradient(145deg, rgba(20,8,8,0.9), rgba(12,12,12,0.95)); border: 1px solid rgba(185, 28, 28, 0.4);">
+        <div class="review-section-header" style="color: var(--accent-red-bright);">★ NEXT RECOMMENDED PROJECT</div>
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem;">
+          <div style="flex: 1; min-width: 260px;">
+            <h2 id="next-proj-title" style="font-size: 1.5rem; color: var(--text-primary); margin: 0 0 0.4rem 0;">Responsive Portfolio</h2>
+            <p id="next-proj-reason" class="assessment-paragraph-text" style="margin: 0 0 0.5rem 0; font-size: 0.95rem;"></p>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span id="next-proj-difficulty" class="diff-badge diff-beginner">BEGINNER</span>
+              <span id="next-proj-priority" class="priority-badge priority-high">HIGH PRIORITY</span>
+            </div>
+            <span id="next-proj-effort" class="effort-badge">Effort: 6–10 hours</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem;">
+          <div id="next-proj-skills" class="tags-container"></div>
+          <button type="button" id="next-proj-view-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 1rem; font-size: 0.85rem;">
+            VIEW PROJECT DETAILS →
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. FILTER BAR -->
+      <div class="onboarding-card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+        <div class="review-section-header" style="margin-bottom: 0.75rem; font-size: 0.9rem;">FILTER PROJECTS</div>
+        <div id="project-filters" class="filters-container">
+          <button type="button" class="filter-btn active" data-filter="ALL">ALL</button>
+          <button type="button" class="filter-btn" data-filter="HIGH">HIGH PRIORITY</button>
+          <button type="button" class="filter-btn" data-filter="BEGINNER">BEGINNER</button>
+          <button type="button" class="filter-btn" data-filter="INTERMEDIATE">INTERMEDIATE</button>
+          <button type="button" class="filter-btn" data-filter="ADVANCED">ADVANCED</button>
+          <button type="button" class="filter-btn" data-filter="NOT_STARTED">NOT STARTED</button>
+          <button type="button" class="filter-btn" data-filter="IN_PROGRESS">IN PROGRESS</button>
+          <button type="button" class="filter-btn" data-filter="COMPLETED">COMPLETED</button>
+        </div>
+      </div>
+
+      <!-- 5. PROJECTS CARDS GRID -->
+      <div id="projects-grid" class="projects-grid" style="margin-bottom: 2rem;"></div>
+
+      <!-- Action Navigation Buttons Bar -->
+      <div class="step-nav-bar" style="margin-top: 1rem;">
+        <button type="button" id="review-profile-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.5rem;">
+          ← REVIEW PROFILE
+        </button>
+
+        <button type="button" id="back-roadmap-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.5rem;">
+          ← ROADMAP
+        </button>
+
+        <button type="button" id="continue-phase7-btn" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">
+          CONTINUE →
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Project Detail Modal -->
+  <div id="project-modal-backdrop" class="modal-backdrop" style="display: none;">
+    <div class="modal-container onboarding-card" style="max-width: 700px; width: 92%; max-height: 90vh; overflow-y: auto; position: relative;">
+      <button type="button" id="modal-close-btn" class="modal-close-icon" aria-label="Close modal">&times;</button>
+      
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+        <h2 id="modal-project-title" style="font-size: 1.6rem; color: var(--text-primary); margin: 0;">Project Title</h2>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <span id="modal-project-difficulty" class="diff-badge diff-beginner">BEGINNER</span>
+          <span id="modal-project-priority" class="priority-badge priority-high">HIGH PRIORITY</span>
+          <span id="modal-project-effort" class="effort-badge">6–10 hours</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <span id="modal-project-status-pill" class="status-pill status-notstarted">○ NOT STARTED</span>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">WHY THIS PROJECT?</div>
+        <p id="modal-project-why" class="assessment-paragraph-text" style="font-size: 0.95rem; margin: 0;"></p>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">OBJECTIVE</div>
+        <p id="modal-project-objective" class="assessment-paragraph-text" style="font-size: 0.95rem; margin: 0;"></p>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">DESCRIPTION</div>
+        <p id="modal-project-description" class="assessment-paragraph-text" style="font-size: 0.95rem; margin: 0;"></p>
+      </div>
+
+      <div class="form-grid-2" style="gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <div class="modal-section-title">SKILLS COVERED</div>
+          <div id="modal-project-skills" class="tags-container" style="margin-top: 0.35rem;"></div>
+        </div>
+        <div>
+          <div class="modal-section-title">REQUIRED PREREQUISITES</div>
+          <div id="modal-project-prereqs" class="tags-container" style="margin-top: 0.35rem;"></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">TECH STACK</div>
+        <div id="modal-project-tech" class="tags-container" style="margin-top: 0.35rem;"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">PROJECT MILESTONES</div>
+        <div id="modal-project-milestones" class="milestones-checklist" style="margin-top: 0.5rem;"></div>
+      </div>
+
+      <div class="modal-status-bar">
+        <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">UPDATE STATUS:</div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" id="btn-status-notstarted" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.8rem;">
+            NOT STARTED
+          </button>
+          <button type="button" id="btn-status-inprogress" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.8rem;">
+            IN PROGRESS
+          </button>
+          <button type="button" id="btn-status-completed" class="btn btn-primary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.8rem;">
+            COMPLETED ✓
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="projects.js"></script>
+</body>
+</html>
