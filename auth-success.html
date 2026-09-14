@@ -40,12 +40,9 @@
             Welcome, <span id="user-name" class="user-name-highlight">User</span>.<br>Your account has been created successfully.
           </p>
 
-          <!-- Message container for CONTINUE button click -->
-          <div id="notice-alert" class="alert alert-success" style="display: none; margin-top: 1.25rem;"></div>
-
           <div class="action-stack">
             <button type="button" id="continue-btn" class="btn btn-primary">
-              CONTINUE
+              CONTINUE TO ONBOARDING →
             </button>
             
             <button type="button" id="logout-btn" class="btn btn-secondary">
@@ -75,13 +72,9 @@
       document.getElementById('user-name').textContent = currentUser.fullName;
     }
 
-    // Continue button action
-    const continueBtn = document.getElementById('continue-btn');
-    const noticeAlert = document.getElementById('notice-alert');
-
-    continueBtn.addEventListener('click', () => {
-      noticeAlert.textContent = "Onboarding will be available in Phase 2.";
-      noticeAlert.style.display = 'block';
+    // Continue button action -> Navigate to onboarding.html
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      window.location.href = 'onboarding.html';
     });
 
     // Logout button actions

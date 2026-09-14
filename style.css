@@ -1,8 +1,8 @@
 /* ==========================================================================
-   CAREERPILOT AI - PHASE 1: DARK CINEMATIC HORROR DESIGN SYSTEM
+   CAREERPILOT AI - DARK CINEMATIC HORROR DESIGN SYSTEM
    Visual Target: Psychological horror atmosphere, cinematic environment,
    deep dark palette (#050505), dark red accents (#b91c1c / #dc2626), 
-   crisp forms, and perfect readability.
+   crisp forms, and perfect readability across Phase 1 & Phase 2.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -12,7 +12,7 @@
   /* Color Palette - Dark Horror Theme */
   --bg-page: #050505;
   --bg-secondary: #0b0b0b;
-  --bg-card: rgba(12, 12, 12, 0.92);
+  --bg-card: rgba(12, 12, 12, 0.94);
   --bg-card-solid: #0c0c0c;
   --bg-input: #121212;
   
@@ -45,7 +45,6 @@
   --radius-lg: 14px;
 
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Cinzel", "Times New Roman", Georgia, serif;
 }
 
 /* --------------------------------------------------------------------------
@@ -98,7 +97,7 @@ body {
 .header {
   position: relative;
   z-index: 10;
-  background-color: rgba(5, 5, 5, 0.8);
+  background-color: rgba(5, 5, 5, 0.85);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(48, 48, 48, 0.6);
   padding: 1rem 2rem;
@@ -133,6 +132,22 @@ body {
   font-weight: 500;
 }
 
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #171717;
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.user-badge strong {
+  color: var(--text-primary);
+}
+
 .back-link {
   font-size: 0.875rem;
   color: var(--text-secondary);
@@ -146,7 +161,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   4. Layout & Desktop Composition
+   4. Layout Containers
    -------------------------------------------------------------------------- */
 .main-wrapper {
   position: relative;
@@ -155,7 +170,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 2.5rem 1.5rem;
 }
 
 .auth-container {
@@ -168,10 +183,18 @@ body {
   align-items: center;
 }
 
-/* Single Column Centered Variant (Auth Success) */
 .auth-container-center {
   max-width: 500px;
   grid-template-columns: 1fr;
+}
+
+.onboarding-container {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 /* Left Column Dramatic Heading */
@@ -212,9 +235,9 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   5. Authentication Card & Forms
+   5. Cards, Forms & Inputs
    -------------------------------------------------------------------------- */
-.auth-card {
+.auth-card, .onboarding-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -224,7 +247,7 @@ body {
   overflow: hidden;
 }
 
-.auth-card::before {
+.auth-card::before, .onboarding-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -237,6 +260,12 @@ body {
 .auth-form {
   display: flex;
   flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
 
@@ -254,7 +283,12 @@ body {
   letter-spacing: 0.02em;
 }
 
-.form-input {
+.form-label .required-star {
+  color: var(--accent-red-bright);
+  margin-left: 0.2rem;
+}
+
+.form-input, .form-select, .form-textarea {
   width: 100%;
   padding: 0.75rem 0.9rem;
   font-size: 0.95rem;
@@ -266,18 +300,39 @@ body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-input:hover {
+.form-select {
+  cursor: pointer;
+}
+
+.form-select option {
+  background-color: var(--bg-card-solid);
+  color: var(--text-primary);
+}
+
+.form-input:hover, .form-select:hover, .form-textarea:hover {
   border-color: var(--border-hover);
 }
 
-.form-input:focus {
+.form-input:focus, .form-select:focus, .form-textarea:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
 }
 
-.form-input::placeholder {
+.form-input:read-only {
+  background-color: #171717;
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  border-color: #262626;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
   color: #525252;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
 }
 
 /* Validation Alert Banners */
@@ -305,7 +360,304 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   6. Buttons
+   6. Progress Indicator (Phase 2 Onboarding)
+   -------------------------------------------------------------------------- */
+.progress-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.75rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-step-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progress-step-counter {
+  font-size: 0.85rem;
+  color: var(--accent-red-bright);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background-color: #1a1a1a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-red-bright) 100%);
+  width: 16.6%;
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.step-dots-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+}
+
+.step-dot-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #262626;
+  border: 2px solid var(--border-color);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.step-dot.active {
+  background-color: var(--accent-red-bright);
+  border-color: var(--accent-red-bright);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.step-dot.completed {
+  background-color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+/* --------------------------------------------------------------------------
+   7. Categorized Skill Checkboxes & Custom Tag UI
+   -------------------------------------------------------------------------- */
+.skill-category-block {
+  margin-bottom: 1.5rem;
+}
+
+.category-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-red-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.category-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #262626;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.65rem;
+}
+
+.checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.checkbox-card:hover {
+  border-color: var(--border-hover);
+  background-color: #171717;
+}
+
+.checkbox-card input[type="checkbox"] {
+  accent-color: var(--accent-red-bright);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.custom-skill-input-group {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: rgba(185, 28, 28, 0.2);
+  border: 1px solid var(--accent-red);
+  color: var(--text-primary);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.tag-remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 0.15rem;
+  transition: color 0.15s ease;
+}
+
+.tag-remove-btn:hover {
+  color: var(--danger-color);
+}
+
+/* --------------------------------------------------------------------------
+   8. Radio Card UI (Experience Level)
+   -------------------------------------------------------------------------- */
+.radio-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+}
+
+.radio-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.radio-card:hover {
+  border-color: var(--border-hover);
+  background-color: #171717;
+}
+
+.radio-card input[type="radio"] {
+  accent-color: var(--accent-red-bright);
+  margin-bottom: 0.5rem;
+
+}
+
+.radio-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   9. Review Section Summary Cards (Step 6)
+   -------------------------------------------------------------------------- */
+.review-sections-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.review-section-card {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.5rem;
+}
+
+.review-section-header {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-red-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #262626;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.review-label {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.review-value {
+  font-size: 0.925rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   10. Navigation Bar (Back & Next)
+   -------------------------------------------------------------------------- */
+.step-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-nav-back {
+  width: auto;
+  min-width: 110px;
+}
+
+.btn-nav-next {
+  width: auto;
+  min-width: 140px;
+}
+
+/* --------------------------------------------------------------------------
+   11. Buttons
    -------------------------------------------------------------------------- */
 .btn {
   display: inline-flex;
@@ -350,7 +702,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   7. Card Footer & Links
+   12. Card Footer & Links
    -------------------------------------------------------------------------- */
 .auth-footer-nav {
   margin-top: 1.75rem;
@@ -374,42 +726,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   8. Auth Success Page Specifics
-   -------------------------------------------------------------------------- */
-.success-box {
-  text-align: center;
-  padding: 0.5rem 0;
-}
-
-.success-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background-color: var(--success-bg);
-  color: var(--success-color);
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1.25rem;
-  border: 1px solid var(--success-border);
-}
-
-.user-name-highlight {
-  color: var(--accent-red-bright);
-  font-weight: 600;
-}
-
-.action-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  margin-top: 1.75rem;
-}
-
-/* --------------------------------------------------------------------------
-   9. Footer
+   13. Footer
    -------------------------------------------------------------------------- */
 .footer {
   position: relative;
@@ -423,7 +740,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   10. Responsive Breakpoints
+   14. Responsive Breakpoints
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
   .auth-container {
@@ -440,12 +757,22 @@ body {
     font-size: 2.75rem;
   }
 
-  .hero-subtitle {
-    max-width: 100%;
-  }
-
   .brand-tagline {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }
 
@@ -458,11 +785,11 @@ body {
     padding: 1.5rem 1rem;
   }
 
-  .hero-title {
-    font-size: 2.15rem;
+  .auth-card, .onboarding-card {
+    padding: 1.5rem 1.15rem;
   }
 
-  .auth-card {
-    padding: 1.75rem 1.25rem;
+  .hero-title {
+    font-size: 2.15rem;
   }
 }

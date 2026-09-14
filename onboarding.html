@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - Career Profile Onboarding">
+  <title>Onboarding & Profile — CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="onboarding.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-badge">
+          <span>User:</span> <strong id="header-user-name">Student</strong>
+        </div>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+          LOGOUT
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Onboarding Container -->
+  <main class="main-wrapper">
+    <div class="onboarding-container">
+      
+      <!-- Progress Indicator Card -->
+      <div class="progress-container">
+        <div class="progress-header">
+          <span id="progress-step-title" class="progress-step-title">STEP 1: ABOUT YOU</span>
+          <span id="progress-step-counter" class="progress-step-counter">STEP 1 OF 6 (16%)</span>
+        </div>
+
+        <div class="progress-bar-track">
+          <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+
+        <div class="step-dots-container">
+          <div class="step-dot active" data-step="1" title="About You"></div>
+          <div class="step-dot" data-step="2" title="Education"></div>
+          <div class="step-dot" data-step="3" title="Skills"></div>
+          <div class="step-dot" data-step="4" title="Interests"></div>
+          <div class="step-dot" data-step="5" title="Career Goal"></div>
+          <div class="step-dot" data-step="6" title="Review Profile"></div>
+        </div>
+      </div>
+
+      <!-- Main Form Card -->
+      <div class="onboarding-card">
+        
+        <!-- Validation Error Alert -->
+        <div id="error-alert" class="alert alert-danger" style="display: none;" role="alert"></div>
+
+        <!-- Save Success Alert -->
+        <div id="success-alert" class="alert alert-success" style="display: none;" role="alert"></div>
+
+        <!-- ===================================================================
+             STEP 1: ABOUT YOU
+             =================================================================== -->
+        <div id="step-1" class="step-content">
+          <div class="auth-header-text" style="text-align: left; margin-bottom: 1.5rem;">
+            <h1 class="auth-title">Tell Us About You</h1>
+            <p class="auth-subtitle">Let's start with some basic information.</p>
+          </div>
+
+          <div class="auth-form">
+            <div class="form-group">
+              <label for="step1-fullName" class="form-label">Full Name <span class="required-star">*</span></label>
+              <input type="text" id="step1-fullName" class="form-input" placeholder="Ansh Bhatnagar" required>
+            </div>
+
+            <div class="form-group">
+              <label for="step1-email" class="form-label">Email Address (Read Only)</label>
+              <input type="email" id="step1-email" class="form-input" readonly required>
+            </div>
+
+            <div class="form-group">
+              <label for="step1-location" class="form-label">Location <span class="required-star">*</span></label>
+              <input type="text" id="step1-location" class="form-input" placeholder="Enter your city (e.g. Kota, Rajasthan)" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             STEP 2: EDUCATION
+             =================================================================== -->
+        <div id="step-2" class="step-content" style="display: none;">
+          <div class="auth-header-text" style="text-align: left; margin-bottom: 1.5rem;">
+            <h1 class="auth-title">Your Education</h1>
+            <p class="auth-subtitle">Tell us about your current education.</p>
+          </div>
+
+          <div class="auth-form">
+            <div class="form-group">
+              <label for="step2-college" class="form-label">College / University <span class="required-star">*</span></label>
+              <input type="text" id="step2-college" class="form-input" placeholder="e.g. IIT Bombay / LPU" required>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="step2-degree" class="form-label">Degree / Program <span class="required-star">*</span></label>
+                <select id="step2-degree" class="form-select" required>
+                  <option value="">Select Degree</option>
+                  <option value="B.Tech">B.Tech</option>
+                  <option value="B.E.">B.E.</option>
+                  <option value="BCA">BCA</option>
+                  <option value="B.Sc">B.Sc</option>
+                  <option value="BBA">BBA</option>
+                  <option value="B.Com">B.Com</option>
+                  <option value="MCA">MCA</option>
+                  <option value="M.Tech">M.Tech</option>
+                  <option value="Diploma">Diploma</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="step2-branch" class="form-label">Branch / Specialization <span class="required-star">*</span></label>
+                <input type="text" id="step2-branch" class="form-input" placeholder="e.g. Computer Science & Engineering" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="step2-currentYear" class="form-label">Current Year <span class="required-star">*</span></label>
+                <select id="step2-currentYear" class="form-select" required>
+                  <option value="">Select Current Year</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                  <option value="Final Year">Final Year</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="step2-graduationYear" class="form-label">Expected Graduation Year <span class="required-star">*</span></label>
+                <select id="step2-graduationYear" class="form-select" required>
+                  <option value="">Select Year</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                  <option value="2029">2029</option>
+                  <option value="2030">2030</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             STEP 3: SKILLS
+             =================================================================== -->
+        <div id="step-3" class="step-content" style="display: none;">
+          <div class="auth-header-text" style="text-align: left; margin-bottom: 1.5rem;">
+            <h1 class="auth-title">What Skills Do You Have?</h1>
+            <p class="auth-subtitle">Select the technologies and skills you already know.</p>
+          </div>
+
+          <div class="auth-form">
+            <!-- Programming -->
+            <div class="skill-category-block">
+              <div class="category-title">Programming</div>
+              <div class="checkbox-grid">
+                <label class="checkbox-card"><input type="checkbox" value="C" class="skill-checkbox"> C</label>
+                <label class="checkbox-card"><input type="checkbox" value="C++" class="skill-checkbox"> C++</label>
+                <label class="checkbox-card"><input type="checkbox" value="Java" class="skill-checkbox"> Java</label>
+                <label class="checkbox-card"><input type="checkbox" value="Python" class="skill-checkbox"> Python</label>
+                <label class="checkbox-card"><input type="checkbox" value="JavaScript" class="skill-checkbox"> JavaScript</label>
+              </div>
+            </div>
+
+            <!-- Web Development -->
+            <div class="skill-category-block">
+              <div class="category-title">Web Development</div>
+              <div class="checkbox-grid">
+                <label class="checkbox-card"><input type="checkbox" value="HTML" class="skill-checkbox"> HTML</label>
+                <label class="checkbox-card"><input type="checkbox" value="CSS" class="skill-checkbox"> CSS</label>
+                <label class="checkbox-card"><input type="checkbox" value="React" class="skill-checkbox"> React</label>
+                <label class="checkbox-card"><input type="checkbox" value="Node.js" class="skill-checkbox"> Node.js</label>
+              </div>
+            </div>
+
+            <!-- Database -->
+            <div class="skill-category-block">
+              <div class="category-title">Database</div>
+              <div class="checkbox-grid">
+                <label class="checkbox-card"><input type="checkbox" value="MySQL" class="skill-checkbox"> MySQL</label>
+                <label class="checkbox-card"><input type="checkbox" value="MongoDB" class="skill-checkbox"> MongoDB</label>
+                <label class="checkbox-card"><input type="checkbox" value="PostgreSQL" class="skill-checkbox"> PostgreSQL</label>
+              </div>
+            </div>
+
+            <!-- Tools -->
+            <div class="skill-category-block">
+              <div class="category-title">Tools</div>
+              <div class="checkbox-grid">
+                <label class="checkbox-card"><input type="checkbox" value="Git" class="skill-checkbox"> Git</label>
+                <label class="checkbox-card"><input type="checkbox" value="GitHub" class="skill-checkbox"> GitHub</label>
+                <label class="checkbox-card"><input type="checkbox" value="VS Code" class="skill-checkbox"> VS Code</label>
+              </div>
+            </div>
+
+            <!-- Custom Skills Input -->
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label for="custom-skill-input" class="form-label">Add Custom Skill</label>
+              <div class="custom-skill-input-group">
+                <input type="text" id="custom-skill-input" class="form-input" placeholder="Enter a skill (e.g. Docker, TypeScript)">
+                <button type="button" id="add-skill-btn" class="btn btn-secondary" style="width: auto; padding: 0.65rem 1.25rem;">+ ADD</button>
+              </div>
+              <div id="custom-skills-tags" class="tags-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             STEP 4: INTERESTS
+             =================================================================== -->
+        <div id="step-4" class="step-content" style="display: none;">
+          <div class="auth-header-text" style="text-align: left; margin-bottom: 1.5rem;">
+            <h1 class="auth-title">What Interests You?</h1>
+            <p class="auth-subtitle">Choose the areas you are interested in exploring.</p>
+          </div>
+
+          <div class="auth-form">
+            <div class="checkbox-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.85rem;">
+              <label class="checkbox-card"><input type="checkbox" value="Software Development" class="interest-checkbox"> Software Development</label>
+              <label class="checkbox-card"><input type="checkbox" value="Web Development" class="interest-checkbox"> Web Development</label>
+              <label class="checkbox-card"><input type="checkbox" value="App Development" class="interest-checkbox"> App Development</label>
+              <label class="checkbox-card"><input type="checkbox" value="AI / Machine Learning" class="interest-checkbox"> AI / Machine Learning</label>
+              <label class="checkbox-card"><input type="checkbox" value="Data Science" class="interest-checkbox"> Data Science</label>
+              <label class="checkbox-card"><input type="checkbox" value="Cybersecurity" class="interest-checkbox"> Cybersecurity</label>
+              <label class="checkbox-card"><input type="checkbox" value="Cloud Computing" class="interest-checkbox"> Cloud Computing</label>
+              <label class="checkbox-card"><input type="checkbox" value="DevOps" class="interest-checkbox"> DevOps</label>
+              <label class="checkbox-card"><input type="checkbox" value="UI/UX Design" class="interest-checkbox"> UI/UX Design</label>
+              <label class="checkbox-card"><input type="checkbox" value="Other" id="interest-other-checkbox" class="interest-checkbox"> Other</label>
+            </div>
+
+            <!-- Custom Other Interest Input -->
+            <div id="custom-interest-block" class="form-group" style="display: none; margin-top: 1rem;">
+              <label for="custom-interest-input" class="form-label">Specify Other Interest</label>
+              <input type="text" id="custom-interest-input" class="form-input" placeholder="e.g. Robotics, Blockchain">
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             STEP 5: CAREER GOAL
+             =================================================================== -->
+        <div id="step-5" class="step-content" style="display: none;">
+          <div class="auth-header-text" style="text-align: left; margin-bottom: 1.5rem;">
+            <h1 class="auth-title">Where Do You Want To Go?</h1>
+            <p class="auth-subtitle">Tell us what career you want to pursue.</p>
+          </div>
+
+          <div class="auth-form">
+            <div class="form-group">
+              <label for="step5-targetCareer" class="form-label">Target Career <span class="required-star">*</span></label>
+              <select id="step5-targetCareer" class="form-select" required>
+                <option value="">Select Target Career</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="Backend Developer">Backend Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Python Developer">Python Developer</option>
+                <option value="Data Analyst">Data Analyst</option>
+                <option value="Data Scientist">Data Scientist</option>
+                <option value="AI/ML Engineer">AI/ML Engineer</option>
+                <option value="Cybersecurity Engineer">Cybersecurity Engineer</option>
+                <option value="Cloud Engineer">Cloud Engineer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="UI/UX Designer">UI/UX Designer</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Experience Level <span class="required-star">*</span></label>
+              <div class="radio-card-grid">
+                <label class="radio-card">
+                  <input type="radio" name="experienceLevel" value="Beginner">
+                  <span class="radio-card-title">Beginner</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="experienceLevel" value="Intermediate">
+                  <span class="radio-card-title">Intermediate</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="experienceLevel" value="Advanced">
+                  <span class="radio-card-title">Advanced</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="step5-careerGoal" class="form-label">Career Goal <span class="required-star">*</span></label>
+              <textarea id="step5-careerGoal" class="form-textarea" placeholder="Tell us what you want to achieve in your career..." required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             STEP 6: REVIEW PROFILE
+             =================================================================== -->
+        <div id="step-6" class="step-content" style="display: none;">
+          <div class="auth-header-text" style="text-align: left; margin-bottom: 1.5rem;">
+            <h1 class="auth-title">Review Your Career Profile</h1>
+            <p class="auth-subtitle">Make sure everything looks correct before continuing.</p>
+          </div>
+
+          <div id="review-sections-stack" class="review-sections-stack">
+            <!-- Dynamically populated review summary -->
+          </div>
+        </div>
+
+        <!-- Step Navigation Bar -->
+        <div class="step-nav-bar">
+          <button type="button" id="back-btn" class="btn btn-secondary btn-nav-back" style="visibility: hidden;">
+            ← BACK
+          </button>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button type="button" id="edit-btn" class="btn btn-secondary" style="display: none; width: auto; padding: 0.75rem 1.5rem;">
+              EDIT
+            </button>
+            <button type="button" id="next-btn" class="btn btn-primary btn-nav-next">
+              NEXT →
+            </button>
+            <button type="button" id="save-btn" class="btn btn-primary" style="display: none; width: auto; padding: 0.75rem 1.75rem;">
+              SAVE PROFILE
+            </button>
+            <button type="button" id="continue-phase3-btn" class="btn btn-primary" style="display: none; width: auto; padding: 0.75rem 1.75rem;">
+              CONTINUE →
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="onboarding.js"></script>
+</body>
+</html>
