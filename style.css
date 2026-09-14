@@ -1,0 +1,468 @@
+/* ==========================================================================
+   CAREERPILOT AI - PHASE 1: DARK CINEMATIC HORROR DESIGN SYSTEM
+   Visual Target: Psychological horror atmosphere, cinematic environment,
+   deep dark palette (#050505), dark red accents (#b91c1c / #dc2626), 
+   crisp forms, and perfect readability.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design Tokens & CSS Variables
+   -------------------------------------------------------------------------- */
+:root {
+  /* Color Palette - Dark Horror Theme */
+  --bg-page: #050505;
+  --bg-secondary: #0b0b0b;
+  --bg-card: rgba(12, 12, 12, 0.92);
+  --bg-card-solid: #0c0c0c;
+  --bg-input: #121212;
+  
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  
+  --accent-red: #b91c1c;
+  --accent-red-bright: #dc2626;
+  --accent-red-hover: #ef4444;
+  --accent-red-subtle: rgba(185, 28, 28, 0.15);
+  
+  --border-color: #303030;
+  --border-hover: #404040;
+  --border-focus: #dc2626;
+  
+  --danger-color: #f87171;
+  --danger-bg: rgba(153, 27, 27, 0.2);
+  --danger-border: #991b1b;
+
+  --success-color: #4ade80;
+  --success-bg: rgba(20, 83, 45, 0.3);
+  --success-border: #15803d;
+
+  --shadow-card: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-red-glow: 0 0 20px rgba(185, 28, 28, 0.15);
+
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Cinzel", "Times New Roman", Georgia, serif;
+}
+
+/* --------------------------------------------------------------------------
+   2. CSS Reset & Base Environment
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background Atmosphere Layer */
+.cinematic-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(185, 28, 28, 0.08) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(5, 5, 5, 0.7) 0%, rgba(5, 5, 5, 0.85) 60%, #050505 100%),
+    url('assets/horror-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. Navigation & Header
+   -------------------------------------------------------------------------- */
+.header {
+  position: relative;
+  z-index: 10;
+  background-color: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(48, 48, 48, 0.6);
+  padding: 1rem 2rem;
+  width: 100%;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.brand-logo span {
+  color: var(--accent-red-bright);
+}
+
+.brand-tagline {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.back-link {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--accent-red-bright);
+}
+
+/* --------------------------------------------------------------------------
+   4. Layout & Desktop Composition
+   -------------------------------------------------------------------------- */
+.main-wrapper {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.auth-container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* Single Column Centered Variant (Auth Success) */
+.auth-container-center {
+  max-width: 500px;
+  grid-template-columns: 1fr;
+}
+
+/* Left Column Dramatic Heading */
+.hero-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.hero-title {
+  font-family: var(--font-sans);
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+}
+
+.hero-title span {
+  display: block;
+  color: var(--text-primary);
+}
+
+.hero-title .highlight-red {
+  color: var(--accent-red-bright);
+  text-shadow: 0 0 15px rgba(185, 28, 28, 0.4);
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 420px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* --------------------------------------------------------------------------
+   5. Authentication Card & Forms
+   -------------------------------------------------------------------------- */
+.auth-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 2.25rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-red) 50%, transparent 100%);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  text-align: left;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:hover {
+  border-color: var(--border-hover);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+.form-input::placeholder {
+  color: #525252;
+}
+
+/* Validation Alert Banners */
+.alert {
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  margin-bottom: 1.25rem;
+  display: none;
+}
+
+.alert-danger {
+  display: block;
+  background-color: var(--danger-bg);
+  color: var(--danger-color);
+  border: 1px solid var(--danger-border);
+}
+
+.alert-success {
+  display: block;
+  background-color: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid var(--success-border);
+}
+
+/* --------------------------------------------------------------------------
+   6. Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.8rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background-color: var(--accent-red);
+  color: #ffffff;
+  border-color: var(--accent-red);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-red-bright);
+  border-color: var(--accent-red-bright);
+  box-shadow: var(--shadow-red-glow);
+}
+
+.btn-secondary {
+  background-color: #171717;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: #262626;
+  border-color: var(--border-hover);
+}
+
+/* --------------------------------------------------------------------------
+   7. Card Footer & Links
+   -------------------------------------------------------------------------- */
+.auth-footer-nav {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.auth-link {
+  color: var(--accent-red-bright);
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 0.35rem;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+  color: var(--accent-red-hover);
+}
+
+/* --------------------------------------------------------------------------
+   8. Auth Success Page Specifics
+   -------------------------------------------------------------------------- */
+.success-box {
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.success-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--success-bg);
+  color: var(--success-color);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--success-border);
+}
+
+.user-name-highlight {
+  color: var(--accent-red-bright);
+  font-weight: 600;
+}
+
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   9. Footer
+   -------------------------------------------------------------------------- */
+.footer {
+  position: relative;
+  z-index: 10;
+  background-color: rgba(5, 5, 5, 0.9);
+  border-top: 1px solid rgba(48, 48, 48, 0.6);
+  padding: 1.25rem 2rem;
+  text-align: center;
+  font-size: 0.825rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   10. Responsive Breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .auth-container {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .hero-text-block {
+    text-align: center;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 2.75rem;
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+  }
+
+  .brand-tagline {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.85rem 1.25rem;
+  }
+  
+  .main-wrapper {
+    padding: 1.5rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 2.15rem;
+  }
+
+  .auth-card {
+    padding: 1.75rem 1.25rem;
+  }
+}

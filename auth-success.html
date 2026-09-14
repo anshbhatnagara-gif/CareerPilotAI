@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - Authentication Successful">
+  <title>Account Verified — CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cinematic Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="auth-success.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+      <button type="button" id="header-logout-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 1rem; font-size: 0.85rem;">
+        LOGOUT
+      </button>
+    </div>
+  </header>
+
+  <!-- Success Screen Main Layout -->
+  <main class="main-wrapper">
+    <div class="auth-container auth-container-center">
+      
+      <div class="auth-card">
+        <div class="success-box">
+          
+          <div class="success-badge">✓</div>
+          
+          <h1 class="hero-title" style="font-size: 2.5rem; text-align: center; margin-bottom: 0.5rem;">
+            YOU'RE <span class="highlight-red">IN!</span>
+          </h1>
+          
+          <p class="hero-subtitle" style="text-align: center; font-size: 1rem; margin: 0 auto;">
+            Welcome, <span id="user-name" class="user-name-highlight">User</span>.<br>Your account has been created successfully.
+          </p>
+
+          <!-- Message container for CONTINUE button click -->
+          <div id="notice-alert" class="alert alert-success" style="display: none; margin-top: 1.25rem;"></div>
+
+          <div class="action-stack">
+            <button type="button" id="continue-btn" class="btn btn-primary">
+              CONTINUE
+            </button>
+            
+            <button type="button" id="logout-btn" class="btn btn-secondary">
+              LOGOUT
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script>
+    // Route protection: Protect auth-success.html from unauthenticated access
+    AuthService.protectAuthSuccess();
+
+    // Populate user's name
+    const currentUser = AuthService.getCurrentUser();
+    if (currentUser && currentUser.fullName) {
+      document.getElementById('user-name').textContent = currentUser.fullName;
+    }
+
+    // Continue button action
+    const continueBtn = document.getElementById('continue-btn');
+    const noticeAlert = document.getElementById('notice-alert');
+
+    continueBtn.addEventListener('click', () => {
+      noticeAlert.textContent = "Onboarding will be available in Phase 2.";
+      noticeAlert.style.display = 'block';
+    });
+
+    // Logout button actions
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      AuthService.logout();
+    });
+
+    document.getElementById('header-logout-btn').addEventListener('click', () => {
+      AuthService.logout();
+    });
+  </script>
+</body>
+</html>
