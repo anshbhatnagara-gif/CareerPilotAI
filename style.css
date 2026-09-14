@@ -1593,6 +1593,57 @@ body {
   }
 }
 
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+  .form-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .form-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mode Selector Group */
+.mode-selector-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mode-btn {
+  background: #111111;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.03em;
+}
+
+.mode-btn:hover {
+  border-color: var(--accent-red-bright);
+  color: var(--text-primary);
+  background: #181818;
+}
+
+.mode-btn.active {
+  background: var(--accent-red);
+  color: #ffffff;
+  border-color: var(--accent-red-bright);
+  box-shadow: 0 0 10px rgba(185, 28, 28, 0.35);
+}
+
 .score-dimension-card {
   background: #080808;
   border: 1px solid var(--border-color);
@@ -1666,7 +1717,17 @@ body {
   line-height: 1.4;
 }
 
-/* Resume Box */
+/* Resume Box & Disclaimer */
+.resume-disclaimer-box {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--text-muted);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
 .resume-preview-box {
   background: #060606;
   border: 1px solid var(--border-color);
@@ -1679,4 +1740,41 @@ body {
 .evidence-item-card {
   padding: 1rem 1.15rem;
   border-left: 3px solid rgba(185, 28, 28, 0.4);
+}
+
+/* Interview History Item Cards */
+.history-item-card {
+  background: #080808;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.history-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.history-item-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.history-item-meta {
+  font-size: 0.775rem;
+  color: var(--text-secondary);
+}
+
+.history-item-score {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-red-bright);
 }

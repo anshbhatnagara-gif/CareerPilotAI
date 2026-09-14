@@ -60,7 +60,7 @@
               <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">READINESS SCORE</div>
               <div id="iv-readiness-score" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
             </div>
-            <div id="iv-interview-status" class="alignment-badge alignment-badge-high">INTERVIEW READY</div>
+            <div id="iv-interview-status" class="alignment-badge alignment-badge-high">0% INTERVIEW SCORE</div>
           </div>
         </div>
       </div>
@@ -83,11 +83,25 @@
            ========================================================================= -->
       <div id="interview-tab" class="tab-content-panel" style="display: block;">
         
+        <!-- Interview Mode Selector Card -->
+        <div class="onboarding-card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">
+              SELECT INTERVIEW MODE:
+            </div>
+            <div id="interview-mode-selector" class="mode-selector-group">
+              <button type="button" class="mode-btn active" data-mode="QUICK">QUICK — 5Q</button>
+              <button type="button" class="mode-btn" data-mode="STANDARD">STANDARD — 10Q</button>
+              <button type="button" class="mode-btn" data-mode="DEEP">DEEP — 15Q</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Question Progress Navigator -->
         <div class="onboarding-card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-              QUESTION <span id="q-curr-num">1</span> OF <span id="q-total-num">5</span>
+              QUESTION <span id="q-curr-num">1</span> OF <span id="q-total-num">5</span> (<span id="q-mode-label" style="color: var(--accent-red-bright);">QUICK MODE</span>)
             </div>
             <div id="question-nav-dots" class="question-nav-dots"></div>
           </div>
@@ -145,13 +159,16 @@
         <div id="evaluation-card" class="onboarding-card" style="display: none; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-red-bright);">
           <div class="review-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
             <span>EVALUATION BREAKDOWN</span>
-            <span id="eval-overall-status" class="alignment-badge alignment-badge-high">STRONG RESPONSE</span>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span id="eval-overall-number" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-red-bright);">OVERALL: 0 / 100</span>
+              <span id="eval-overall-status" class="alignment-badge alignment-badge-high">STRONG RESPONSE</span>
+            </div>
           </div>
 
-          <!-- 3-Dimension Score Meters Grid -->
-          <div class="form-grid-3" style="gap: 1rem; margin: 1rem 0;">
+          <!-- 4-Dimension Score Meters Grid -->
+          <div class="form-grid-4" style="gap: 0.75rem; margin: 1rem 0;">
             <div class="score-dimension-card">
-              <div class="score-dim-label">TECHNICAL DEPTH</div>
+              <div class="score-dim-label">TECHNICAL DEPTH (35%)</div>
               <div id="eval-tech-score" class="score-dim-val">0 / 100</div>
               <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
                 <div id="eval-tech-bar" class="progress-bar-fill" style="width: 0%;"></div>
@@ -159,7 +176,15 @@
             </div>
 
             <div class="score-dimension-card">
-              <div class="score-dim-label">COMMUNICATION CLARITY</div>
+              <div class="score-dim-label">PROBLEM SOLVING (30%)</div>
+              <div id="eval-prob-score" class="score-dim-val">0 / 100</div>
+              <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
+                <div id="eval-prob-bar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="score-dimension-card">
+              <div class="score-dim-label">COMMUNICATION (15%)</div>
               <div id="eval-comm-score" class="score-dim-val">0 / 100</div>
               <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
                 <div id="eval-comm-bar" class="progress-bar-fill" style="width: 0%;"></div>
@@ -167,10 +192,10 @@
             </div>
 
             <div class="score-dimension-card">
-              <div class="score-dim-label">PROBLEM SOLVING</div>
-              <div id="eval-prob-score" class="score-dim-val">0 / 100</div>
+              <div class="score-dim-label">PROJECT KNOWLEDGE (20%)</div>
+              <div id="eval-proj-score" class="score-dim-val">0 / 100</div>
               <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
-                <div id="eval-prob-bar" class="progress-bar-fill" style="width: 0%;"></div>
+                <div id="eval-proj-bar" class="progress-bar-fill" style="width: 0%;"></div>
               </div>
             </div>
           </div>
@@ -205,6 +230,12 @@
             </div>
             <p id="eval-ideal-approach" class="assessment-paragraph-text" style="font-size: 0.875rem; color: var(--text-muted); margin: 0;"></p>
           </div>
+        </div>
+
+        <!-- Interview Session History Section -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">INTERVIEW SESSION HISTORY</div>
+          <div id="interview-history-list" style="margin-top: 0.75rem;"></div>
         </div>
 
       </div>
@@ -254,10 +285,10 @@
           </div>
         </div>
 
-        <!-- ATS-Friendly Resume Preview Card -->
+        <!-- ATS-Friendly Resume Draft Card -->
         <div class="onboarding-card" style="margin-bottom: 1.5rem;">
           <div class="review-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-            <span>ATS-FRIENDLY RESUME PROFILE</span>
+            <span>ATS-FRIENDLY RESUME DRAFT</span>
             <div style="display: flex; gap: 0.5rem;">
               <button type="button" id="btn-copy-resume" class="btn btn-secondary" style="width: auto; padding: 0.35rem 0.85rem; font-size: 0.775rem;">
                 COPY MARKDOWN
@@ -268,7 +299,12 @@
             </div>
           </div>
 
-          <div id="resume-preview-box" class="resume-preview-box" style="margin-top: 1rem;"></div>
+          <!-- Resume Disclaimer -->
+          <div class="resume-disclaimer-box" style="margin-top: 0.75rem; margin-bottom: 1rem;">
+            <strong>Disclaimer:</strong> This is a structured preparation draft generated from the information you provide. It does not guarantee ATS acceptance, interview selection, employment, or job placement.
+          </div>
+
+          <div id="resume-preview-box" class="resume-preview-box"></div>
         </div>
 
       </div>
@@ -341,9 +377,9 @@
         </div>
 
         <div class="onboarding-card" style="padding: 1rem;">
-          <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">OVERALL READINESS SCORE</div>
-          <div id="pass-readiness-score" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
-          <div id="pass-readiness-status" style="font-size: 0.8rem; color: #22c55e;">DEVELOPING</div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">INTERVIEW SCORE</div>
+          <div id="pass-interview-score" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
+          <div id="pass-interview-status" style="font-size: 0.8rem; color: #22c55e;">READY</div>
         </div>
       </div>
 
