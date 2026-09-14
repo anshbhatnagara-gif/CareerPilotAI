@@ -162,16 +162,11 @@ const ProjectsApp = {
       });
     }
 
-    // Continue to Phase 7
+    // Continue to Phase 7 (Interview Simulator & Career Tools)
     const continueBtn = document.getElementById('continue-phase7-btn');
     if (continueBtn) {
       continueBtn.addEventListener('click', () => {
-        const lockedAlert = document.getElementById('phase7-locked-alert');
-        if (lockedAlert) {
-          lockedAlert.textContent = "Phase 7: Career Interview & Readiness Simulator — Coming in Next Phase.";
-          lockedAlert.style.display = 'block';
-          lockedAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        window.location.href = 'interview.html';
       });
     }
 

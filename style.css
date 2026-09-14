@@ -1489,3 +1489,194 @@ body {
   border-top: 1px solid var(--border-color);
   flex-wrap: wrap;
 }
+
+/* --------------------------------------------------------------------------
+   18. Phase 7 Interview Simulator & Career Tools Styles
+   -------------------------------------------------------------------------- */
+.tool-tabs-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.tool-tab-btn {
+  background: #0f0f0f;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.65rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  letter-spacing: 0.03em;
+}
+
+.tool-tab-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(185, 28, 28, 0.4);
+  background: #181818;
+}
+
+.tool-tab-btn.active {
+  background: var(--accent-red);
+  color: #ffffff;
+  border-color: var(--accent-red-bright);
+}
+
+.question-nav-dots {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.q-dot-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #111111;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.q-dot-btn:hover {
+  border-color: var(--accent-red-bright);
+  color: var(--text-primary);
+}
+
+.q-dot-btn.active {
+  background: var(--accent-red);
+  color: #ffffff;
+  border-color: var(--accent-red-bright);
+}
+
+.q-dot-btn.answered {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.star-hint-box {
+  background: rgba(185, 28, 28, 0.06);
+  border: 1px dashed rgba(185, 28, 28, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.825rem;
+  line-height: 1.45;
+}
+
+.answer-textarea {
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 130px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.score-dimension-card {
+  background: #080808;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+}
+
+.score-dim-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.score-dim-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Audit Checklist */
+.audit-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .audit-checklist-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.audit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #080808;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+}
+
+.audit-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #141414;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.audit-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.audit-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Resume Box */
+.resume-preview-box {
+  background: #060606;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+.evidence-item-card {
+  padding: 1rem 1.15rem;
+  border-left: 3px solid rgba(185, 28, 28, 0.4);
+}

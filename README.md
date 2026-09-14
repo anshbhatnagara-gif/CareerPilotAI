@@ -19,6 +19,7 @@ careerpilot-ai/
 ├── readiness.html       # Phase 4: Career Readiness & Skill Gap Analysis page
 ├── roadmap.html         # Phase 5: Personalized Learning Roadmap page
 ├── projects.html        # Phase 6: Projects & Project Tracker page
+├── interview.html       # Phase 7: Interview Simulator, Resume Tools & Evidence Tracker page
 ├── style.css            # Dark horror design system & responsive styling across all phases
 ├── auth.js              # Phase 1: Authentication service & localStorage session engine
 ├── onboarding.js        # Phase 2: Onboarding workflow, step validation & profile persistence
@@ -26,6 +27,7 @@ careerpilot-ai/
 ├── readiness.js         # Phase 4: Career Readiness calculation & Skill Gap engine
 ├── roadmap.js           # Phase 5: Personalized Learning Roadmap generator engine
 ├── projects.js          # Phase 6: Projects recommendation & Project Tracker engine
+├── interview.js         # Phase 7: Interview simulator, resume builder & evidence engine
 └── README.md            # Comprehensive project documentation
 ```
 
@@ -74,73 +76,71 @@ Phase 5 converts the Phase 4 Readiness Score and Skill Gap output into a structu
 
 ### Phase 6: Projects & Project Tracker Engine
 Phase 6 converts the user's readiness gaps and roadmap sequences into personalized, portfolio-ready project recommendations and provides an interactive project tracker.
-
-#### Features & Engine (`projects.js`):
-- **Route Protection**: Verifies `careerPilotLoggedIn === "true"`, `careerPilotProfile.completed === true`, `careerPilotReadiness`, `careerPilotRoadmap`, and a valid `targetCareer`.
-- **Deterministic Career Catalogs (12 Roles)**:
-  - Curated catalogs containing 6–10 practical projects spanning `BEGINNER`, `INTERMEDIATE`, and `ADVANCED` difficulty.
-- **Project Personalization & Relevance**:
-  - Compares project covered skills against missing readiness skills and upcoming roadmap items.
-  - Dynamically calculates project priority (`HIGH`, `MEDIUM`, `LOW`) and generates tailored `"Why this project?"` rationales.
-- **Interactive Project Tracker**:
+- **Features & Engine (`projects.js`)**:
+  - Curated project catalogs for 12 career roles (Beginner, Intermediate, Advanced).
+  - Dynamic prioritization matching missing roadmap skills.
   - State tracking: `NOT_STARTED` (default), `IN_PROGRESS`, `COMPLETED`.
-  - Profile skills indicate capability but do **NOT** falsely mark projects completed.
-  - Status changes update `careerPilotProjects` immediately in `localStorage` without altering readiness scores or profile skills.
-- **Interactive Detail Modal View**:
-  - Displays full objective, detailed description, why this project, skills covered, required prerequisites, tech stack, and step-by-step project milestones.
-- **Real-Time Client-Side Filtering**:
-  - Instant filtering by `ALL`, `HIGH PRIORITY`, `BEGINNER`, `INTERMEDIATE`, `ADVANCED`, `NOT STARTED`, `IN PROGRESS`, and `COMPLETED`.
-- **Persistence & Triple Fingerprinting (`careerPilotProjects`)**:
-  - Automatically regenerates recommendations when profile, readiness, or roadmap data changes, while preserving existing user project status where project IDs match.
-  - Zero password storage.
-- **Action Controls**:
-  - `[ REVIEW PROFILE ]`: Returns to `onboarding.html`.
-  - `[ BACK TO ROADMAP ]`: Returns to `roadmap.html`.
-  - `[ CONTINUE ]`: Displays in-page locked notice for upcoming Phase 7 features.
+  - Triple fingerprinting persistence (`careerPilotProjects`).
 
 ---
 
-## 💾 LocalStorage Data Schema (`careerPilotProjects`)
+### Phase 7: Interview Simulator, Resume Tools & Evidence Tracker Engine
+Phase 7 provides technical interview practice, automated resume profile exports, and verified portfolio evidence tracking.
 
+#### Features & Engine (`interview.js`):
+- **1. 🎤 Interview Simulator**:
+  - 5 career-tailored technical & scenario questions per role for all 12 domains.
+  - Interactive answer input supporting STAR method response formatting.
+  - Deterministic multi-dimensional evaluation:
+    - **Technical Depth Score (0–100)**: Domain keyword vector matching and technical terminology precision.
+    - **Communication Score (0–100)**: Response length, multi-sentence structuring, paragraph readability, and clarity.
+    - **Problem-Solving Score (0–100)**: Trade-off reasoning, computational complexity, and edge-case handling.
+  - Generates constructive feedback, identified strengths, and specific areas to strengthen.
+- **2. 📄 Resume & Career Readiness Tools**:
+  - 4-Tier Career Readiness Audit Checklist (Profile Completeness, Skill Coverage, Project Proof, Interview Score).
+  - Formatted ATS-Friendly Resume Preview generator with Markdown export and print formatting.
+- **3. 🐙 GitHub & Portfolio Evidence**:
+  - Evidence Tracker linking Phase 6 projects to GitHub repository URLs and live deployment links.
+  - Verified Career Passport summary modal documenting complete candidate readiness.
+- **Persistence (`careerPilotInterview` & `careerPilotCareerTools`)**:
+  - Client-side `localStorage` persistence with zero passwords or credentials.
+
+---
+
+## 💾 LocalStorage Data Schemas
+
+### `careerPilotInterview`
 ```json
 {
   "targetCareer": "Frontend Developer",
-  "readinessScore": 68,
-  "projects": [
-    {
-      "id": "fe-proj-1",
-      "title": "Responsive Developer Portfolio Website",
-      "career": "Frontend Developer",
-      "difficulty": "BEGINNER",
-      "priority": "HIGH",
-      "description": "A modern, accessible, mobile-first personal portfolio...",
-      "objective": "Master semantic HTML5 markup, CSS3 Flexbox/Grid layouts...",
-      "skillsCovered": ["HTML", "CSS", "Responsive Design"],
-      "requiredSkills": ["HTML", "CSS"],
-      "techStack": ["HTML5", "CSS3", "Responsive Design", "Flexbox/Grid"],
-      "estimatedEffort": "3–5 hours",
-      "whyThisProject": "This project is recommended because it strengthens Responsive Design...",
-      "milestones": [
-        "Draft wireframe and semantic HTML5 document structure",
-        "Apply modern CSS styling, custom color variables, and typography",
-        "Implement responsive navigation and media queries for mobile/tablet",
-        "Deploy to GitHub Pages with clean cross-browser compatibility"
-      ],
-      "order": 1,
-      "status": "NOT_STARTED"
+  "overallScore": 82,
+  "completedAnswers": {
+    "fe-q1": {
+      "userAnswer": "In a high-throughput scenario...",
+      "evaluation": {
+        "technicalScore": 85,
+        "communicationScore": 80,
+        "problemSolvingScore": 82,
+        "overallScore": 83,
+        "statusLabel": "STRONG RESPONSE",
+        "feedback": "Excellent response...",
+        "strengths": ["Strong domain terminology & keyword precision"],
+        "weaknesses": ["Further quantify real-world benchmark metrics"]
+      },
+      "evaluatedAt": "2026-09-15T01:55:00.000Z"
     }
-  ],
-  "totalProjects": 8,
-  "completedProjects": 0,
-  "inProgressProjects": 0,
-  "notStartedProjects": 8,
-  "highPriorityProjects": 5,
-  "generatedAt": "2026-09-15T01:50:00.000Z",
-  "profileFingerprint": "fp_profile_12345",
-  "readinessFingerprint": "fp_readiness_67890",
-  "roadmapFingerprint": "fp_roadmap_11223"
+  }
 }
 ```
 
-> [!IMPORTANT]
-> **Phase 7 Boundary**: Phase 6 does **NOT** implement interview simulations, resume builders, GitHub analyzers, or job matching engines. Those belong strictly to Phase 7+.
+### `careerPilotCareerTools`
+```json
+{
+  "projectEvidence": {
+    "fe-proj-1": {
+      "githubUrl": "https://github.com/alex/portfolio",
+      "liveUrl": "https://alex-portfolio.dev"
+    }
+  }
+}
+```

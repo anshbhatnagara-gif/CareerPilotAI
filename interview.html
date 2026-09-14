@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - Interview Simulator, Resume Tools & Portfolio Evidence">
+  <title>Interview Simulator & Career Tools — CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cinematic Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="interview.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-badge">
+          <span>User:</span> <strong id="header-user-name">Student</strong>
+        </div>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+          LOGOUT
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout Container -->
+  <main class="main-wrapper">
+    <div class="onboarding-container" style="max-width: 1000px;">
+      
+      <!-- Hero Header -->
+      <div class="assessment-hero-header">
+        <div class="status-badge-wrapper">
+          <span class="status-indicator-dot"></span>
+          <span class="status-badge-text">FINAL READINESS SUITE</span>
+        </div>
+        
+        <h1 class="hero-title" style="font-size: 2.5rem; margin-top: 0.5rem;">
+          INTERVIEW & <span class="highlight-red">CAREER TOOLS</span>
+        </h1>
+        
+        <p class="hero-subtitle" style="max-width: 700px; margin-top: 0.25rem;">
+          "Practice technical interviews, audit your career readiness, and assemble verified portfolio evidence."
+        </p>
+      </div>
+
+      <!-- Overview Header Bar (Target Career & Readiness Score) -->
+      <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">TARGET CAREER</div>
+            <div id="iv-target-career" style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary);">Frontend Developer</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">READINESS SCORE</div>
+              <div id="iv-readiness-score" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
+            </div>
+            <div id="iv-interview-status" class="alignment-badge alignment-badge-high">INTERVIEW READY</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation Bar -->
+      <div class="tool-tabs-bar" style="margin-bottom: 1.5rem;">
+        <button type="button" class="tool-tab-btn active" data-tab="interview-tab">
+          🎤 1. INTERVIEW SIMULATOR
+        </button>
+        <button type="button" class="tool-tab-btn" data-tab="resume-tab">
+          📄 2. RESUME & CAREER TOOLS
+        </button>
+        <button type="button" class="tool-tab-btn" data-tab="evidence-tab">
+          🐙 3. GITHUB & PORTFOLIO EVIDENCE
+        </button>
+      </div>
+
+      <!-- =========================================================================
+           TAB 1: INTERVIEW SIMULATOR
+           ========================================================================= -->
+      <div id="interview-tab" class="tab-content-panel" style="display: block;">
+        
+        <!-- Question Progress Navigator -->
+        <div class="onboarding-card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+              QUESTION <span id="q-curr-num">1</span> OF <span id="q-total-num">5</span>
+            </div>
+            <div id="question-nav-dots" class="question-nav-dots"></div>
+          </div>
+        </div>
+
+        <!-- Question Prompt Card -->
+        <div class="onboarding-card" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+            <span id="q-category-badge" class="priority-badge priority-high">TECHNICAL SCENARIO</span>
+            <span id="q-difficulty-badge" class="diff-badge diff-intermediate">INTERMEDIATE</span>
+          </div>
+
+          <h2 id="q-title" style="font-size: 1.35rem; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.4;">
+            Question Title
+          </h2>
+
+          <p id="q-scenario" class="assessment-paragraph-text" style="font-size: 0.95rem; color: var(--text-secondary); margin: 0 0 1rem 0;">
+            Question scenario details...
+          </p>
+
+          <div class="star-hint-box">
+            <span style="color: var(--accent-red-bright); font-weight: 700;">PROMPT TIP (STAR METHOD):</span> 
+            <span id="q-hint" style="color: var(--text-primary); font-size: 0.85rem;">Structure your answer by stating the Situation, the Technical Task, your specific Action, and the quantifiable Result.</span>
+          </div>
+        </div>
+
+        <!-- Answer Input Area -->
+        <div class="onboarding-card" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <label for="user-answer-input" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+              YOUR DETAILED RESPONSE:
+            </label>
+            <span id="answer-char-count" style="font-size: 0.75rem; color: var(--text-muted);">0 characters</span>
+          </div>
+
+          <textarea id="user-answer-input" class="form-input answer-textarea" rows="7" placeholder="Type your technical interview answer here. Explain your methodology, trade-offs, architecture choices, and code logic..."></textarea>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+            <button type="button" id="btn-quick-sample" class="btn btn-secondary" style="width: auto; padding: 0.45rem 1rem; font-size: 0.8rem;">
+              INSERT SAMPLE RESPONSE
+            </button>
+            
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" id="btn-evaluate-answer" class="btn btn-primary" style="width: auto; padding: 0.5rem 1.5rem; font-size: 0.85rem;">
+                EVALUATE RESPONSE ✓
+              </button>
+              <button type="button" id="btn-next-question" class="btn btn-secondary" style="width: auto; padding: 0.5rem 1.25rem; font-size: 0.85rem;">
+                NEXT QUESTION →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluation Results Card -->
+        <div id="evaluation-card" class="onboarding-card" style="display: none; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-red-bright);">
+          <div class="review-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span>EVALUATION BREAKDOWN</span>
+            <span id="eval-overall-status" class="alignment-badge alignment-badge-high">STRONG RESPONSE</span>
+          </div>
+
+          <!-- 3-Dimension Score Meters Grid -->
+          <div class="form-grid-3" style="gap: 1rem; margin: 1rem 0;">
+            <div class="score-dimension-card">
+              <div class="score-dim-label">TECHNICAL DEPTH</div>
+              <div id="eval-tech-score" class="score-dim-val">0 / 100</div>
+              <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
+                <div id="eval-tech-bar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="score-dimension-card">
+              <div class="score-dim-label">COMMUNICATION CLARITY</div>
+              <div id="eval-comm-score" class="score-dim-val">0 / 100</div>
+              <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
+                <div id="eval-comm-bar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="score-dimension-card">
+              <div class="score-dim-label">PROBLEM SOLVING</div>
+              <div id="eval-prob-score" class="score-dim-val">0 / 100</div>
+              <div class="progress-bar-track" style="height: 6px; margin-top: 0.4rem;">
+                <div id="eval-prob-bar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback & Weak Areas -->
+          <div style="margin-top: 1rem;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-red-bright); text-transform: uppercase; margin-bottom: 0.35rem;">
+              CONSTRUCTIVE FEEDBACK:
+            </div>
+            <p id="eval-feedback-text" class="assessment-paragraph-text" style="font-size: 0.95rem; line-height: 1.5; margin: 0 0 0.85rem 0;"></p>
+
+            <div class="form-grid-2" style="gap: 1rem;">
+              <div>
+                <div style="font-size: 0.775rem; font-weight: 700; color: #22c55e; text-transform: uppercase; margin-bottom: 0.35rem;">
+                  ✓ IDENTIFIED STRENGTHS
+                </div>
+                <div id="eval-strengths-list" class="tags-container"></div>
+              </div>
+              <div>
+                <div style="font-size: 0.775rem; font-weight: 700; color: var(--accent-red-bright); text-transform: uppercase; margin-bottom: 0.35rem;">
+                  ▲ AREAS TO STRENGTHEN
+                </div>
+                <div id="eval-weaknesses-list" class="tags-container"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Benchmark Ideal Structure -->
+          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <div style="font-size: 0.775rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.3rem;">
+              BENCHMARK APPROACH:
+            </div>
+            <p id="eval-ideal-approach" class="assessment-paragraph-text" style="font-size: 0.875rem; color: var(--text-muted); margin: 0;"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =========================================================================
+           TAB 2: RESUME & CAREER TOOLS
+           ========================================================================= -->
+      <div id="resume-tab" class="tab-content-panel" style="display: none;">
+        
+        <!-- 4-Tier Career Readiness Audit Checklist -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">4-TIER CAREER READINESS AUDIT</div>
+          <div class="audit-checklist-grid" style="margin-top: 0.75rem;">
+            
+            <div class="audit-item">
+              <div class="audit-icon text-green" id="audit-icon-1">✓</div>
+              <div>
+                <div class="audit-title">1. Profile & Onboarding Completeness</div>
+                <div class="audit-desc" id="audit-desc-1">Profile verified with education, experience level, and career aspirations.</div>
+              </div>
+            </div>
+
+            <div class="audit-item">
+              <div class="audit-icon text-green" id="audit-icon-2">✓</div>
+              <div>
+                <div class="audit-title">2. Core Skill Gap Coverage</div>
+                <div class="audit-desc" id="audit-desc-2">Skill gaps analyzed against industry requirements.</div>
+              </div>
+            </div>
+
+            <div class="audit-item">
+              <div class="audit-icon" id="audit-icon-3">○</div>
+              <div>
+                <div class="audit-title">3. Portfolio Project Proof of Work</div>
+                <div class="audit-desc" id="audit-desc-3">0 projects completed in tracker.</div>
+              </div>
+            </div>
+
+            <div class="audit-item">
+              <div class="audit-icon" id="audit-icon-4">○</div>
+              <div>
+                <div class="audit-title">4. Technical Interview Readiness</div>
+                <div class="audit-desc" id="audit-desc-4">Interview simulation completed with scored feedback.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ATS-Friendly Resume Preview Card -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span>ATS-FRIENDLY RESUME PROFILE</span>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" id="btn-copy-resume" class="btn btn-secondary" style="width: auto; padding: 0.35rem 0.85rem; font-size: 0.775rem;">
+                COPY MARKDOWN
+              </button>
+              <button type="button" id="btn-print-resume" class="btn btn-secondary" style="width: auto; padding: 0.35rem 0.85rem; font-size: 0.775rem;">
+                PRINT / PDF
+              </button>
+            </div>
+          </div>
+
+          <div id="resume-preview-box" class="resume-preview-box" style="margin-top: 1rem;"></div>
+        </div>
+
+      </div>
+
+      <!-- =========================================================================
+           TAB 3: GITHUB & PORTFOLIO EVIDENCE
+           ========================================================================= -->
+      <div id="evidence-tab" class="tab-content-panel" style="display: none;">
+        
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">PROOF OF WORK & GITHUB EVIDENCE TRACKER</div>
+          <p class="assessment-paragraph-text" style="font-size: 0.95rem; margin: 0 0 1rem 0;">
+            Attach repository links and live deployment URLs to your Phase 6 projects to transform your learning roadmap into verified portfolio proof.
+          </p>
+
+          <div id="evidence-projects-list" class="evidence-stack"></div>
+
+          <div style="margin-top: 1.25rem; text-align: right;">
+            <button type="button" id="btn-save-evidence" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.75rem;">
+              SAVE EVIDENCE & PROOF ✓
+            </button>
+          </div>
+        </div>
+
+        <div id="evidence-saved-alert" class="alert alert-success" style="display: none; margin-bottom: 1.5rem;">
+          Portfolio evidence and project proof saved successfully!
+        </div>
+
+      </div>
+
+      <!-- Action Navigation Buttons Bar -->
+      <div class="step-nav-bar" style="margin-top: 1rem;">
+        <button type="button" id="review-profile-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.5rem;">
+          ← REVIEW PROFILE
+        </button>
+
+        <button type="button" id="back-projects-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.5rem;">
+          ← PROJECTS
+        </button>
+
+        <button type="button" id="view-passport-btn" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">
+          VIEW CAREER PASSPORT ★
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Complete Career Passport Modal -->
+  <div id="passport-modal-backdrop" class="modal-backdrop" style="display: none;">
+    <div class="modal-container onboarding-card" style="max-width: 750px; width: 92%; max-height: 90vh; overflow-y: auto; position: relative;">
+      <button type="button" id="passport-close-btn" class="modal-close-icon" aria-label="Close passport">&times;</button>
+      
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div class="status-badge-wrapper" style="margin-bottom: 0.5rem;">
+          <span class="status-indicator-dot"></span>
+          <span class="status-badge-text">VERIFIED CAREER PASSPORT</span>
+        </div>
+        <h2 style="font-size: 1.8rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+          CAREERPILOT <span class="highlight-red">PASSPORT</span>
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Comprehensive Proof of Technical Competency</p>
+      </div>
+
+      <div class="form-grid-2" style="gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="onboarding-card" style="padding: 1rem;">
+          <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">CANDIDATE</div>
+          <div id="pass-candidate-name" style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">Student</div>
+          <div id="pass-target-career" style="font-size: 0.85rem; color: var(--accent-red-bright);">Frontend Developer</div>
+        </div>
+
+        <div class="onboarding-card" style="padding: 1rem;">
+          <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">OVERALL READINESS SCORE</div>
+          <div id="pass-readiness-score" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
+          <div id="pass-readiness-status" style="font-size: 0.8rem; color: #22c55e;">DEVELOPING</div>
+        </div>
+      </div>
+
+      <div class="onboarding-card" style="padding: 1rem; margin-bottom: 1rem;">
+        <div class="review-section-header" style="font-size: 0.85rem;">VERIFIED SKILL COVERAGE</div>
+        <div id="pass-skills-list" class="tags-container" style="margin-top: 0.4rem;"></div>
+      </div>
+
+      <div class="onboarding-card" style="padding: 1rem; margin-bottom: 1.5rem;">
+        <div class="review-section-header" style="font-size: 0.85rem;">PORTFOLIO PROJECTS & PROOF OF WORK</div>
+        <div id="pass-projects-list" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+      </div>
+
+      <div style="text-align: center;">
+        <button type="button" id="pass-close-modal-btn" class="btn btn-primary" style="width: auto; padding: 0.6rem 2rem;">
+          CLOSE PASSPORT
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="interview.js"></script>
+</body>
+</html>
