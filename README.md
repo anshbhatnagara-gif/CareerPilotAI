@@ -13,11 +13,13 @@ careerpilot-ai/
 │   └── horror-bg.jpg    # High-resolution cinematic horror background landscape
 ├── login.html           # Phase 1: User login page
 ├── register.html        # Phase 1: Registration page
-├── auth-success.html    # Phase 1: Authentication success page & onboarding entry
+├── auth-success.html    # Phase 1: Authentication success page
 ├── onboarding.html      # Phase 2: 6-Step Onboarding & Career Profile creation page
+├── assessment.html      # Phase 3: AI Career Assessment page
 ├── style.css            # Dark horror design system & responsive styling across all phases
 ├── auth.js              # Phase 1: Authentication service & localStorage session engine
 ├── onboarding.js        # Phase 2: Onboarding workflow, step validation & profile persistence
+├── assessment.js        # Phase 3: Deterministic local profile analysis & assessment engine
 └── README.md            # Comprehensive project documentation
 ```
 
@@ -28,86 +30,68 @@ careerpilot-ai/
 ### Phase 1: Authentication Engine & Horror UI
 - **User Registration & Login**: Full Name, Email Address, Password, Confirm Password validation.
 - **Session Management**: Prototype browser `localStorage` persistence under `careerPilotUser` and `careerPilotLoggedIn`.
-- **Route Guards**: Protects `auth-success.html` and `onboarding.html` against unauthenticated access. Redirects authenticated users away from `login.html` and `register.html`.
+- **Route Guards**: Protects `auth-success.html`, `onboarding.html`, and `assessment.html` against unauthenticated access.
 - **Visual Design**: Deep dark palette (`#050505` bg, `#0c0c0c` card surface, `#303030` border, `#b91c1c`/`#dc2626` crimson accents, cinematic ruined landscape background).
 
 ---
 
 ### Phase 2: Onboarding & Career Profile
-
-Phase 2 enables authenticated users to complete a structured 6-step career profile builder.
-
-#### 6-Step Workflow:
-
-1. **Step 1 — About You**:
-   - Full Name (pre-filled from `careerPilotUser.fullName`).
-   - Email Address (pre-filled from `careerPilotUser.email`, read-only).
-   - Location (required text input).
-
-2. **Step 2 — Education**:
-   - College / University (required text input).
-   - Degree / Program (select: B.Tech, B.E., BCA, B.Sc, BBA, B.Com, MCA, M.Tech, Diploma, Other).
-   - Branch / Specialization (required text input).
-   - Current Year (select: 1st Year, 2nd Year, 3rd Year, 4th Year, Final Year, Other).
-   - Expected Graduation Year (select: 2024–2030).
-
-3. **Step 3 — Skills**:
-   - Categorized multi-select checkboxes for Programming (C, C++, Java, Python, JS), Web Development (HTML, CSS, React, Node.js), Database (MySQL, MongoDB, PostgreSQL), and Tools (Git, GitHub, VS Code).
-   - Interactive Custom Skill Input (`[ + ADD ]` tag with removal button `×`).
-   - Requires at least 1 skill selected (`"Please select at least one skill."`).
-
-4. **Step 4 — Interests**:
-   - Multi-select areas of interest (Software Dev, Web Dev, App Dev, AI/ML, Data Science, Cybersecurity, Cloud, DevOps, UI/UX, Other).
-   - Custom text field when "Other" is selected.
-   - Requires at least 1 interest selected (`"Please select at least one area of interest."`).
-
-5. **Step 5 — Career Goal**:
-   - Target Career dropdown (Software Engineer, Frontend Developer, Backend Developer, Full Stack Developer, Python Developer, Data Analyst, Data Scientist, AI/ML Engineer, Cybersecurity Engineer, Cloud Engineer, DevOps Engineer, UI/UX Designer, Other).
-   - Experience Level radio card selection (Beginner, Intermediate, Advanced).
-   - Career Goal statement textarea.
-
-6. **Step 6 — Review Profile**:
-   - Complete structured summary of Personal, Education, Skills, Interests, and Career Goal.
-   - Buttons: `[ EDIT ]` (returns to previous steps without data loss) and `[ SAVE PROFILE ]`.
+Phase 2 enables authenticated users to complete a structured 6-step career profile builder stored in `localStorage` under `careerPilotProfile`.
+- **6-Step Workflow**: About You, Education, Skills (categorized checkboxes + custom tags), Interests, Career Goal (Target career, experience level, goal statement), and Summary Review.
 
 ---
 
-## 💾 LocalStorage Data Schema
+### Phase 3: AI Career Assessment
+Phase 3 performs a profile-based analysis of the user's completed `careerPilotProfile`.
 
-Career Profiles are stored separately from user authentication credentials under the key `careerPilotProfile`.
+#### Features & Analysis Engine (`assessment.js`):
+- **Dual Route Protection**: Verifies `careerPilotLoggedIn === "true"` AND `careerPilotProfile.completed === true`. Redirects unauthenticated users to `login.html` and un-onboarded users to `onboarding.html`.
+- **Simulated Analysis Loading State**: Animated 4-step checklist (`✓ Education analyzed`, `✓ Skills analyzed`, `✓ Interests analyzed`, `✓ Career goal analyzed`).
+- **Deterministic Assessment Engine**:
+  - **Career Direction & Alignment**: Evaluates profile inputs against target career domain requirements and generates qualitative alignment status (`HIGH`, `MODERATE`, `LOW`).
+  - **Profile Summary**: Dynamic narrative paragraph synthesized from education, skills, interests, and target career.
+  - **Your Strengths**: Dynamic strength badges derived from actual selected skills and background.
+  - **Current Skills**: Matches `profile.skills` exactly (no fake skills).
+  - **Recommended Focus Areas**: Targeted domain learning recommendations compared against career requirements.
+  - **Career Advice**: Actionable guidance tailored to experience level (Beginner, Intermediate, Advanced).
+- **Profile Fingerprinting & Persistence**:
+  - Stores assessment under `careerPilotAssessment` in `localStorage` with ISO timestamp.
+  - Computes a profile fingerprint to detect changes: if profile details change, the assessment is automatically regenerated.
+  - User password is **NEVER** stored inside `careerPilotAssessment`.
+- **Action Controls**:
+  - `[ REVIEW PROFILE ]`: Returns to `onboarding.html` allowing re-editing.
+  - `[ CONTINUE ]`: Displays in-page locked notice for upcoming Phase 4 features.
 
+---
+
+## 💾 LocalStorage Data Schemas
+
+### `careerPilotProfile`
 ```json
 {
-  "personal": {
-    "fullName": "Ansh Bhatnagar",
-    "email": "ansh@gmail.com",
-    "location": "Kota, Rajasthan"
-  },
-  "education": {
-    "college": "IIT Bombay",
-    "degree": "B.Tech",
-    "branch": "Computer Science & Engineering",
-    "currentYear": "3rd Year",
-    "graduationYear": "2026"
-  },
-  "skills": ["Python", "JavaScript", "HTML", "CSS", "Git", "GitHub", "Docker"],
+  "personal": { "fullName": "Ansh Bhatnagar", "email": "ansh@gmail.com", "location": "Kota, Rajasthan" },
+  "education": { "college": "IIT Bombay", "degree": "B.Tech", "branch": "Computer Science & Engineering", "currentYear": "3rd Year", "graduationYear": "2026" },
+  "skills": ["Python", "JavaScript", "HTML", "CSS", "Git", "GitHub"],
   "interests": ["Software Development", "AI / Machine Learning"],
-  "careerGoal": {
-    "targetCareer": "Software Engineer",
-    "experienceLevel": "Beginner",
-    "goal": "I want to become a software engineer and get a job in a product-based company."
-  },
+  "careerGoal": { "targetCareer": "Software Engineer", "experienceLevel": "Beginner", "goal": "Build software products." },
   "completed": true
 }
 ```
 
+### `careerPilotAssessment`
+```json
+{
+  "careerDirection": "Your current profile demonstrates a HIGH alignment with your selected target career of Software Engineer.",
+  "profileSummary": "Based on your profile, pursuing a B.Tech background...",
+  "strengths": ["Programming Foundation", "Version Control & Tooling Awareness", "Web Development Exposure"],
+  "currentSkills": ["Python", "JavaScript", "HTML", "CSS", "Git", "GitHub"],
+  "focusAreas": ["Data Structures & Algorithms", "Backend Fundamentals", "Problem Solving"],
+  "careerAdvice": "As a Beginner aiming for a role as a Software Engineer...",
+  "confidenceLevel": "HIGH",
+  "generatedAt": "2026-09-15T01:26:00.000Z",
+  "profileFingerprint": "fp_12345678"
+}
+```
+
 > [!IMPORTANT]
-> **Security Note**: User passwords are **NEVER** stored inside `careerPilotProfile`. Authentication credentials and profile information remain decoupled. `localStorage` is used as a frontend prototype persistence mechanism and will be replaced with a secure backend API in production.
-
----
-
-## 🔮 Phase 3 Transition Notice
-
-Upon successfully saving the profile:
-- Displays message: `"Your career profile has been saved successfully."`
-- Clicking `[ CONTINUE ]` presents notice: `"AI Career Assessment will be available in Phase 3."` (Phase 3 AI features are not implemented yet).
+> **Phase 4 Boundary**: Phase 3 does **NOT** implement the official numeric Career Readiness Score or Skill Gap engine. Those features belong to Phase 4.

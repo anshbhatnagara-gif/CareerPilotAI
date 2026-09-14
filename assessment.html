@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - AI Career Assessment">
+  <title>AI Career Assessment — CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cinematic Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="assessment.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-badge">
+          <span>User:</span> <strong id="header-user-name">Student</strong>
+        </div>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+          LOGOUT
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout Container -->
+  <main class="main-wrapper">
+    <div class="onboarding-container" style="max-width: 900px;">
+      
+      <!-- Page Hero Header -->
+      <div class="assessment-hero-header">
+        <div class="status-badge-wrapper">
+          <span class="status-indicator-dot"></span>
+          <span class="status-badge-text">PROFILE ANALYZED</span>
+        </div>
+        
+        <h1 class="hero-title" style="font-size: 2.75rem; margin-top: 0.5rem;">
+          AI CAREER <span class="highlight-red">ASSESSMENT</span>
+        </h1>
+        
+        <p class="hero-subtitle" style="max-width: 600px; margin-top: 0.25rem;">
+          "Let's examine where you stand before choosing your next move."
+        </p>
+      </div>
+
+      <!-- Analysis Loading Card (Simulated Transition) -->
+      <div id="analyzing-card" class="onboarding-card" style="display: none; text-align: center; padding: 3rem 2rem;">
+        <h2 style="font-size: 1.35rem; color: var(--accent-red-bright); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem;">
+          ANALYZING YOUR PROFILE...
+        </h2>
+        
+        <div class="analyzing-checklist">
+          <div id="check-step-1" class="check-step">
+            <span class="check-mark">○</span>
+            <span>Education analyzed</span>
+          </div>
+          <div id="check-step-2" class="check-step">
+            <span class="check-mark">○</span>
+            <span>Skills analyzed</span>
+          </div>
+          <div id="check-step-3" class="check-step">
+            <span class="check-mark">○</span>
+            <span>Interests analyzed</span>
+          </div>
+          <div id="check-step-4" class="check-step">
+            <span class="check-mark">○</span>
+            <span>Career goal analyzed</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assessment Results Section -->
+      <div id="assessment-results-wrapper" style="display: block;">
+        
+        <!-- Locked Phase 4 Notice -->
+        <div id="phase4-locked-alert" class="alert alert-success" style="display: none; margin-bottom: 1.25rem;"></div>
+
+        <!-- 1. CAREER DIRECTION & ALIGNMENT -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <span>CAREER DIRECTION</span>
+            <span id="res-alignment-badge" class="alignment-badge alignment-badge-high">ALIGNMENT: HIGH</span>
+          </div>
+          <h2 id="res-career-direction" class="assessment-target-title">Software Engineer</h2>
+        </div>
+
+        <!-- 2. PROFILE SUMMARY -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">PROFILE SUMMARY</div>
+          <p id="res-profile-summary" class="assessment-paragraph-text"></p>
+        </div>
+
+        <!-- 3. YOUR STRENGTHS & 4. CURRENT SKILLS -->
+        <div class="form-grid-2" style="margin-bottom: 1.5rem; gap: 1.5rem;">
+          <div class="onboarding-card">
+            <div class="review-section-header">YOUR STRENGTHS</div>
+            <div id="res-strengths-list" class="feature-pills-stack"></div>
+          </div>
+
+          <div class="onboarding-card">
+            <div class="review-section-header">CURRENT SKILLS</div>
+            <div id="res-current-skills-list" class="tags-container" style="margin-top: 0.5rem;"></div>
+          </div>
+        </div>
+
+        <!-- 5. RECOMMENDED FOCUS AREAS -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">RECOMMENDED FOCUS AREAS</div>
+          <div id="res-focus-areas-list" class="focus-areas-grid"></div>
+        </div>
+
+        <!-- 6. CAREER ADVICE -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">CAREER ADVICE</div>
+          <p id="res-career-advice" class="assessment-paragraph-text" style="font-style: normal; border-left: 3px solid var(--accent-red); padding-left: 1rem;"></p>
+        </div>
+
+        <!-- 7. NEXT STEP RECOMMENDATION -->
+        <div class="onboarding-card" style="margin-bottom: 2rem;">
+          <div class="review-section-header">NEXT STEP</div>
+          <p class="assessment-paragraph-text" style="color: var(--text-primary); font-weight: 600;">
+            "Build your foundation before chasing the job title."
+          </p>
+        </div>
+
+        <!-- Action Buttons Footer Bar -->
+        <div class="step-nav-bar" style="margin-top: 1rem;">
+          <button type="button" id="review-profile-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.75rem;">
+            ← REVIEW PROFILE
+          </button>
+
+          <button type="button" id="continue-phase4-btn" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">
+            CONTINUE →
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="assessment.js"></script>
+</body>
+</html>

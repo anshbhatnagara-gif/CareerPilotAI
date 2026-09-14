@@ -573,10 +573,7 @@ const OnboardingApp = {
   },
 
   handlePhase3Continue() {
-    this.clearAlerts();
-    const successAlert = document.getElementById('success-alert');
-    successAlert.textContent = "AI Career Assessment will be available in Phase 3.";
-    successAlert.style.display = 'block';
+    window.location.href = 'assessment.html';
   },
 
   showError(msg) {
