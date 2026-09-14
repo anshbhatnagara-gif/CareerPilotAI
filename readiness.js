@@ -113,16 +113,11 @@ const ReadinessApp = {
       });
     }
 
-    // Continue to Phase 5 button
+    // Continue to Phase 5 button (Personalized Learning Roadmap)
     const continueBtn = document.getElementById('continue-phase5-btn');
     if (continueBtn) {
       continueBtn.addEventListener('click', () => {
-        const lockedAlert = document.getElementById('phase5-locked-alert');
-        if (lockedAlert) {
-          lockedAlert.textContent = "Phase 5: Personalized Learning Roadmap — Coming in Next Phase.";
-          lockedAlert.style.display = 'block';
-          lockedAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        window.location.href = 'roadmap.html';
       });
     }
   },

@@ -17,11 +17,13 @@ careerpilot-ai/
 ├── onboarding.html      # Phase 2: 6-Step Onboarding & Career Profile creation page
 ├── assessment.html      # Phase 3: AI Career Assessment page
 ├── readiness.html       # Phase 4: Career Readiness & Skill Gap Analysis page
+├── roadmap.html         # Phase 5: Personalized Learning Roadmap page
 ├── style.css            # Dark horror design system & responsive styling across all phases
 ├── auth.js              # Phase 1: Authentication service & localStorage session engine
 ├── onboarding.js        # Phase 2: Onboarding workflow, step validation & profile persistence
 ├── assessment.js        # Phase 3: Profile analysis & assessment engine
 ├── readiness.js         # Phase 4: Career Readiness calculation & Skill Gap engine
+├── roadmap.js           # Phase 5: Personalized Learning Roadmap generator engine
 └── README.md            # Comprehensive project documentation
 ```
 
@@ -51,64 +53,83 @@ Phase 3 performs a qualitative profile-based analysis of the user's completed `c
 
 ### Phase 4: Career Readiness & Skill Gap Engine
 Phase 4 calculates a quantitative, weighted **Career Readiness Score (0–100)** and generates an official **Skill Gap Analysis**.
-
-#### Features & Analysis Engine (`readiness.js`):
-- **Route Protection**: Verifies `careerPilotLoggedIn === "true"`, `careerPilotProfile.completed === true`, and a valid `targetCareer`.
-- **Simulated Calculation Loading State**: Animated 5-step checklist (`✓ Profile loaded`, `✓ Career requirements loaded`, `✓ Current skills checked`, `✓ Skill gaps calculated`, `✓ Readiness analyzed`).
-- **Deterministic Career Requirement Engine**:
-  - Maps 12 career domains (Software Engineer, Frontend Developer, Backend Developer, Full Stack Developer, Python Developer, Data Analyst, Data Scientist, AI/ML Engineer, Cybersecurity Engineer, Cloud Engineer, DevOps Engineer, UI/UX Designer) to required domain skills and priority levels.
-- **Weighted Readiness Calculation**:
-  - Priority weights: `HIGH` = 3, `MEDIUM` = 2, `LOW` = 1.
-  - Formula: `(Met Weights / Total Required Weights) * 100`.
-  - Score Status Interpretation:
-    - 90–100: `JOB-READY FOUNDATION`
-    - 75–89: `STRONG FOUNDATION`
-    - 50–74: `DEVELOPING`
-    - 25–49: `EARLY STAGE`
-    - 0–24: `STARTING POINT`
-- **Skill Gap Analysis**:
-  - Categorizes required skills into MET vs. MISSING.
-  - Assigns deterministic `HIGH`, `MEDIUM`, or `LOW` priority to every missing skill gap alongside rationale ("Why it matters").
-  - Identifies top `YOUR FIRST FOCUS` recommendations.
-- **Persistence & Profile Fingerprinting (`careerPilotReadiness`)**:
-  - Saves readiness results under `careerPilotReadiness` in `localStorage` with timestamp and profile fingerprint.
-  - Automatically regenerates readiness if profile inputs change in onboarding.
-  - User password is **NEVER** stored in `careerPilotReadiness`.
-- **Action Controls**:
-  - `[ REVIEW PROFILE ]`: Returns to `onboarding.html` allowing profile editing.
-  - `[ CONTINUE ]`: Displays in-page locked notice for upcoming Phase 5 features.
+- **Features & Analysis Engine (`readiness.js`)**:
+  - Deterministic Career Requirement Engine across 12 tech career domains.
+  - Weighted readiness score calculation (`HIGH` = 3, `MEDIUM` = 2, `LOW` = 1).
+  - Skill Gap Analysis (categorized into MET vs MISSING with priority levels and rationales).
+  - Persistence & Profile Fingerprinting (`careerPilotReadiness`).
 
 ---
 
-## 💾 LocalStorage Data Schema (`careerPilotReadiness`)
+### Phase 5: Personalized Learning Roadmap Engine
+Phase 5 converts the Phase 4 Readiness Score and Skill Gap output into a structured, deterministic **Personalized Learning Roadmap**.
+
+#### Features & Engine (`roadmap.js`):
+- **Route Protection**: Verifies `careerPilotLoggedIn === "true"`, `careerPilotProfile.completed === true`, `careerPilotReadiness`, and a valid `targetCareer`.
+- **5 Learning Stages**:
+  1. `STAGE 1: FOUNDATION`: Essential baseline concepts and core tools.
+  2. `STAGE 2: CORE SKILLS`: Core working knowledge and domain competence.
+  3. `STAGE 3: DEVELOPMENT DEPTH`: Frameworks, architecture, and system integration.
+  4. `STAGE 4: ADVANCED / SPECIALIZATION`: Advanced patterns, tools, and design concepts.
+  5. `STAGE 5: JOB PREPARATION FOUNDATION`: Practical portfolio readiness and technical problem solving.
+- **Prerequisite Graph Engine**:
+  - Maps technical dependency relationships (e.g. `HTML` → `CSS` → `Responsive Design`, `JavaScript` → `React` / `APIs`, `Python` → `Pandas` → `Machine Learning`, `Linux` → `Containers` → `Deployment`, etc.).
+- **Strict Skill Completion Mapping**:
+  - Skills are marked `COMPLETED` if and only if present in normalized `profile.skills`.
+  - Unacquired skills are strictly marked `UPCOMING`.
+- **Deterministic Effort Estimation**:
+  - Assigns structured effort ranges (`3–5 hours`, `6–10 hours`, `10–20 hours`, `20–30 hours`).
+- **Milestones**:
+  - Generates outcome-focused learning milestones for every stage.
+- **Persistence & Double Fingerprinting (`careerPilotRoadmap`)**:
+  - Stores roadmap data under `careerPilotRoadmap` in `localStorage`.
+  - Uses both `profileFingerprint` and `readinessFingerprint` to automatically refresh the roadmap when profile skills or readiness gaps change.
+  - Zero password storage.
+- **Action Controls**:
+  - `[ REVIEW PROFILE ]`: Returns to `onboarding.html`.
+  - `[ BACK TO READINESS ]`: Returns to `readiness.html`.
+  - `[ CONTINUE ]`: Displays in-page locked notice for upcoming Phase 6 features.
+
+---
+
+## 💾 LocalStorage Data Schema (`careerPilotRoadmap`)
 
 ```json
 {
-  "targetCareer": "Software Engineer",
-  "score": 68,
+  "targetCareer": "Frontend Developer",
+  "readinessScore": 68,
   "status": "DEVELOPING",
-  "requiredSkills": ["Programming", "Data Structures & Algorithms", "Problem Solving", "Git", "GitHub", "Backend Fundamentals", "APIs", "Database Fundamentals", "Projects"],
-  "metSkills": ["Programming", "Git", "GitHub", "Backend Fundamentals", "APIs"],
-  "missingSkills": ["Data Structures & Algorithms", "Problem Solving", "Database Fundamentals", "Projects"],
-  "skillGaps": [
+  "stages": [
     {
-      "skill": "Data Structures & Algorithms",
-      "priority": "HIGH",
-      "reason": "Essential for efficient problem solving, technical interviews, and scalable code."
+      "id": "stage-1",
+      "title": "STAGE 1 — FOUNDATION",
+      "description": "Establish essential baseline concepts...",
+      "milestone": "Master core syntax and web styling fundamentals.",
+      "items": [
+        {
+          "id": "item-1",
+          "skill": "HTML",
+          "stage": "stage-1",
+          "priority": "HIGH",
+          "status": "COMPLETED",
+          "reason": "Semantic document markup foundation for web pages.",
+          "prerequisites": [],
+          "estimatedEffort": "3–5 hours",
+          "order": 1
+        }
+      ]
     }
   ],
-  "highPriorityCount": 2,
-  "mediumPriorityCount": 0,
-  "lowPriorityCount": 2,
-  "coveredCount": 5,
-  "requiredCount": 9,
-  "alignment": "HIGH",
-  "summary": "Your profile currently satisfies 5 of 9 core domain requirements for Software Engineer...",
-  "advice": "As a Beginner aiming for a role as a Software Engineer...",
-  "generatedAt": "2026-09-15T01:31:00.000Z",
-  "profileFingerprint": "fp_readiness_12345"
+  "totalItems": 8,
+  "completedItems": 3,
+  "upcomingItems": 5,
+  "highPriorityItems": 3,
+  "estimatedTotalEffort": "45–70 hours",
+  "generatedAt": "2026-09-15T01:36:00.000Z",
+  "profileFingerprint": "fp_profile_12345",
+  "readinessFingerprint": "fp_readiness_67890"
 }
 ```
 
 > [!IMPORTANT]
-> **Phase 5 Boundary**: Phase 4 does **NOT** implement the Personalized Learning Roadmap, weekly/monthly schedules, course recommendations, or project trackers. Those belong to Phase 5+.
+> **Phase 6 Boundary**: Phase 5 does **NOT** implement project recommendation engines, project trackers, interview simulators, resume builders, or job matching systems. Those belong strictly to Phase 6+.

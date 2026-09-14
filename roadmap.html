@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - Personalized Learning Roadmap">
+  <title>Personalized Learning Roadmap — CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cinematic Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="roadmap.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-badge">
+          <span>User:</span> <strong id="header-user-name">Student</strong>
+        </div>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+          LOGOUT
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout Container -->
+  <main class="main-wrapper">
+    <div class="onboarding-container" style="max-width: 950px;">
+      
+      <!-- Hero Header -->
+      <div class="assessment-hero-header">
+        <div class="status-badge-wrapper">
+          <span class="status-indicator-dot"></span>
+          <span class="status-badge-text">ROADMAP GENERATED</span>
+        </div>
+        
+        <h1 class="hero-title" style="font-size: 2.5rem; margin-top: 0.5rem;">
+          PERSONALIZED <span class="highlight-red">LEARNING ROADMAP</span>
+        </h1>
+        
+        <p class="hero-subtitle" style="max-width: 700px; margin-top: 0.25rem;">
+          "Your next skills, arranged in the order that makes the most sense for your career goal."
+        </p>
+      </div>
+
+      <!-- Roadmap Header Bar (Target Career & Readiness Score) -->
+      <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">TARGET CAREER</div>
+            <div id="rm-target-career" style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary);">Frontend Developer</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">READINESS SCORE</div>
+              <div id="rm-readiness-score" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red-bright);">0 / 100</div>
+            </div>
+            <div id="rm-readiness-status" class="alignment-badge alignment-badge-high">DEVELOPING</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Locked Phase 6 Notice Alert -->
+      <div id="phase6-locked-alert" class="alert alert-success" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <!-- 1. ROADMAP METRICS SUMMARY -->
+      <div class="form-grid-4" style="margin-bottom: 1.5rem; gap: 1rem;">
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">TOTAL ITEMS</div>
+          <div id="metric-total-items" class="metric-value">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">COMPLETED</div>
+          <div id="metric-completed-items" class="metric-value text-green">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">UPCOMING</div>
+          <div id="metric-upcoming-items" class="metric-value text-amber">0</div>
+        </div>
+        <div class="onboarding-card metric-card">
+          <div class="metric-label">HIGH PRIORITY</div>
+          <div id="metric-high-priority" class="metric-value text-red">0</div>
+        </div>
+      </div>
+
+      <!-- 2. CURRENT POSITION BANNER -->
+      <div class="onboarding-card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--accent-red-bright);">
+        <div class="review-section-header">YOUR CURRENT POSITION</div>
+        <p id="rm-current-position" class="assessment-paragraph-text" style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin: 0;"></p>
+      </div>
+
+      <!-- 3. NEXT RECOMMENDED SKILL -->
+      <div id="next-skill-wrapper" class="onboarding-card" style="margin-bottom: 1.5rem; background: linear-gradient(145deg, rgba(20,8,8,0.9), rgba(12,12,12,0.95)); border: 1px solid rgba(185, 28, 28, 0.4);">
+        <div class="review-section-header" style="color: var(--accent-red-bright);">★ NEXT RECOMMENDED SKILL</div>
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem;">
+          <div>
+            <h2 id="next-skill-title" style="font-size: 1.6rem; color: var(--text-primary); margin: 0 0 0.4rem 0;">JavaScript</h2>
+            <p id="next-skill-reason" class="assessment-paragraph-text" style="margin: 0; font-size: 0.95rem;"></p>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+            <span id="next-skill-priority" class="priority-badge priority-high">HIGH PRIORITY</span>
+            <span id="next-skill-effort" class="effort-badge">Effort: 6–10 hours</span>
+          </div>
+        </div>
+        <div id="next-skill-prereqs-box" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);">
+          <span>Prerequisites: </span><strong id="next-skill-prereqs" style="color: var(--text-primary);">None</strong>
+        </div>
+      </div>
+
+      <!-- 4. QUICK SUMMARY GRIDS (ALREADY COVERED vs COMING NEXT) -->
+      <div class="form-grid-2" style="margin-bottom: 1.5rem; gap: 1.5rem;">
+        <div class="onboarding-card">
+          <div class="review-section-header">ALREADY COVERED</div>
+          <div id="rm-already-covered-list" class="tags-container" style="margin-top: 0.5rem;"></div>
+        </div>
+
+        <div class="onboarding-card">
+          <div class="review-section-header">COMING NEXT</div>
+          <div id="rm-coming-next-list" class="upcoming-summary-list" style="margin-top: 0.5rem;"></div>
+        </div>
+      </div>
+
+      <!-- 5. STAGES ROADMAP TIMELINE (5 STAGES) -->
+      <div class="roadmap-stages-wrapper" style="margin-bottom: 1.5rem;">
+        <div class="review-section-header" style="margin-bottom: 1rem; font-size: 1.1rem;">YOUR LEARNING PATH</div>
+        <div id="stages-container" class="stages-stack"></div>
+      </div>
+
+      <!-- 6. CAREER CONTEXT (WHY THIS ROADMAP?) -->
+      <div class="onboarding-card" style="margin-bottom: 2rem;">
+        <div class="review-section-header">WHY THIS ROADMAP?</div>
+        <p id="rm-why-roadmap" class="assessment-paragraph-text" style="font-size: 0.95rem; line-height: 1.6; margin: 0;"></p>
+      </div>
+
+      <!-- Action Navigation Buttons Bar -->
+      <div class="step-nav-bar" style="margin-top: 1rem;">
+        <button type="button" id="review-profile-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.5rem;">
+          ← REVIEW PROFILE
+        </button>
+
+        <button type="button" id="back-readiness-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.5rem;">
+          ← READINESS
+        </button>
+
+        <button type="button" id="continue-phase6-btn" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">
+          CONTINUE →
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="roadmap.js"></script>
+</body>
+</html>

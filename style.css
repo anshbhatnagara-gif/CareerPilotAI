@@ -1061,3 +1061,161 @@ body {
     font-size: 2.15rem;
   }
 }
+
+/* --------------------------------------------------------------------------
+   16. Phase 5 Roadmap Component Styles
+   -------------------------------------------------------------------------- */
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .form-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.metric-card {
+  text-align: center;
+  padding: 1.1rem 0.8rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.metric-label {
+  font-size: 0.725rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.text-green { color: #22c55e; }
+.text-amber { color: #f59e0b; }
+.text-red { color: var(--accent-red-bright); }
+
+.stage-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.stage-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-red-bright);
+  letter-spacing: 0.03em;
+  margin: 0 0 0.35rem 0;
+}
+
+.stage-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+}
+
+.milestone-box {
+  background: rgba(185, 28, 28, 0.08);
+  border: 1px dashed rgba(185, 28, 28, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.milestone-label {
+  color: var(--accent-red-bright);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  margin-right: 0.35rem;
+}
+
+.roadmap-item-card {
+  background: #080808;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  margin-bottom: 0.85rem;
+  transition: var(--transition-normal);
+}
+
+.roadmap-item-card:hover {
+  border-color: rgba(185, 28, 28, 0.35);
+}
+
+.item-completed {
+  border-left: 4px solid #22c55e;
+}
+
+.item-upcoming {
+  border-left: 4px solid var(--accent-red-bright);
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.item-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.status-pill {
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+}
+
+.status-completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-upcoming {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.effort-badge {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: #141414;
+  border: 1px solid var(--border-color);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.item-reason {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.5;
+}
+
+.item-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
