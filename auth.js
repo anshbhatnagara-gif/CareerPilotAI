@@ -4,6 +4,9 @@
  * Manages user registration, credential verification, session state,
  * input validation, and route protection using localStorage.
  * 
+ * Temporary local authentication only. Production authentication must use
+ * server-side password hashing and secure session/token handling.
+ * 
  * Modular architecture designed to allow replacing localStorage calls
  * with a REST / Node.js backend API in future phases.
  */
@@ -46,7 +49,43 @@ const AuthService = {
   },
 
   /**
+   * Helper to clear active user career profile & generated state from localStorage
+   */
+  clearActiveUserCareerState() {
+    const userKeys = [
+      'careerPilotProfile',
+      'careerPilotAssessment',
+      'careerPilotReadiness',
+      'careerPilotRoadmap',
+      'careerPilotProjects',
+      'careerPilotInterview',
+      'careerPilotInterviewHistory',
+      'careerPilotCareerTools'
+    ];
+    userKeys.forEach(key => localStorage.removeItem(key));
+  },
+
+  /**
+   * Helper to clear active career profile & state if a different user logs in
+   */
+  clearStaleUserData(activeEmail) {
+    try {
+      const profileRaw = localStorage.getItem('careerPilotProfile');
+      if (profileRaw) {
+        const profile = JSON.parse(profileRaw);
+        if (profile && profile.personal && profile.personal.email && profile.personal.email.toLowerCase() !== activeEmail.toLowerCase()) {
+          this.clearActiveUserCareerState();
+        }
+      }
+    } catch (e) {
+      // Ignore JSON parse errors
+    }
+  },
+
+  /**
    * Register a new account
+   * Temporary local authentication only. Production authentication must use
+   * server-side password hashing and secure session/token handling.
    */
   register(fullName, email, password, confirmPassword) {
     const cleanName = fullName ? fullName.trim() : '';
@@ -79,11 +118,14 @@ const AuthService = {
       return { success: false, message: 'An account with this email already exists.' };
     }
 
-    // Create user data object
+    // Clear any leftover career data from previous active session before creating new account
+    this.clearActiveUserCareerState();
+
+    // Create user data object (prototype storage only)
     const newUser = {
       fullName: cleanName,
       email: cleanEmail,
-      password: password // Prototype storage only
+      password: password // Temporary local prototype authentication
     };
 
     // Save to localStorage
@@ -94,11 +136,13 @@ const AuthService = {
     // Set logged in state
     localStorage.setItem(STORAGE_KEYS.LOGGED_IN, 'true');
 
-    return { success: true, user: newUser };
+    return { success: true, user: { fullName: cleanName, email: cleanEmail } };
   },
 
   /**
    * Verify credentials and log in
+   * Temporary local authentication only. Production authentication must use
+   * server-side password hashing and secure session/token handling.
    */
   login(email, password) {
     const cleanEmail = email ? email.trim().toLowerCase() : '';
@@ -111,9 +155,13 @@ const AuthService = {
     const matchedUser = users.find(u => u.email.toLowerCase() === cleanEmail && u.password === password);
 
     if (matchedUser) {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(matchedUser));
+      // Clear career data if switching to a different user account
+      this.clearStaleUserData(cleanEmail);
+
+      const activeUser = { fullName: matchedUser.fullName, email: matchedUser.email };
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(activeUser));
       localStorage.setItem(STORAGE_KEYS.LOGGED_IN, 'true');
-      return { success: true, user: matchedUser };
+      return { success: true, user: activeUser };
     }
 
     return { success: false, message: 'Invalid email or password.' };
@@ -127,22 +175,29 @@ const AuthService = {
   },
 
   /**
-   * Retrieve active user details
+   * Retrieve active user details (without password attribute)
    */
   getCurrentUser() {
     try {
       const userRaw = localStorage.getItem(STORAGE_KEYS.USER);
-      return userRaw ? JSON.parse(userRaw) : null;
+      if (!userRaw) return null;
+      const parsed = JSON.parse(userRaw);
+      if (parsed) {
+        return { fullName: parsed.fullName || '', email: parsed.email || '' };
+      }
+      return null;
     } catch (e) {
       return null;
     }
   },
 
   /**
-   * Log out active user
+   * Log out active user and clear all user-specific career data
    */
   logout() {
     localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    this.clearActiveUserCareerState();
     window.location.href = 'login.html';
   },
 

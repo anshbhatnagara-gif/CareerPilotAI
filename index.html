@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerPilot AI - Your Career. Your Fate.">
+  <title>CareerPilot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cinematic Background Layer -->
+  <div class="cinematic-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo">CareerPilot <span>AI</span></a>
+      <span class="brand-tagline">Your Career. Your Fate.</span>
+    </div>
+  </header>
+
+  <!-- Main Layout Container -->
+  <main class="main-wrapper">
+    <div class="auth-container auth-container-center">
+      <div class="auth-card" style="text-align: center; padding: 3rem 2rem;">
+        <h1 class="hero-title" style="font-size: 2.25rem; margin-bottom: 0.5rem;">
+          CAREERPILOT <span class="highlight-red">AI</span>
+        </h1>
+        <p class="hero-subtitle" style="font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Your Career. Your Fate.
+        </p>
+        <p style="color: var(--text-secondary); font-size: 0.85rem;">Redirecting...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 CareerPilot AI. All rights reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script>
+    // Entry Point Redirect: Navigate based on login session state
+    if (typeof AuthService !== 'undefined' && AuthService.isLoggedIn()) {
+      window.location.href = 'auth-success.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
