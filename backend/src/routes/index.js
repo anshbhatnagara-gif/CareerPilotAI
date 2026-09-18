@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../config/db');
 
 /**
  * GET /api/health
@@ -11,6 +12,27 @@ router.get('/health', (req, res) => {
     message: 'CareerPilot API is running',
     service: 'careerpilot-backend'
   });
+});
+
+/**
+ * GET /api/health/db
+ * Database health check endpoint
+ */
+router.get('/health/db', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.status(200).json({
+      success: true,
+      message: 'Database connection is healthy',
+      database: 'connected'
+    });
+  } catch (error) {
+    res.status(503).json({
+      success: false,
+      message: 'Database connection is unavailable',
+      database: 'disconnected'
+    });
+  }
 });
 
 module.exports = router;

@@ -1,12 +1,14 @@
 {
   "name": "careerpilot-backend",
   "version": "1.0.0",
-  "description": "CareerPilot AI - Node.js + Express Backend Foundation (Phase 8.1)",
+  "description": "CareerPilot AI - Node.js + Express Backend Foundation (Phase 8.1 & 8.2)",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "db:test": "node scripts/test-db.js",
+    "db:migrate": "node scripts/run-migrations.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
