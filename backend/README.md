@@ -1,53 +1,41 @@
 # CareerPilot AI Backend
 
 ## Phase
-**8.2 — TiDB Cloud + Database Foundation + Initial Schema**
+**8.3 — Authentication + Security Foundation**
 
 ## Stack
 - **Runtime:** Node.js
 - **Framework:** Express.js (JavaScript)
 - **Database Driver:** `mysql2/promise` (Connection pool with TLS v1.2)
-- **Security & Utilities:**
-  - `dotenv` (Environment variable management)
-  - `cors` (Cross-Origin Resource Sharing control)
+- **Authentication & Security:**
+  - `bcrypt` (12 rounds password hashing)
+  - `express-session` + `express-mysql-session` (Persistent HTTP-only cookie-based session store)
+  - `express-validator` (Strict input validation & normalization)
+  - `express-rate-limit` (Route-specific brute-force rate limiting)
+  - `cors` (Credentials-enabled CORS configured for `FRONTEND_URL`)
   - `helmet` (HTTP security headers)
-  - `express-rate-limit` (Rate limiting protection)
-  - `express-validator` (Request validation ready)
 
-## Environment Configuration
-Database credentials must be supplied via environment variables (`backend/.env`):
-- `TIDB_HOST`
-- `TIDB_PORT` (Default: 4000)
-- `TIDB_USER`
-- `TIDB_PASSWORD`
-- `TIDB_DATABASE` (Default: `careerpilot`)
-- `TIDB_ENABLE_SSL` (Default: `true`)
-- `TIDB_CA_PATH`
-- `DB_CONNECTION_LIMIT` (Default: 10)
+## Authentication Routes
+- `POST /api/auth/register` — Register a new user (`fullName`, `email`, `password`) -> Returns `201 Created` with safe user object.
+- `POST /api/auth/login` — Authenticate user credentials & create secure session -> Returns `200 OK` with safe user object.
+- `POST /api/auth/logout` — Destroy session & clear HTTP-only cookie -> Returns `200 OK`.
+- `GET /api/auth/me` — Retrieve active user details (Protected by `requireAuth`) -> Returns `200 OK`.
+- `GET /api/auth/protected-test` — Protected development verification route -> Returns `200 OK` (or `401 Unauthorized`).
 
-> **Security Note:** `.env` is ignored by Git and will never be committed. API endpoints do not expose database credentials or connection strings.
+## Health & Monitoring Endpoints
+- `GET /api/health` — API service availability check
+- `GET /api/health/db` — Database connectivity check (`SELECT 1`)
 
 ## Package Commands
 - `npm run start` — Start API server (`src/server.js`)
 - `npm run dev` — Start API server in watch mode
 - `npm run db:test` — Verify connection to TiDB Cloud / MySQL
-- `npm run db:migrate` — Execute initial schema migrations (`001_initial_schema.sql`)
+- `npm run db:migrate` — Execute schema migrations (`001_initial_schema.sql`, `002_auth_sessions.sql`)
+- `npm run test:auth` — Execute 15-point automated authentication test suite
 
-## Endpoints
-- `GET /api/health` — API service availability check
-- `GET /api/health/db` — Database connectivity check (`SELECT 1`)
-
-```json
-{
-  "success": true,
-  "message": "Database connection is healthy",
-  "database": "connected"
-}
-```
-
-## Initial Database Schema (14 Tables)
-1. `users` — User credentials and account state (`password_hash` reserved)
-2. `profiles` — User profile details (1-to-1 with users)
+## Database Schema Tables
+1. `users` — User credentials and account status (`password_hash` only, zero plaintext password columns)
+2. `profiles` — User profile details
 3. `profile_skills` — User skill list
 4. `profile_interests` — User interest list
 5. `assessment_reports` — Phase 3 assessment outputs
@@ -60,6 +48,7 @@ Database credentials must be supplied via environment variables (`backend/.env`)
 12. `interview_sessions` — Interview simulator sessions
 13. `interview_responses` — Detailed interview responses and scores
 14. `portfolio_evidence` — Portfolio evidence links and notes
+15. `sessions` — Persistent server-side session store (`express-mysql-session`)
 
 ## Next Phase
-**8.3 — User Authentication & Session Security (JWT / Passwords)**
+**8.4 — Profile APIs**

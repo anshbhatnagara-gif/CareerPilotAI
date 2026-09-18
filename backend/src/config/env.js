@@ -13,9 +13,14 @@ const config = {
   TIDB_USER: process.env.TIDB_USER || '',
   TIDB_PASSWORD: process.env.TIDB_PASSWORD || '',
   TIDB_DATABASE: process.env.TIDB_DATABASE || 'careerpilot',
-  TIDB_ENABLE_SSL: process.env.TIDB_ENABLE_SSL !== 'false', // Default true unless explicitly 'false'
+  TIDB_ENABLE_SSL: process.env.TIDB_ENABLE_SSL !== 'false',
   TIDB_CA_PATH: process.env.TIDB_CA_PATH || '',
-  DB_CONNECTION_LIMIT: parseInt(process.env.DB_CONNECTION_LIMIT, 10) || 10
+  DB_CONNECTION_LIMIT: parseInt(process.env.DB_CONNECTION_LIMIT, 10) || 10,
+
+  // Session & Auth Configuration
+  SESSION_SECRET: process.env.SESSION_SECRET || 'careerpilot-default-secret-dev-only-change-in-prod',
+  SESSION_COOKIE_NAME: process.env.SESSION_COOKIE_NAME || 'careerpilot.sid',
+  SESSION_MAX_AGE_MS: parseInt(process.env.SESSION_MAX_AGE_MS, 10) || 86400000 // 24 hours
 };
 
 module.exports = config;

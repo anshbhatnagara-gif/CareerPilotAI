@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
+const authRoutes = require('./auth.routes');
 
 /**
  * GET /api/health
@@ -34,5 +35,8 @@ router.get('/health/db', async (req, res) => {
     });
   }
 });
+
+// Mount authentication routes under /api/auth
+router.use('/auth', authRoutes);
 
 module.exports = router;
