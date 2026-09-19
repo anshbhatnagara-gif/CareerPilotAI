@@ -1,11 +1,12 @@
 /**
- * CAREERPILOT AI - PHASE 2 ONBOARDING ENGINE
+ * CAREERPILOT AI - PHASE 8.8.2 ONBOARDING ENGINE
  * 
  * Manages 6-step onboarding workflow, input validation, custom skill tags,
- * interest selection, profile review, and localStorage persistence under
- * the 'careerPilotProfile' key.
+ * interest selection, profile review, and backend Profile API persistence via
+ * GET /api/profile and PUT /api/profile.
  */
 
+const API_BASE_URL = 'http://localhost:5000/api';
 const PROFILE_STORAGE_KEY = 'careerPilotProfile';
 
 const OnboardingApp = {
@@ -13,20 +14,29 @@ const OnboardingApp = {
   totalSteps: 6,
   customSkills: [],
 
-  init() {
-    this.protectRoute();
+  async init() {
+    const isAuth = await this.protectRoute();
+    if (!isAuth) return;
+
     this.bindEvents();
-    this.loadUser();
-    this.loadProfile();
+    await this.loadProfile();
     this.renderStep(this.currentStep);
   },
 
   /**
-   * Route Guard: Ensure user is logged in
+   * Route Guard: Ensure user is authenticated with active backend session
    */
-  protectRoute() {
-    if (typeof AuthService !== 'undefined' && !AuthService.isLoggedIn()) {
+  async protectRoute() {
+    if (typeof AuthService !== 'undefined') {
+      const status = await AuthService.checkAuthStatus();
+      if (!status.success) {
+        window.location.href = 'login.html';
+        return false;
+      }
+      return true;
+    } else {
       window.location.href = 'login.html';
+      return false;
     }
   },
 
@@ -42,9 +52,9 @@ const OnboardingApp = {
     document.getElementById('continue-phase3-btn').addEventListener('click', () => this.handlePhase3Continue());
 
     // Logout buttons
-    document.getElementById('logout-btn').addEventListener('click', () => {
+    document.getElementById('logout-btn').addEventListener('click', async () => {
       if (typeof AuthService !== 'undefined') {
-        AuthService.logout();
+        await AuthService.logout();
       } else {
         localStorage.removeItem('careerPilotLoggedIn');
         window.location.href = 'login.html';
@@ -81,47 +91,42 @@ const OnboardingApp = {
   },
 
   /**
-   * Load user basic credentials from careerPilotUser
+   * Load profile directly from backend GET /api/profile
    */
-  loadUser() {
-    let user = null;
-    if (typeof AuthService !== 'undefined') {
-      user = AuthService.getCurrentUser();
-    } else {
-      try {
-        const userRaw = localStorage.getItem('careerPilotUser');
-        if (userRaw) user = JSON.parse(userRaw);
-      } catch (e) {
-        user = null;
-      }
-    }
-
-    if (user) {
-      if (user.fullName) {
-        document.getElementById('step1-fullName').value = user.fullName;
-        document.getElementById('header-user-name').textContent = user.fullName;
-      }
-      if (user.email) {
-        document.getElementById('step1-email').value = user.email;
-      }
-    }
-  },
-
-  /**
-   * Load saved profile from careerPilotProfile if present
-   */
-  loadProfile() {
+  async loadProfile() {
     try {
-      const profileRaw = localStorage.getItem(PROFILE_STORAGE_KEY);
-      if (!profileRaw) return;
+      const res = await fetch(`${API_BASE_URL}/profile`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        credentials: 'include'
+      });
 
-      const profile = JSON.parse(profileRaw);
+      if (!res.ok) {
+        if (res.status === 401) {
+          window.location.href = 'login.html';
+          return;
+        }
+        console.warn('Failed to fetch profile from backend API:', res.status);
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.success || !data.profile) return;
+
+      const profile = data.profile;
 
       // Step 1: Personal
       if (profile.personal) {
-        if (profile.personal.fullName) document.getElementById('step1-fullName').value = profile.personal.fullName;
-        if (profile.personal.email) document.getElementById('step1-email').value = profile.personal.email;
-        if (profile.personal.location) document.getElementById('step1-location').value = profile.personal.location;
+        if (profile.personal.fullName) {
+          document.getElementById('step1-fullName').value = profile.personal.fullName;
+          document.getElementById('header-user-name').textContent = profile.personal.fullName;
+        }
+        if (profile.personal.email) {
+          document.getElementById('step1-email').value = profile.personal.email;
+        }
+        if (profile.personal.location) {
+          document.getElementById('step1-location').value = profile.personal.location;
+        }
       }
 
       // Step 2: Education
@@ -130,13 +135,14 @@ const OnboardingApp = {
         if (profile.education.degree) document.getElementById('step2-degree').value = profile.education.degree;
         if (profile.education.branch) document.getElementById('step2-branch').value = profile.education.branch;
         if (profile.education.currentYear) document.getElementById('step2-currentYear').value = profile.education.currentYear;
-        if (profile.education.graduationYear) document.getElementById('step2-graduationYear').value = profile.education.graduationYear;
+        if (profile.education.graduationYear) document.getElementById('step2-graduationYear').value = String(profile.education.graduationYear);
       }
 
       // Step 3: Skills
       if (Array.isArray(profile.skills)) {
         const standardSkills = ["C", "C++", "Java", "Python", "JavaScript", "HTML", "CSS", "React", "Node.js", "MySQL", "MongoDB", "PostgreSQL", "Git", "GitHub", "VS Code"];
         
+        this.customSkills = [];
         profile.skills.forEach(skill => {
           if (standardSkills.includes(skill)) {
             const cb = document.querySelector(`.skill-checkbox[value="${CSS.escape(skill)}"]`);
@@ -185,7 +191,7 @@ const OnboardingApp = {
         }
       }
     } catch (e) {
-      console.error('Error loading saved profile:', e);
+      console.error('Error loading profile from backend:', e);
     }
   },
 
@@ -516,9 +522,9 @@ const OnboardingApp = {
   },
 
   /**
-   * Save Career Profile to localStorage
+   * Save Career Profile to backend PUT /api/profile
    */
-  saveProfile() {
+  async saveProfile() {
     // Validate final state across all steps
     for (let step = 1; step <= 5; step++) {
       if (!this.validateStep(step)) {
@@ -529,10 +535,8 @@ const OnboardingApp = {
 
     const expRadio = document.querySelector('input[name="experienceLevel"]:checked');
 
-    const profileData = {
+    const profilePayload = {
       personal: {
-        fullName: document.getElementById('step1-fullName').value.trim(),
-        email: document.getElementById('step1-email').value.trim(),
         location: document.getElementById('step1-location').value.trim()
       },
       education: {
@@ -548,27 +552,41 @@ const OnboardingApp = {
         targetCareer: document.getElementById('step5-targetCareer').value,
         experienceLevel: expRadio ? expRadio.value : '',
         goal: document.getElementById('step5-careerGoal').value.trim()
-      },
-      completed: true
+      }
     };
 
     try {
-      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
+      const res = await fetch(`${API_BASE_URL}/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(profilePayload)
+      });
 
-      // Show save success message
-      this.clearAlerts();
-      const successAlert = document.getElementById('success-alert');
-      successAlert.textContent = "Your career profile has been saved successfully.";
-      successAlert.style.display = 'block';
+      const data = await res.json().catch(() => ({}));
 
-      // Hide save/edit buttons and show CONTINUE button
-      document.getElementById('edit-btn').style.display = 'none';
-      document.getElementById('save-btn').style.display = 'none';
-      document.getElementById('continue-phase3-btn').style.display = 'inline-flex';
+      if (res.status === 200 && data.success) {
+        // Remove legacy profile key from localStorage once backend save is verified
+        localStorage.removeItem(PROFILE_STORAGE_KEY);
 
+        // Show save success message
+        this.clearAlerts();
+        const successAlert = document.getElementById('success-alert');
+        successAlert.textContent = "Your career profile has been saved successfully.";
+        successAlert.style.display = 'block';
+
+        // Hide save/edit buttons and show CONTINUE button
+        document.getElementById('edit-btn').style.display = 'none';
+        document.getElementById('save-btn').style.display = 'none';
+        document.getElementById('continue-phase3-btn').style.display = 'inline-flex';
+      } else if (res.status === 400 && data.errors && data.errors.length > 0) {
+        this.showError(data.errors[0].message || data.message || 'Failed to save profile.');
+      } else {
+        this.showError(data.message || 'Failed to save profile. Please try again.');
+      }
     } catch (e) {
-      console.error('Error saving career profile:', e);
-      this.showError('Failed to save profile. Please try again.');
+      console.error('Error saving career profile to backend:', e);
+      this.showError('Unable to connect to the CareerPilot server. Please try again.');
     }
   },
 
