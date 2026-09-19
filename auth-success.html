@@ -63,14 +63,13 @@
 
   <script src="auth.js"></script>
   <script>
-    // Route protection: Protect auth-success.html from unauthenticated access
-    AuthService.protectAuthSuccess();
-
-    // Populate user's name
-    const currentUser = AuthService.getCurrentUser();
-    if (currentUser && currentUser.fullName) {
-      document.getElementById('user-name').textContent = currentUser.fullName;
-    }
+    (async () => {
+      // Route protection: Protect auth-success.html from unauthenticated access
+      const user = await AuthService.protectAuthSuccess();
+      if (user && user.fullName) {
+        document.getElementById('user-name').textContent = user.fullName;
+      }
+    })();
 
     // Continue button action -> Navigate to onboarding.html
     document.getElementById('continue-btn').addEventListener('click', () => {
@@ -78,12 +77,12 @@
     });
 
     // Logout button actions
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      AuthService.logout();
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await AuthService.logout();
     });
 
-    document.getElementById('header-logout-btn').addEventListener('click', () => {
-      AuthService.logout();
+    document.getElementById('header-logout-btn').addEventListener('click', async () => {
+      await AuthService.logout();
     });
   </script>
 </body>

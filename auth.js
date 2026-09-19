@@ -1,15 +1,18 @@
 /**
- * CAREERPILOT AI - AUTHENTICATION SERVICE (PHASE 1)
+ * CAREERPILOT AI - AUTHENTICATION SERVICE (PHASE 8.8.1 MIGRATION)
  * 
- * Manages user registration, credential verification, session state,
- * input validation, and route protection using localStorage.
+ * Production REST API authentication engine connecting frontend to Node.js + Express backend.
  * 
- * Temporary local authentication only. Production authentication must use
- * server-side password hashing and secure session/token handling.
- * 
- * Modular architecture designed to allow replacing localStorage calls
- * with a REST / Node.js backend API in future phases.
+ * Features:
+ * - Centralized API Configuration (http://localhost:5000/api)
+ * - HTTP-Only Session Cookie persistence via `credentials: "include"`
+ * - Real-time authentication verification via GET /api/auth/me
+ * - Zero client-side password storage (localStorage, sessionStorage, cookies)
+ * - Safe user display state synchronization
+ * - Clean error mapping & network failure fallback
  */
+
+const API_BASE_URL = 'http://localhost:5000/api';
 
 const STORAGE_KEYS = {
   USER: 'careerPilotUser',
@@ -18,27 +21,7 @@ const STORAGE_KEYS = {
 };
 
 const AuthService = {
-  /**
-   * Helper to fetch all registered users from localStorage
-   * Supports multiple registered users while maintaining compatibility
-   * with the single careerPilotUser primary object.
-   */
-  getRegisteredUsers() {
-    try {
-      const listRaw = localStorage.getItem(STORAGE_KEYS.USERS_LIST);
-      if (listRaw) {
-        return JSON.parse(listRaw);
-      }
-      const singleUserRaw = localStorage.getItem(STORAGE_KEYS.USER);
-      if (singleUserRaw) {
-        return [JSON.parse(singleUserRaw)];
-      }
-      return [];
-    } catch (e) {
-      console.error('Error parsing stored user data:', e);
-      return [];
-    }
-  },
+  API_BASE_URL,
 
   /**
    * Helper to validate email format
@@ -83,11 +66,37 @@ const AuthService = {
   },
 
   /**
-   * Register a new account
-   * Temporary local authentication only. Production authentication must use
-   * server-side password hashing and secure session/token handling.
+   * Check authenticated session status via backend GET /api/auth/me
    */
-  register(fullName, email, password, confirmPassword) {
+  async checkAuthStatus() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/me`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        credentials: 'include'
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.user) {
+          // Sync safe display user object in localStorage (NO passwords or secrets)
+          const safeUser = { fullName: data.user.fullName, email: data.user.email };
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser));
+          localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
+          return { success: true, user: data.user };
+        }
+      }
+      return { success: false, user: null };
+    } catch (e) {
+      console.warn('Auth check connection failed:', e);
+      return { success: false, user: null, networkError: true };
+    }
+  },
+
+  /**
+   * Register a new account via POST /api/auth/register
+   */
+  async register(fullName, email, password, confirmPassword) {
     const cleanName = fullName ? fullName.trim() : '';
     const cleanEmail = email ? email.trim().toLowerCase() : '';
 
@@ -111,71 +120,90 @@ const AuthService = {
       return { success: false, message: 'Passwords do not match.' };
     }
 
-    // 5. Existing email check
-    const users = this.getRegisteredUsers();
-    const existingUser = users.find(u => u.email.toLowerCase() === cleanEmail);
-    if (existingUser) {
-      return { success: false, message: 'An account with this email already exists.' };
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ fullName: cleanName, email: cleanEmail, password })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 201 && data.success) {
+        // Clear any leftover career data from previous active session before creating new account
+        this.clearActiveUserCareerState();
+
+        const safeUser = { fullName: data.user.fullName, email: data.user.email };
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser));
+        localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
+
+        return { success: true, user: safeUser };
+      } else if (res.status === 409) {
+        return { success: false, message: 'An account with this email address already exists.' };
+      } else if (res.status === 400 && data.errors && data.errors.length > 0) {
+        return { success: false, message: data.errors[0].message || data.message || 'Validation failed.' };
+      } else {
+        return { success: false, message: data.message || 'Registration failed. Please try again.' };
+      }
+    } catch (e) {
+      console.error('Registration API network error:', e);
+      return { success: false, message: 'Unable to connect to the CareerPilot server. Please try again.' };
     }
-
-    // Clear any leftover career data from previous active session before creating new account
-    this.clearActiveUserCareerState();
-
-    // Create user data object (prototype storage only)
-    const newUser = {
-      fullName: cleanName,
-      email: cleanEmail,
-      password: password // Temporary local prototype authentication
-    };
-
-    // Save to localStorage
-    users.push(newUser);
-    localStorage.setItem(STORAGE_KEYS.USERS_LIST, JSON.stringify(users));
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
-
-    // Set logged in state
-    localStorage.setItem(STORAGE_KEYS.LOGGED_IN, 'true');
-
-    return { success: true, user: { fullName: cleanName, email: cleanEmail } };
   },
 
   /**
-   * Verify credentials and log in
-   * Temporary local authentication only. Production authentication must use
-   * server-side password hashing and secure session/token handling.
+   * Verify credentials and log in via POST /api/auth/login
    */
-  login(email, password) {
+  async login(email, password) {
     const cleanEmail = email ? email.trim().toLowerCase() : '';
 
     if (!cleanEmail || !password) {
       return { success: false, message: 'Invalid email or password.' };
     }
 
-    const users = this.getRegisteredUsers();
-    const matchedUser = users.find(u => u.email.toLowerCase() === cleanEmail && u.password === password);
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: cleanEmail, password })
+      });
 
-    if (matchedUser) {
-      // Clear career data if switching to a different user account
-      this.clearStaleUserData(cleanEmail);
+      const data = await res.json().catch(() => ({}));
 
-      const activeUser = { fullName: matchedUser.fullName, email: matchedUser.email };
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(activeUser));
-      localStorage.setItem(STORAGE_KEYS.LOGGED_IN, 'true');
-      return { success: true, user: activeUser };
+      if (res.status === 200 && data.success) {
+        // Clear career data if switching to a different user account
+        this.clearStaleUserData(cleanEmail);
+
+        const safeUser = { fullName: data.user.fullName, email: data.user.email };
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser));
+        localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
+
+        return { success: true, user: safeUser };
+      } else if (res.status === 401) {
+        return { success: false, message: 'Invalid email or password.' };
+      } else if (res.status === 400 && data.errors && data.errors.length > 0) {
+        return { success: false, message: data.errors[0].message || 'Invalid email or password.' };
+      } else {
+        return { success: false, message: data.message || 'Invalid email or password.' };
+      }
+    } catch (e) {
+      console.error('Login API network error:', e);
+      return { success: false, message: 'Unable to connect to the CareerPilot server. Please try again.' };
     }
-
-    return { success: false, message: 'Invalid email or password.' };
   },
 
   /**
-   * Check login state
+   * Synchronous check for login state (used by legacy sync guards)
    */
   isLoggedIn() {
-    return localStorage.getItem(STORAGE_KEYS.LOGGED_IN) === 'true';
+    // Falls back to safe user presence; primary guards use async checkAuthStatus()
+    return Boolean(this.getCurrentUser());
   },
 
   /**
-   * Retrieve active user details (without password attribute)
+   * Retrieve active user details (safe display object only, NO password)
    */
   getCurrentUser() {
     try {
@@ -192,29 +220,53 @@ const AuthService = {
   },
 
   /**
-   * Log out active user and clear all user-specific career data
+   * Fetch fresh active user from backend GET /api/auth/me
    */
-  logout() {
-    localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
-    localStorage.removeItem(STORAGE_KEYS.USER);
-    this.clearActiveUserCareerState();
-    window.location.href = 'login.html';
+  async fetchCurrentUser() {
+    const status = await this.checkAuthStatus();
+    if (status.success && status.user) {
+      return { fullName: status.user.fullName, email: status.user.email };
+    }
+    return null;
   },
 
   /**
-   * Route Guard: Protect auth-success.html
+   * Log out active user via POST /api/auth/logout
    */
-  protectAuthSuccess() {
-    if (!this.isLoggedIn()) {
+  async logout() {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (e) {
+      console.warn('Logout request failed:', e);
+    } finally {
+      localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
+      localStorage.removeItem(STORAGE_KEYS.USER);
+      this.clearActiveUserCareerState();
       window.location.href = 'login.html';
     }
   },
 
   /**
+   * Route Guard: Protect auth-success.html (Async backend session verification)
+   */
+  async protectAuthSuccess() {
+    const status = await this.checkAuthStatus();
+    if (!status.success) {
+      window.location.href = 'login.html';
+      return null;
+    }
+    return status.user;
+  },
+
+  /**
    * Route Guard: Prevent logged-in users from accessing login/register
    */
-  redirectIfLoggedIn() {
-    if (this.isLoggedIn()) {
+  async redirectIfLoggedIn() {
+    const status = await this.checkAuthStatus();
+    if (status.success) {
       window.location.href = 'auth-success.html';
     }
   }

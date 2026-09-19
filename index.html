@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <title>CareerPilot AI</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- Cinematic Background Layer -->
@@ -42,12 +44,16 @@
 
   <script src="auth.js"></script>
   <script>
-    // Entry Point Redirect: Navigate based on login session state
-    if (typeof AuthService !== 'undefined' && AuthService.isLoggedIn()) {
-      window.location.href = 'auth-success.html';
-    } else {
-      window.location.href = 'login.html';
-    }
+    // Entry Point Redirect: Navigate based on backend session state
+    (async () => {
+      const status = await AuthService.checkAuthStatus();
+      if (status && status.success) {
+        window.location.href = 'auth-success.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    })();
   </script>
 </body>
+
 </html>

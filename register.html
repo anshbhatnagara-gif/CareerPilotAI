@@ -117,7 +117,7 @@
     const registerForm = document.getElementById('register-form');
     const errorAlert = document.getElementById('error-alert');
 
-    registerForm.addEventListener('submit', (e) => {
+    registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const fullName = document.getElementById('fullName').value;
@@ -129,7 +129,7 @@
       errorAlert.style.display = 'none';
       errorAlert.textContent = '';
 
-      const result = AuthService.register(fullName, email, password, confirmPassword);
+      const result = await AuthService.register(fullName, email, password, confirmPassword);
 
       if (result.success) {
         window.location.href = 'auth-success.html';

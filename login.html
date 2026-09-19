@@ -93,7 +93,7 @@
     const loginForm = document.getElementById('login-form');
     const errorAlert = document.getElementById('error-alert');
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const email = document.getElementById('email').value;
@@ -103,7 +103,7 @@
       errorAlert.style.display = 'none';
       errorAlert.textContent = '';
 
-      const result = AuthService.login(email, password);
+      const result = await AuthService.login(email, password);
 
       if (result.success) {
         window.location.href = 'auth-success.html';
