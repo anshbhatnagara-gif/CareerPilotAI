@@ -39,6 +39,31 @@ router.get('/health/db', async (req, res) => {
   }
 });
 
+const aiClient = require('../services/aiClient');
+
+/**
+ * GET /api/health/ai
+ * Python FastAPI AI service health check endpoint
+ */
+router.get('/health/ai', async (req, res) => {
+  const result = await aiClient.checkHealth();
+  if (result.success) {
+    res.status(200).json({
+      success: true,
+      message: 'AI microservice connection is healthy',
+      aiService: 'connected',
+      details: result.data
+    });
+  } else {
+    res.status(503).json({
+      success: false,
+      message: 'AI microservice is unavailable',
+      aiService: 'disconnected',
+      error: result.error
+    });
+  }
+});
+
 const roadmapRoutes = require('./roadmap.routes');
 const projectsRoutes = require('./projects.routes');
 const interviewRoutes = require('./interview.routes');
