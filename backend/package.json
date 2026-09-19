@@ -1,7 +1,7 @@
 {
   "name": "careerpilot-backend",
   "version": "1.0.0",
-  "description": "CareerPilot AI - Node.js + Express Backend Foundation (Phase 8.1 - 8.4)",
+  "description": "CareerPilot AI - Node.js + Express Backend Foundation (Phase 8.1 - 8.5)",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
@@ -10,7 +10,9 @@
     "db:test": "node scripts/test-db.js",
     "db:migrate": "node scripts/run-migrations.js",
     "test:auth": "node scripts/test-auth.js",
-    "test:profile": "node scripts/test-profile.js"
+    "test:profile": "node scripts/test-profile.js",
+    "test:assessment": "node scripts/test-assessment.js",
+    "test:readiness": "node scripts/test-readiness.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

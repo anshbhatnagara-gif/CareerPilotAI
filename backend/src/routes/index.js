@@ -3,6 +3,8 @@ const router = express.Router();
 const pool = require('../config/db');
 const authRoutes = require('./auth.routes');
 const profileRoutes = require('./profile.routes');
+const assessmentRoutes = require('./assessment.routes');
+const readinessRoutes = require('./readiness.routes');
 
 /**
  * GET /api/health
@@ -37,10 +39,10 @@ router.get('/health/db', async (req, res) => {
   }
 });
 
-// Mount authentication routes under /api/auth
+// Mount routes
 router.use('/auth', authRoutes);
-
-// Mount profile routes under /api/profile
 router.use('/profile', profileRoutes);
+router.use('/assessment', assessmentRoutes);
+router.use('/readiness', readinessRoutes);
 
 module.exports = router;
