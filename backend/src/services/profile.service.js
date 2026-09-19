@@ -24,19 +24,26 @@ const ProfileService = {
     const interests = Array.isArray(profileData.interests) ? profileData.interests : [];
     const careerGoal = profileData.careerGoal || {};
 
+    const college = education.college || personal.college;
+    const degree = education.degree || personal.degree;
+    const branch = education.branch || personal.branch;
+    const currentYear = education.currentYear || personal.currentYear;
+    const gradYear = education.graduationYear !== undefined && education.graduationYear !== null ? education.graduationYear : personal.graduationYear;
+
     const hasLocation = Boolean(personal.location && personal.location.trim());
-    const hasCollege = Boolean(education.college && education.college.trim());
-    const hasDegree = Boolean(education.degree && education.degree.trim());
-    const hasBranch = Boolean(education.branch && education.branch.trim());
-    const hasCurrentYear = Boolean(education.currentYear && education.currentYear.trim());
-    const hasGraduationYear = education.graduationYear !== undefined && education.graduationYear !== null && String(education.graduationYear).trim() !== '';
+    const hasCollege = Boolean(college && college.trim());
+    const hasDegree = Boolean(degree && degree.trim());
+    const hasBranch = Boolean(branch && branch.trim());
+    const hasCurrentYear = Boolean(currentYear && currentYear.trim());
+    const hasGraduationYear = gradYear !== undefined && gradYear !== null && String(gradYear).trim() !== '';
 
     const hasSkills = skills.filter(s => typeof s === 'string' && s.trim()).length > 0;
     const hasInterests = interests.filter(i => typeof i === 'string' && i.trim()).length > 0;
 
     const hasTargetCareer = Boolean(careerGoal.targetCareer && careerGoal.targetCareer.trim());
     const hasExperienceLevel = Boolean(careerGoal.experienceLevel && ['Beginner', 'Intermediate', 'Advanced'].includes(careerGoal.experienceLevel.trim()));
-    const hasGoal = Boolean(careerGoal.goal && careerGoal.goal.trim());
+    const goalText = careerGoal.goal || careerGoal.careerGoalText || careerGoal.careerGoal || '';
+    const hasGoal = Boolean(goalText && goalText.trim());
 
     return (
       hasLocation &&
@@ -159,7 +166,13 @@ const ProfileService = {
     if (!userId) throw new Error('User ID is required');
 
     const personal = inputData.personal || {};
-    const education = inputData.education || {};
+    const education = inputData.education || {
+      college: personal.college,
+      degree: personal.degree,
+      branch: personal.branch,
+      currentYear: personal.currentYear,
+      graduationYear: personal.graduationYear
+    };
     const rawSkills = Array.isArray(inputData.skills) ? inputData.skills : [];
     const rawInterests = Array.isArray(inputData.interests) ? inputData.interests : [];
     const careerGoal = inputData.careerGoal || {};
@@ -178,6 +191,8 @@ const ProfileService = {
 
     const isCompleted = this.calculateCompletion(profileDataToEval);
     const gradYearNum = education.graduationYear ? parseInt(education.graduationYear, 10) || null : null;
+
+    const goalText = (careerGoal.goal || careerGoal.careerGoalText || careerGoal.careerGoal || '').trim();
 
     if (this.isDbConfigured()) {
       const connection = await pool.getConnection();
@@ -211,7 +226,7 @@ const ProfileService = {
             gradYearNum,
             careerGoal.targetCareer ? careerGoal.targetCareer.trim() : null,
             careerGoal.experienceLevel ? careerGoal.experienceLevel.trim() : null,
-            careerGoal.goal ? careerGoal.goal.trim() : null,
+            goalText || null,
             isCompleted
           ]
         );
@@ -257,7 +272,7 @@ const ProfileService = {
       interests,
       targetCareer: careerGoal.targetCareer ? careerGoal.targetCareer.trim() : '',
       experienceLevel: careerGoal.experienceLevel ? careerGoal.experienceLevel.trim() : '',
-      goal: careerGoal.goal ? careerGoal.goal.trim() : '',
+      goal: goalText,
       completed: isCompleted
     });
 

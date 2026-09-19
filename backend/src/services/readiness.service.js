@@ -299,12 +299,26 @@ const ReadinessService = {
     if (!userId) throw new Error('User ID is required');
 
     const profile = await ProfileService.getProfile(userId);
-    if (!profile || profile.completed !== true) {
+    if (!profile) {
       return { incompleteProfile: true };
     }
 
-    if (!profile.careerGoal || !profile.careerGoal.targetCareer || !profile.careerGoal.targetCareer.trim()) {
-      return { missingTargetCareer: true };
+    const personal = profile.personal || {};
+    const skills = Array.isArray(profile.skills) ? profile.skills : [];
+    const education = profile.education || {};
+
+    const hasBasicInfo = Boolean((personal.location && personal.location.trim()) || (skills.length > 0) || (education.college && education.college.trim()));
+    const hasTargetCareer = Boolean(profile.careerGoal && profile.careerGoal.targetCareer && profile.careerGoal.targetCareer.trim());
+
+    if (!hasTargetCareer) {
+      if (hasBasicInfo) {
+        return { missingTargetCareer: true };
+      }
+      return { incompleteProfile: true };
+    }
+
+    if (profile.completed !== true) {
+      return { incompleteProfile: true };
     }
 
     const fingerprint = this.generateProfileFingerprint(profile);

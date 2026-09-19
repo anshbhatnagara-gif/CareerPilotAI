@@ -39,10 +39,15 @@ router.get('/health/db', async (req, res) => {
   }
 });
 
+const roadmapRoutes = require('./roadmap.routes');
+const projectsRoutes = require('./projects.routes');
+
 // Mount routes
 router.use('/auth', authRoutes);
 router.use('/profile', profileRoutes);
 router.use('/assessment', assessmentRoutes);
 router.use('/readiness', readinessRoutes);
+router.use('/roadmap', roadmapRoutes);
+router.use('/projects', projectsRoutes);
 
 module.exports = router;

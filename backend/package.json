@@ -12,7 +12,10 @@
     "test:auth": "node scripts/test-auth.js",
     "test:profile": "node scripts/test-profile.js",
     "test:assessment": "node scripts/test-assessment.js",
-    "test:readiness": "node scripts/test-readiness.js"
+    "test:readiness": "node scripts/test-readiness.js",
+    "db:seed:projects": "node scripts/seed-project-catalog.js",
+    "test:roadmap": "node scripts/test-roadmap.js",
+    "test:projects": "node scripts/test-projects.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
