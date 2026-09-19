@@ -14,8 +14,11 @@
     "test:assessment": "node scripts/test-assessment.js",
     "test:readiness": "node scripts/test-readiness.js",
     "db:seed:projects": "node scripts/seed-project-catalog.js",
+    "db:seed:interview": "node scripts/seed-interview-questions.js",
     "test:roadmap": "node scripts/test-roadmap.js",
-    "test:projects": "node scripts/test-projects.js"
+    "test:projects": "node scripts/test-projects.js",
+    "test:interview": "node scripts/test-interview.js",
+    "test:career-tools": "node scripts/test-career-tools.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

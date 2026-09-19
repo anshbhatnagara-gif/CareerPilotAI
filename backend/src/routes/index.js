@@ -41,6 +41,8 @@ router.get('/health/db', async (req, res) => {
 
 const roadmapRoutes = require('./roadmap.routes');
 const projectsRoutes = require('./projects.routes');
+const interviewRoutes = require('./interview.routes');
+const careerToolsRoutes = require('./career-tools.routes');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -49,5 +51,8 @@ router.use('/assessment', assessmentRoutes);
 router.use('/readiness', readinessRoutes);
 router.use('/roadmap', roadmapRoutes);
 router.use('/projects', projectsRoutes);
+router.use('/interview', interviewRoutes);
+router.use('/career-tools', careerToolsRoutes);
 
 module.exports = router;
+
