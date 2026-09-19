@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const authRoutes = require('./auth.routes');
+const profileRoutes = require('./profile.routes');
 
 /**
  * GET /api/health
@@ -38,5 +39,8 @@ router.get('/health/db', async (req, res) => {
 
 // Mount authentication routes under /api/auth
 router.use('/auth', authRoutes);
+
+// Mount profile routes under /api/profile
+router.use('/profile', profileRoutes);
 
 module.exports = router;
