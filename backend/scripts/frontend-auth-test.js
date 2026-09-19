@@ -139,7 +139,7 @@ async function runTests() {
 
       // Test 13: Removal of careerPilotLoggedIn authentication dependency
       console.log('\nTest 13: Removal of careerPilotLoggedIn as auth source of truth');
-      assert(authJsCode.includes("localStorage.removeItem(STORAGE_KEYS.LOGGED_IN)") || authJsCode.includes("STORAGE_KEYS.LOGGED_IN"), 'auth.js manages legacy keys safely');
+      assert(authJsCode.includes("'careerPilotLoggedIn'") && authJsCode.includes("localStorage.removeItem"), 'auth.js manages legacy keys safely');
 
       // Test 14: User A -> Logout -> User B isolation
       console.log('\nTest 14: Multi-user authentication isolation');
