@@ -1,24 +1,19 @@
 /**
- * CAREERPILOT AI - AUTHENTICATION SERVICE (PHASE 8.8.1 MIGRATION)
+ * CAREERPILOT AI - AUTHENTICATION SERVICE (PHASE 8.8.6 HARDENED)
  * 
  * Production REST API authentication engine connecting frontend to Node.js + Express backend.
+ * 
+ * Backend APIs are the authoritative source of application data. Browser storage is not used for persistent CareerPilot application state.
  * 
  * Features:
  * - Centralized API Configuration (http://localhost:5000/api)
  * - HTTP-Only Session Cookie persistence via `credentials: "include"`
  * - Real-time authentication verification via GET /api/auth/me
- * - Zero client-side password storage (localStorage, sessionStorage, cookies)
- * - Safe user display state synchronization
- * - Clean error mapping & network failure fallback
+ * - Zero client-side password, token, or session storage (localStorage, sessionStorage, cookies)
+ * - Legacy localStorage cleanup engine
  */
 
 const API_BASE_URL = 'http://localhost:5000/api';
-
-const STORAGE_KEYS = {
-  USER: 'careerPilotUser',
-  USERS_LIST: 'careerPilotUsersList',
-  LOGGED_IN: 'careerPilotLoggedIn'
-};
 
 const AuthService = {
   API_BASE_URL,
@@ -32,10 +27,13 @@ const AuthService = {
   },
 
   /**
-   * Helper to clear active user career profile & generated state from localStorage
+   * Helper to clear active user career profile & legacy keys from localStorage
    */
   clearActiveUserCareerState() {
-    const userKeys = [
+    const legacyKeys = [
+      'careerPilotLoggedIn',
+      'careerPilotUser',
+      'careerPilotUsersList',
       'careerPilotProfile',
       'careerPilotAssessment',
       'careerPilotReadiness',
@@ -45,24 +43,9 @@ const AuthService = {
       'careerPilotInterviewHistory',
       'careerPilotCareerTools'
     ];
-    userKeys.forEach(key => localStorage.removeItem(key));
-  },
-
-  /**
-   * Helper to clear active career profile & state if a different user logs in
-   */
-  clearStaleUserData(activeEmail) {
-    try {
-      const profileRaw = localStorage.getItem('careerPilotProfile');
-      if (profileRaw) {
-        const profile = JSON.parse(profileRaw);
-        if (profile && profile.personal && profile.personal.email && profile.personal.email.toLowerCase() !== activeEmail.toLowerCase()) {
-          this.clearActiveUserCareerState();
-        }
-      }
-    } catch (e) {
-      // Ignore JSON parse errors
-    }
+    legacyKeys.forEach(key => {
+      try { localStorage.removeItem(key); } catch (e) {}
+    });
   },
 
   /**
@@ -79,10 +62,8 @@ const AuthService = {
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && data.user) {
-          // Sync safe display user object in localStorage (NO passwords or secrets)
-          const safeUser = { fullName: data.user.fullName, email: data.user.email };
-          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser));
-          localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
+          // Clean up legacy localStorage keys on authenticated startup
+          this.clearActiveUserCareerState();
           return { success: true, user: data.user };
         }
       }
@@ -100,22 +81,18 @@ const AuthService = {
     const cleanName = fullName ? fullName.trim() : '';
     const cleanEmail = email ? email.trim().toLowerCase() : '';
 
-    // 1. Full Name check
     if (!cleanName) {
       return { success: false, message: 'Please enter your full name.' };
     }
 
-    // 2. Email format check
     if (!cleanEmail || !this.isValidEmail(cleanEmail)) {
       return { success: false, message: 'Please enter a valid email address.' };
     }
 
-    // 3. Password length check
     if (!password || password.length < 8) {
       return { success: false, message: 'Password must be at least 8 characters.' };
     }
 
-    // 4. Confirm Password check
     if (password !== confirmPassword) {
       return { success: false, message: 'Passwords do not match.' };
     }
@@ -131,14 +108,8 @@ const AuthService = {
       const data = await res.json().catch(() => ({}));
 
       if (res.status === 201 && data.success) {
-        // Clear any leftover career data from previous active session before creating new account
         this.clearActiveUserCareerState();
-
-        const safeUser = { fullName: data.user.fullName, email: data.user.email };
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser));
-        localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
-
-        return { success: true, user: safeUser };
+        return { success: true, user: data.user };
       } else if (res.status === 409) {
         return { success: false, message: 'An account with this email address already exists.' };
       } else if (res.status === 400 && data.errors && data.errors.length > 0) {
@@ -173,14 +144,8 @@ const AuthService = {
       const data = await res.json().catch(() => ({}));
 
       if (res.status === 200 && data.success) {
-        // Clear career data if switching to a different user account
-        this.clearStaleUserData(cleanEmail);
-
-        const safeUser = { fullName: data.user.fullName, email: data.user.email };
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser));
-        localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
-
-        return { success: true, user: safeUser };
+        this.clearActiveUserCareerState();
+        return { success: true, user: data.user };
       } else if (res.status === 401) {
         return { success: false, message: 'Invalid email or password.' };
       } else if (res.status === 400 && data.errors && data.errors.length > 0) {
@@ -195,28 +160,17 @@ const AuthService = {
   },
 
   /**
-   * Synchronous check for login state (used by legacy sync guards)
+   * Synchronous check for login state (Primary guards use async checkAuthStatus())
    */
   isLoggedIn() {
-    // Falls back to safe user presence; primary guards use async checkAuthStatus()
-    return Boolean(this.getCurrentUser());
+    return false;
   },
 
   /**
-   * Retrieve active user details (safe display object only, NO password)
+   * Retrieve active user details (backend GET /api/auth/me is authoritative)
    */
   getCurrentUser() {
-    try {
-      const userRaw = localStorage.getItem(STORAGE_KEYS.USER);
-      if (!userRaw) return null;
-      const parsed = JSON.parse(userRaw);
-      if (parsed) {
-        return { fullName: parsed.fullName || '', email: parsed.email || '' };
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
+    return null;
   },
 
   /**
@@ -242,8 +196,6 @@ const AuthService = {
     } catch (e) {
       console.warn('Logout request failed:', e);
     } finally {
-      localStorage.removeItem(STORAGE_KEYS.LOGGED_IN);
-      localStorage.removeItem(STORAGE_KEYS.USER);
       this.clearActiveUserCareerState();
       window.location.href = 'login.html';
     }

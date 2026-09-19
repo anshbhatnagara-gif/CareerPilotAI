@@ -56,7 +56,6 @@ const OnboardingApp = {
       if (typeof AuthService !== 'undefined') {
         await AuthService.logout();
       } else {
-        localStorage.removeItem('careerPilotLoggedIn');
         window.location.href = 'login.html';
       }
     });
