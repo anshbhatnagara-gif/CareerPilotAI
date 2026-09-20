@@ -91,11 +91,12 @@ const InterviewApp = {
         return false;
       }
       const profileJson = await profileRes.json();
-      if (!profileJson.success || !profileJson.data || !profileJson.data.completed) {
+      const profileData = profileJson.profile || profileJson.data;
+      if (!profileJson.success || !profileData || !profileData.completed) {
         window.location.href = 'onboarding.html';
         return false;
       }
-      this.profile = profileJson.data;
+      this.profile = profileData;
 
       // 3. Readiness check
       const readinessRes = await fetch(`${API_BASE_URL}/readiness`, {
@@ -108,11 +109,12 @@ const InterviewApp = {
         return false;
       }
       const readinessJson = await readinessRes.json();
-      if (!readinessJson.success || !readinessJson.data || !readinessJson.data.targetCareer) {
+      const readinessData = readinessJson.readiness || readinessJson.data;
+      if (!readinessJson.success || !readinessData || (!readinessData.targetCareer && !readinessData.targetRole)) {
         window.location.href = 'readiness.html';
         return false;
       }
-      this.readiness = readinessJson.data;
+      this.readiness = readinessData;
 
       return true;
     } catch (e) {

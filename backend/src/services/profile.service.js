@@ -130,7 +130,7 @@ const ProfileService = {
     const saved = mockProfiles.get(Number(userId));
     if (!saved) {
       return {
-        personal: { fullName: user.full_name, email: user.email, location: '' },
+        personal: { fullName: user.full_name || user.fullName || '', email: user.email || '', location: '' },
         education: { college: '', degree: '', branch: '', currentYear: '', graduationYear: '' },
         skills: [],
         interests: [],
@@ -140,7 +140,7 @@ const ProfileService = {
     }
 
     return {
-      personal: { fullName: user.full_name, email: user.email, location: saved.location || '' },
+      personal: { fullName: user.full_name || user.fullName || '', email: user.email || '', location: saved.location || '' },
       education: {
         college: saved.college || '',
         degree: saved.degree || '',

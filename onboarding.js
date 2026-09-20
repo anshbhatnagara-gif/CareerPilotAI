@@ -39,10 +39,11 @@ const OnboardingApp = {
   async protectRoute() {
     if (typeof AuthService !== 'undefined') {
       const status = await AuthService.checkAuthStatus();
-      if (!status.success) {
+      if (!status.success || !status.user) {
         window.location.href = 'login.html';
         return false;
       }
+      this.currentUser = status.user;
       return true;
     } else {
       window.location.href = 'login.html';
@@ -103,6 +104,22 @@ const OnboardingApp = {
    * Load profile directly from backend GET /api/profile
    */
   async loadProfile() {
+    // Pre-populate read-only personal identity from authenticated session user
+    if (this.currentUser) {
+      const userFullName = this.currentUser.fullName || this.currentUser.full_name || '';
+      const userEmail = this.currentUser.email || '';
+      if (userFullName) {
+        const nameEl = document.getElementById('step1-fullName');
+        if (nameEl) nameEl.value = userFullName;
+        const headerNameEl = document.getElementById('header-user-name');
+        if (headerNameEl) headerNameEl.textContent = userFullName;
+      }
+      if (userEmail) {
+        const emailEl = document.getElementById('step1-email');
+        if (emailEl) emailEl.value = userEmail;
+      }
+    }
+
     try {
       const res = await fetch(`${API_BASE_URL}/profile`, {
         method: 'GET',
@@ -126,15 +143,23 @@ const OnboardingApp = {
 
       // Step 1: Personal
       if (profile.personal) {
-        if (profile.personal.fullName) {
-          document.getElementById('step1-fullName').value = profile.personal.fullName;
-          document.getElementById('header-user-name').textContent = profile.personal.fullName;
+        const fullNameVal = profile.personal.fullName || (this.currentUser && (this.currentUser.fullName || this.currentUser.full_name)) || '';
+        const emailVal = profile.personal.email || (this.currentUser && this.currentUser.email) || '';
+        const locationVal = profile.personal.location || '';
+
+        if (fullNameVal) {
+          const nameEl = document.getElementById('step1-fullName');
+          if (nameEl) nameEl.value = fullNameVal;
+          const headerNameEl = document.getElementById('header-user-name');
+          if (headerNameEl) headerNameEl.textContent = fullNameVal;
         }
-        if (profile.personal.email) {
-          document.getElementById('step1-email').value = profile.personal.email;
+        if (emailVal) {
+          const emailEl = document.getElementById('step1-email');
+          if (emailEl) emailEl.value = emailVal;
         }
-        if (profile.personal.location) {
-          document.getElementById('step1-location').value = profile.personal.location;
+        if (locationVal) {
+          const locEl = document.getElementById('step1-location');
+          if (locEl) locEl.value = locationVal;
         }
       }
 
