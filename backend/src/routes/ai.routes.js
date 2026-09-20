@@ -14,8 +14,7 @@ router.use(requireAuth);
 router.get('/dashboard', async (req, res) => {
   try {
     const userId = req.user.id;
-    const profile = await ProfileServic
-    e.getProfile(userId);
+    const profile = await ProfileService.getProfile(userId);
 
     const targetCareer = (profile && profile.careerGoal && profile.careerGoal.targetCareer) || (profile && profile.targetCareer) || '';
     const experienceLevel = (profile && profile.careerGoal && profile.careerGoal.experienceLevel) || (profile && profile.experienceLevel) || 'Entry Level';
@@ -113,6 +112,7 @@ router.post('/skills', async (req, res) => {
 });
 
 /**
+ * 
  * POST /api/ai/learning
  */
 router.post('/learning', async (req, res) => {

@@ -8,7 +8,17 @@
  * sequence generation or fingerprint logic.
  */
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname;
+    if (hostname === '127.0.0.1' || hostname === 'localhost') {
+      return `${window.location.protocol}//${hostname}:5000/api`;
+    }
+  }
+  return 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const RoadmapApp = {
   roadmapData: null,
