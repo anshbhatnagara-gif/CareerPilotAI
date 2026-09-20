@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     AI_SERVICE_HOST: str = "0.0.0.0"
     AI_SERVICE_SECRET: str = "placeholder_secret_key_change_in_production"
 
+    # Gemini AI Provider Configuration
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_TIMEOUT_MS: int = 10000
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

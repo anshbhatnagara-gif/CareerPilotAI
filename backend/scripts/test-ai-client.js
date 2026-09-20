@@ -1,8 +1,9 @@
 /**
- * CAREERPILOT AI — NODE.JS AI CLIENT INTEGRATION TEST SUITE
+ * CAREERPILOT AI — NODE.JS AI CLIENT INTEGRATION TEST SUITE (PHASE 8.9.1 HARDENED)
  * 
  * Tests server-to-server communication between Node.js Express backend and Python FastAPI AI Service.
- * Verifies health checks, authentication, pipeline requests, timeout handling, and graceful offline fallback.
+ * Verifies health checks, header authentication, pipeline requests, status classification (ai_generated / fallback),
+ * timeout handling, and graceful offline fallback.
  */
 
 const express = require('express');
@@ -29,13 +30,12 @@ function assert(condition, description) {
 
 async function runTests() {
   console.log('\n==================================================');
-  console.log('CAREERPILOT AI — PHASE 8.9 NODE.JS AI CLIENT TEST SUITE');
+  console.log('CAREERPILOT AI — PHASE 8.9.1 NODE.JS AI CLIENT TEST SUITE');
   console.log('==================================================\n');
 
   // 1. Offline / Unreachable FastAPI handling test
   console.log('Test 1: Unreachable FastAPI AI service fallback handling');
   const originalUrl = aiClient.AI_SERVICE_URL;
-  // Point to a non-existent port
   aiClient.AI_SERVICE_URL = 'http://localhost:59999';
 
   const offlineHealth = await aiClient.checkHealth();
@@ -50,7 +50,7 @@ async function runTests() {
     const json = await res.json();
     assert(json.aiService === 'disconnected', 'Response indicates aiService is disconnected');
 
-    // 2. Start mock FastAPI server to test live server-to-server communication
+    // 2. Start mock FastAPI server to test live server-to-server communication & status fields
     console.log('\nTest 2 & 3: Server-to-server request authentication & pipelines');
     const mockFastAPI = http.createServer((req, res) => {
       let body = '';
@@ -75,9 +75,13 @@ async function runTests() {
           res.end(JSON.stringify({
             success: true,
             service: 'careerpilot-ai-service',
-            status: 'ready',
-            message: 'AI career analysis pipeline is ready for model integration',
-            data: { targetCareer: 'Software Engineer' }
+            status: 'fallback',
+            message: 'Deterministic career analysis generated via fallback engine',
+            data: {
+              status: 'fallback',
+              career_direction: 'Deterministic roadmap for target career as Software Engineer (Entry Level).',
+              strengths: ['JavaScript', 'Node.js']
+            }
           }));
           return;
         }
@@ -87,8 +91,13 @@ async function runTests() {
           res.end(JSON.stringify({
             success: true,
             service: 'careerpilot-ai-service',
-            status: 'ready',
-            message: 'AI skill analysis pipeline is ready for model integration'
+            status: 'fallback',
+            message: 'Deterministic skill insights generated via fallback engine',
+            data: {
+              status: 'fallback',
+              target_career: 'Software Engineer',
+              missing_skills: ['System Design']
+            }
           }));
           return;
         }
@@ -98,14 +107,17 @@ async function runTests() {
           res.end(JSON.stringify({
             success: true,
             service: 'careerpilot-ai-service',
-            status: 'ready',
-            message: 'AI learning recommendation pipeline is ready for model integration'
+            status: 'fallback',
+            message: 'Deterministic learning recommendations generated via fallback engine',
+            data: {
+              status: 'fallback',
+              learning_order: ['Stage 1: Core Foundations']
+            }
           }));
           return;
         }
 
         if (req.url === '/slow-endpoint') {
-          // Delay response to test timeout
           setTimeout(() => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success: true }));
@@ -133,15 +145,18 @@ async function runTests() {
       // Career Analysis request
       const careerRes = await aiClient.analyzeCareer({ targetCareer: 'Software Engineer', skills: ['JS'] });
       assert(careerRes.success === true, 'analyzeCareer returns success: true');
-      assert(careerRes.status === 'ready', 'analyzeCareer returns status: ready');
+      assert(careerRes.status === 'fallback', 'analyzeCareer returns status: fallback');
+      assert(careerRes.data && careerRes.data.status === 'fallback', 'Data object contains status: fallback');
 
       // Skills Analysis request
       const skillsRes = await aiClient.analyzeSkills({ skills: ['JS'] }, ['Python']);
       assert(skillsRes.success === true, 'analyzeSkills returns success: true');
+      assert(skillsRes.data && skillsRes.data.status === 'fallback', 'Skill data contains status: fallback');
 
       // Learning Analysis request
       const learningRes = await aiClient.analyzeLearning({ skills: ['JS'] }, ['Algorithms']);
       assert(learningRes.success === true, 'analyzeLearning returns success: true');
+      assert(learningRes.data && learningRes.data.status === 'fallback', 'Learning data contains status: fallback');
 
       // Test Timeout handling
       console.log('\nTest 4: Timeout handling verification');

@@ -21,3 +21,6 @@ def test_get_dependency_health():
     assert data["service"] == "careerpilot-ai-service"
     assert "dependencies" in data
     assert data["dependencies"]["configuration"] == "ready"
+    assert "gemini" in data["dependencies"]
+    assert "configured" in data["dependencies"]["gemini"]
+    assert "model" in data["dependencies"]["gemini"]
