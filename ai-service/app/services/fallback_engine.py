@@ -21,28 +21,60 @@ class FallbackEngine:
     def analyze_career_profile(profile: CareerProfile) -> CareerAnalysisData:
         target = profile.targetCareer or "Software Developer"
         exp = profile.experienceLevel or "Entry Level"
-        skills = profile.skills if profile.skills else ["Programming Basics"]
-        interests = profile.interests if profile.interests else ["Software Engineering"]
+        skills = profile.skills if profile.skills else []
+        interests = profile.interests if profile.interests else []
 
-        strengths = [s for s in skills[:5]]
-        if not strengths:
-            strengths = ["Problem Solving", "Adaptability"]
+        # Education summary
+        edu_desc = ""
+        if profile.education and (profile.education.degree or profile.education.branch):
+            deg = profile.education.degree or "Degree"
+            br = profile.education.branch or "Field"
+            edu_desc = f" taking {deg} in {br}"
 
-        focus_areas = ["System Design", "Cloud Infrastructure", "Data Structures"]
-        career_advice = [
-            f"Focus on building core proficiency in {target} fundamentals.",
-            "Complete end-to-end practical projects to validate skills.",
-            "Establish portfolio evidence on GitHub to showcase implementation."
+        loc_desc = f" based in {profile.personal.location}" if profile.personal and profile.personal.location else ""
+
+        # Determine strengths based strictly on profile skills
+        strengths = []
+        if skills:
+            strengths = [f"Exposure to {s}" for s in skills[:4]]
+        else:
+            strengths = ["Interest in technical skill development", "Self-motivated learning mindset"]
+
+        if interests:
+            strengths.append(f"Interest in {interests[0]}")
+
+        focus_areas = [
+            f"Core proficiency in {target} fundamentals",
+            "Practical project building and portfolio evidence",
+            "Data structures, algorithms, and system design"
         ]
+
+        career_advice = [
+            f"Build a strong practical foundation aligned with {target} requirements.",
+            "Complete end-to-end portfolio projects and document code on GitHub.",
+            "Practice technical communication and domain-specific problem solving."
+        ]
+
+        # Calculate confidence level based on profile completeness
+        has_skills = len(skills) > 0
+        has_edu = bool(profile.education and (profile.education.degree or profile.education.branch))
+        has_target = bool(profile.targetCareer)
+
+        if has_skills and has_edu and has_target:
+            confidence = "HIGH"
+        elif has_target and (has_skills or has_edu):
+            confidence = "MODERATE"
+        else:
+            confidence = "LOW"
 
         return CareerAnalysisData(
             status="fallback",
-            career_direction=f"Deterministic roadmap for target career as {target} ({exp}).",
-            profile_summary=f"Candidate with {len(skills)} verified skills interested in {', '.join(interests[:3])}.",
+            career_direction=f"Career path alignment targeting {target} ({exp}){edu_desc}{loc_desc}.",
+            profile_summary=f"Candidate with {len(skills)} verified skills interested in {target} roles.",
             strengths=strengths,
             focus_areas=focus_areas,
             career_advice=career_advice,
-            confidence_level="High" if len(skills) >= 3 else "Medium"
+            confidence_level=confidence
         )
 
     @staticmethod
@@ -50,7 +82,6 @@ class FallbackEngine:
         target = profile.targetCareer or "Software Developer"
         current = profile.skills if profile.skills else ["Programming Basics"]
 
-        # Expected skill sets per career domain
         standard_required = ["Data Structures & Algorithms", "Git", "REST APIs", "Database Management"]
         if target_skills:
             required = list(dict.fromkeys(standard_required + target_skills))

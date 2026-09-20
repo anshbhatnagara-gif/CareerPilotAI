@@ -2,11 +2,27 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
 
+class PersonalInfo(BaseModel):
+    fullName: Optional[str] = Field(default=None, description="Full name of user")
+    location: Optional[str] = Field(default=None, description="Location of user")
+
+
+class EducationInfo(BaseModel):
+    college: Optional[str] = Field(default=None, description="College or university")
+    degree: Optional[str] = Field(default=None, description="Degree program")
+    branch: Optional[str] = Field(default=None, description="Field of study or branch")
+    currentYear: Optional[str] = Field(default=None, description="Current academic year")
+    graduationYear: Optional[str] = Field(default=None, description="Expected graduation year")
+
+
 class CareerProfile(BaseModel):
     targetCareer: Optional[str] = Field(default=None, description="Target career role")
     experienceLevel: Optional[str] = Field(default=None, description="Experience level (e.g. Student, Entry Level)")
+    goal: Optional[str] = Field(default=None, description="Primary career goal")
     skills: List[str] = Field(default_factory=list, description="List of user skills")
     interests: List[str] = Field(default_factory=list, description="List of user career interests")
+    personal: Optional[PersonalInfo] = Field(default=None, description="Personal information")
+    education: Optional[EducationInfo] = Field(default=None, description="Education background")
 
 
 class CareerAnalysisRequest(BaseModel):
@@ -34,7 +50,7 @@ class CareerAnalysisData(BaseModel):
     strengths: List[str] = Field(default_factory=list, description="Key candidate strengths")
     focus_areas: List[str] = Field(default_factory=list, description="Priority growth areas")
     career_advice: List[str] = Field(default_factory=list, description="Actionable career recommendations")
-    confidence_level: str = Field(description="High, Medium, or Low")
+    confidence_level: str = Field(description="LOW, MODERATE, or HIGH")
 
 
 class SkillPriorityItem(BaseModel):
