@@ -7,7 +7,9 @@ from app.schemas.analyze import (
     CareerAnalysisData,
     SkillAnalysisData,
     LearningRecommendationData,
-    SkillPriorityGap
+    SkillPriorityGap,
+    LearningPriority,
+    LearningStep
 )
 from app.config import get_settings
 from app.core.logging import logger
@@ -234,36 +236,85 @@ Target Focus Skills: {', '.join(targets) if targets else 'None specified'}
             logger.warning(f"GeminiProvider SkillAnalysisData validation failed: {str(err)}")
             return None
 
-    def generate_learning_recommendations(self, profile: CareerProfile, focus_areas: Optional[List[str]] = None) -> Optional[LearningRecommendationData]:
-        target = self._sanitize_text(profile.targetCareer)
-        skills = [self._sanitize_text(s) for s in profile.skills[:15]]
+    def generate_learning_recommendations(
+        self,
+        profile: CareerProfile,
+        focus_areas: Optional[List[str]] = None,
+        missing_skills: Optional[List[str]] = None,
+        developing_skills: Optional[List[str]] = None,
+        priority_gaps: Optional[List[SkillPriorityGap]] = None
+    ) -> Optional[LearningRecommendationData]:
+        target = self._sanitize_text(profile.targetCareer) or "Software Developer"
+        exp = self._sanitize_text(profile.experienceLevel) or "Entry Level"
+        current_skills = [self._sanitize_text(s) for s in profile.skills[:20]]
         focuses = [self._sanitize_text(f) for f in (focus_areas or [])[:10]]
+        m_skills = [self._sanitize_text(s) for s in (missing_skills or [])[:15]]
+        d_skills = [self._sanitize_text(s) for s in (developing_skills or [])[:15]]
 
-        prompt = f"""You are an expert tech learning pathway planner AI.
-Analyze the candidate profile and output ONLY valid JSON matching this schema:
+        p_gaps_summary = []
+        if priority_gaps:
+            for pg in priority_gaps[:10]:
+                sk = getattr(pg, 'skill', None) or (pg.get('skill') if isinstance(pg, dict) else str(pg))
+                p_gaps_summary.append(self._sanitize_text(sk))
+
+        prompt = f"""SYSTEM INSTRUCTIONS:
+You are CareerPilot AI's Learning Intelligence Engine.
+Your task is to analyze candidate skills, skill gap priorities, and target career to output ONLY valid JSON matching this schema:
 {{
-  "learning_order": ["string (e.g. Stage 1: Foundation, Stage 2: Advanced)"],
-  "recommendations": [
-    {{"topic": "string", "stage": "string", "estimated_hours": "string", "resources": ["string"]}}
+  "target_career": "{target}",
+  "learning_priorities": [
+    {{"skill": "string", "priority": "HIGH | MEDIUM | LOW", "reason": "string"}}
   ],
-  "estimated_focus": "string (e.g. 5-8 hours / week)",
-  "next_steps": ["string"],
-  "summary": "string"
+  "learning_sequence": [
+    {{
+      "order": 1,
+      "skill": "string",
+      "topics": ["string"],
+      "prerequisites": ["string"],
+      "practice_focus": ["string"],
+      "estimated_effort": "LOW | MEDIUM | HIGH"
+    }}
+  ],
+  "recommended_topics": ["string (Specific technical topics to master)"],
+  "practice_focus": ["string (Hands-on practice exercises or portfolio projects)"],
+  "learning_summary": "string (Overview of recommended learning order and strategy)",
+  "confidence_level": "HIGH | MODERATE | LOW (Reflects completeness of provided profile and skill-gap context)"
 }}
 
-Candidate Data:
+CRITICAL SAFETY & SEQUENCE RULES:
+1. Preserve candidate's selected Target Career EXACTLY: '{target}'. DO NOT change it.
+2. DO NOT recommend already-mastered current skills as missing.
+3. Treat developing skills differently from missing skills: focus developing skills on intermediate/advanced topics, and missing skills on core foundations.
+4. ORDER THE LEARNING SEQUENCE LOGICALLY by prerequisites (e.g. foundational languages/math before advanced frameworks/models).
+5. DO NOT fabricate candidate experience, certifications, internships, or employment.
+6. DO NOT promise employment, job placement, salary levels, or hiring guarantees.
+7. DO NOT generate unrelated career topics (e.g. graphic design for an AI/ML Engineer).
+8. If candidate skill and gap data are minimal, assign confidence_level "LOW" or "MODERATE".
+
+CANDIDATE LEARNING CONTEXT:
 Target Career: {target}
-Current Skills: {', '.join(skills)}
-Focus Areas: {', '.join(focuses)}
+Experience Level: {exp}
+Candidate Current Skills (Mastered/Verified): {', '.join(current_skills) if current_skills else 'None provided'}
+Developing Skills: {', '.join(d_skills) if d_skills else 'None specified'}
+Missing Skills: {', '.join(m_skills) if m_skills else 'None specified'}
+Priority Gaps: {', '.join(p_gaps_summary) if p_gaps_summary else 'None specified'}
+Focus Areas: {', '.join(focuses) if focuses else 'None specified'}
 """
+
         raw_output = self._call_gemini_api(prompt)
         json_data = self._parse_json(raw_output)
         if not json_data:
             return None
 
         try:
+            json_data["target_career"] = target
+            conf = str(json_data.get("confidence_level", "MODERATE")).upper()
+            if conf not in ["HIGH", "MODERATE", "LOW"]:
+                conf = "MODERATE"
+            json_data["confidence_level"] = conf
             json_data["status"] = "ai_generated"
             return LearningRecommendationData(**json_data)
         except Exception as err:
             logger.warning(f"GeminiProvider LearningRecommendationData validation failed: {str(err)}")
             return None
+

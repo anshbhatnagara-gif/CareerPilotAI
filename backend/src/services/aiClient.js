@@ -127,12 +127,19 @@ const aiClient = {
   /**
    * Request AI Learning Recommendation (POST /api/v1/analyze/learning)
    */
-  async analyzeLearning(profileData, focusAreas = []) {
+  async analyzeLearning(profileData, focusAreas = [], missingSkills = [], developingSkills = [], priorityGaps = []) {
     return this._request('/api/v1/analyze/learning', {
       method: 'POST',
-      body: { profile: profileData, focusAreas }
+      body: {
+        profile: profileData,
+        focusAreas,
+        missingSkills,
+        developingSkills,
+        priorityGaps
+      }
     });
   }
+
 };
 
 module.exports = aiClient;

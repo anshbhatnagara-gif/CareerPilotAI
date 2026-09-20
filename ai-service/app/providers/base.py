@@ -20,6 +20,14 @@ class BaseAIProvider(ABC):
         pass
 
     @abstractmethod
-    def generate_learning_recommendations(self, profile: CareerProfile, focus_areas: Optional[List[str]] = None) -> Optional[LearningRecommendationData]:
+    def generate_learning_recommendations(
+        self,
+        profile: CareerProfile,
+        focus_areas: Optional[List[str]] = None,
+        missing_skills: Optional[List[str]] = None,
+        developing_skills: Optional[List[str]] = None,
+        priority_gaps: Optional[List[SkillPriorityGap]] = None
+    ) -> Optional[LearningRecommendationData]:
         """Generate structured learning path and action recommendations."""
         pass
+

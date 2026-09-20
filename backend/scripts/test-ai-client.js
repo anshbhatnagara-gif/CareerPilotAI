@@ -111,7 +111,24 @@ async function runTests() {
             message: 'Deterministic learning recommendations generated via fallback engine',
             data: {
               status: 'fallback',
-              learning_order: ['Stage 1: Core Foundations']
+              target_career: 'Software Engineer',
+              learning_priorities: [
+                { skill: 'System Design', priority: 'HIGH', reason: 'Critical architecture gap' }
+              ],
+              learning_sequence: [
+                {
+                  order: 1,
+                  skill: 'System Design',
+                  topics: ['Distributed Systems', 'Load Balancing'],
+                  prerequisites: ['Networking'],
+                  practice_focus: ['Design scalable web architecture'],
+                  estimated_effort: 'HIGH'
+                }
+              ],
+              recommended_topics: ['Distributed Systems'],
+              practice_focus: ['Design scalable web architecture'],
+              learning_summary: 'Structured learning plan for Software Engineer.',
+              confidence_level: 'HIGH'
             }
           }));
           return;
@@ -154,9 +171,19 @@ async function runTests() {
       assert(skillsRes.data && skillsRes.data.status === 'fallback', 'Skill data contains status: fallback');
 
       // Learning Analysis request
-      const learningRes = await aiClient.analyzeLearning({ skills: ['JS'] }, ['Algorithms']);
+      const learningRes = await aiClient.analyzeLearning(
+        { targetCareer: 'Software Engineer', skills: ['JS'] },
+        ['Algorithms'],
+        ['System Design'],
+        ['Express'],
+        [{ skill: 'System Design', priority: 'HIGH', reason: 'Critical' }]
+      );
       assert(learningRes.success === true, 'analyzeLearning returns success: true');
       assert(learningRes.data && learningRes.data.status === 'fallback', 'Learning data contains status: fallback');
+      assert(learningRes.data.target_career === 'Software Engineer', 'Target career is preserved in learning response');
+      assert(Array.isArray(learningRes.data.learning_sequence), 'Learning sequence is returned as an array');
+      assert(learningRes.data.learning_sequence[0].skill === 'System Design', 'First learning sequence step matches gap skill');
+
 
       // Test Timeout handling
       console.log('\nTest 4: Timeout handling verification');

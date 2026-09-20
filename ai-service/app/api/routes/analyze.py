@@ -55,4 +55,11 @@ def analyze_learning(
     _: str = Depends(verify_service_key),
     ai_service: AIService = Depends(get_ai_service)
 ):
-    return ai_service.generate_learning_recommendations(payload.profile, payload.focusAreas)
+    return ai_service.generate_learning_recommendations(
+        payload.profile,
+        payload.focusAreas,
+        payload.missingSkills,
+        payload.developingSkills,
+        payload.priorityGaps
+    )
+

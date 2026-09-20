@@ -5,7 +5,8 @@ from app.schemas.analyze import (
     SkillAnalysisData,
     LearningRecommendationData,
     SkillPriorityGap,
-    LearningRecommendationItem
+    LearningPriority,
+    LearningStep
 )
 
 
@@ -62,6 +63,29 @@ DEFAULT_SKILL_SPEC = [
     "Domain Programming", "Data Structures & Algorithms", "Database Management",
     "Version Control (Git)", "API Integration", "Testing & Quality Assurance"
 ]
+
+# Structured learning pathways for common career roles
+CAREER_LEARNING_MAPS: Dict[str, List[Dict[str, Any]]] = {
+    "AI/ML Engineer": [
+        {"skill": "Python", "topics": ["Python Syntax & Functions", "Object-Oriented Python", "Virtual Environments"], "prerequisites": ["Programming Basics"], "practice": ["Build CLI data processing scripts"], "effort": "LOW"},
+        {"skill": "Statistics & Probability", "topics": ["Probability Distributions", "Hypothesis Testing", "Linear Algebra"], "prerequisites": ["Basic Mathematics"], "practice": ["Solve statistical inference problems"], "effort": "MEDIUM"},
+        {"skill": "Data Handling (Pandas/NumPy)", "topics": ["NumPy Arrays", "Pandas DataFrames", "Data Cleaning & Transformation"], "prerequisites": ["Python"], "practice": ["Clean and aggregate real-world CSV datasets"], "effort": "MEDIUM"},
+        {"skill": "Machine Learning", "topics": ["Supervised Learning", "Unsupervised Learning", "Model Evaluation & Metrics"], "prerequisites": ["Python", "Statistics", "Data Handling"], "practice": ["Train scikit-learn models on Kaggle datasets"], "effort": "HIGH"},
+        {"skill": "Deep Learning Frameworks", "topics": ["Neural Networks", "PyTorch / TensorFlow", "Model Deployment"], "prerequisites": ["Machine Learning"], "practice": ["Implement image classification neural net"], "effort": "HIGH"}
+    ],
+    "Frontend Developer": [
+        {"skill": "HTML5 & CSS3", "topics": ["Semantic Markup", "Flexbox & Grid Layouts", "Responsive Design"], "prerequisites": ["None"], "practice": ["Build responsive landing pages"], "effort": "LOW"},
+        {"skill": "JavaScript (ES6+)", "topics": ["ES6 Syntax", "DOM Manipulation", "Async/Promises", "Event Handling"], "prerequisites": ["HTML5 & CSS3"], "practice": ["Build interactive web utilities"], "effort": "MEDIUM"},
+        {"skill": "REST API Consumption", "topics": ["Fetch API", "Async/Await", "JSON Parsing", "Error Handling"], "prerequisites": ["JavaScript (ES6+)"], "practice": ["Fetch and render data from public REST APIs"], "effort": "MEDIUM"},
+        {"skill": "Frontend Framework (React)", "topics": ["React Components", "State & Props", "Hooks (useState, useEffect)", "Routing"], "prerequisites": ["JavaScript (ES6+)", "REST APIs"], "practice": ["Build a multi-page React single-page app"], "effort": "HIGH"}
+    ],
+    "Backend Developer": [
+        {"skill": "Server-Side Programming", "topics": ["Node.js / Python Basics", "Event Loop & Async I/O", "Module System"], "prerequisites": ["Programming Fundamentals"], "practice": ["Build basic HTTP server scripts"], "effort": "LOW"},
+        {"skill": "RESTful API Design", "topics": ["Route Handling", "HTTP Methods & Status Codes", "Middleware Pattern", "JSON Validation"], "prerequisites": ["Server-Side Programming"], "practice": ["Create REST API endpoints with Express / FastAPI"], "effort": "MEDIUM"},
+        {"skill": "Database Management (SQL/NoSQL)", "topics": ["Relational Schemas", "SQL Queries & Joins", "Indexes & Transactions", "ORM Integration"], "prerequisites": ["Server-Side Programming"], "practice": ["Design database tables and execute complex JOIN queries"], "effort": "MEDIUM"},
+        {"skill": "Authentication & Security", "topics": ["JWT Tokens", "Password Hashing (bcrypt)", "CORS & Header Security", "Input Sanitization"], "prerequisites": ["RESTful API Design", "Database Management"], "practice": ["Implement secure signup/login auth flow"], "effort": "HIGH"}
+    ]
+}
 
 
 class FallbackEngine:
@@ -206,40 +230,118 @@ class FallbackEngine:
             confidence_level=confidence
         )
 
-    @staticmethod
-    def generate_learning_recommendations(profile: CareerProfile, focus_areas: Optional[List[str]] = None) -> LearningRecommendationData:
+    @classmethod
+    def generate_learning_recommendations(
+        cls,
+        profile: CareerProfile,
+        focus_areas: Optional[List[str]] = None,
+        missing_skills: Optional[List[str]] = None,
+        developing_skills: Optional[List[str]] = None,
+        priority_gaps: Optional[List[SkillPriorityGap]] = None
+    ) -> LearningRecommendationData:
         target = profile.targetCareer or "Software Developer"
-        focuses = focus_areas if focus_areas else ["Core Foundations", "Advanced Concepts", "Portfolio Projects"]
+        current_skills = profile.skills if profile.skills else []
 
-        learning_order = [
-            "Stage 1: Core Technical Foundations",
-            "Stage 2: Architecture & System Design",
-            "Stage 3: Portfolio Implementation & Interview Prep"
-        ]
+        # If skill gaps are not explicitly provided, compute them via fallback skill insights
+        if missing_skills is None or developing_skills is None:
+            insights = cls.generate_skill_insights(profile)
+            if missing_skills is None:
+                missing_skills = insights.missing_skills
+            if developing_skills is None:
+                developing_skills = insights.developing_skills
+            if priority_gaps is None:
+                priority_gaps = insights.priority_gaps
 
-        recommendations = [
-            LearningRecommendationItem(
-                topic=focuses[0] if len(focuses) > 0 else "Algorithms & Data Structures",
-                stage="Stage 1",
-                estimated_hours="15-20 hours",
-                resources=["Documentation", "Interactive Practice"]
-            ),
-            LearningRecommendationItem(
-                topic=focuses[1] if len(focuses) > 1 else "API & Database Design",
-                stage="Stage 2",
-                estimated_hours="20-25 hours",
-                resources=["Project Guided Tutorials", "Reference Guides"]
-            )
-        ]
+        user_skills_norm = {cls._normalize_skill(s) for s in current_skills if s}
+
+        # Filter out mastered skills from missing_skills
+        filtered_missing = []
+        for ms in missing_skills:
+            if cls._normalize_skill(ms) not in user_skills_norm:
+                filtered_missing.append(ms)
+
+        # Build learning priorities
+        priorities: List[LearningPriority] = []
+        for i, ms in enumerate(filtered_missing[:5]):
+            p_val = "HIGH" if i < 2 else "MEDIUM"
+            priorities.append(LearningPriority(
+                skill=ms,
+                priority=p_val,
+                reason=f"Essential skill gap to address for entry-level {target} target role."
+            ))
+
+        for ds in developing_skills[:3]:
+            if cls._normalize_skill(ds) not in {cls._normalize_skill(p.skill) for p in priorities}:
+                priorities.append(LearningPriority(
+                    skill=ds,
+                    priority="MEDIUM",
+                    reason=f"Strengthen developing competency in {ds} for {target} readiness."
+                ))
+
+        # Build learning sequence steps
+        learning_sequence: List[LearningStep] = []
+        rec_map = CAREER_LEARNING_MAPS.get(target)
+
+        if rec_map:
+            for idx, item in enumerate(rec_map):
+                sk = item["skill"]
+                # Skip if mastered
+                if cls._normalize_skill(sk) in user_skills_norm:
+                    continue
+                learning_sequence.append(LearningStep(
+                    order=len(learning_sequence) + 1,
+                    skill=sk,
+                    topics=item["topics"],
+                    prerequisites=item["prerequisites"],
+                    practice_focus=item["practice"],
+                    estimated_effort=item["effort"]
+                ))
+        else:
+            # Dynamic sequence from filtered_missing + developing_skills
+            target_list = filtered_missing + [d for d in developing_skills if cls._normalize_skill(d) not in user_skills_norm]
+            if not target_list:
+                target_list = CAREER_SKILL_SPECS.get(target, DEFAULT_SKILL_SPEC)[:4]
+
+            for idx, sk in enumerate(target_list[:5]):
+                learning_sequence.append(LearningStep(
+                    order=idx + 1,
+                    skill=sk,
+                    topics=[f"{sk} Core Concepts", f"{sk} Practical Patterns", f"{sk} Testing"],
+                    prerequisites=["Programming Foundations"] if idx > 0 else ["None"],
+                    practice_focus=[f"Implement mini-project utilizing {sk}"],
+                    estimated_effort="MEDIUM" if idx < 3 else "HIGH"
+                ))
+
+        recommended_topics: List[str] = []
+        practice_focus: List[str] = []
+
+        for step in learning_sequence:
+            recommended_topics.extend(step.topics)
+            practice_focus.extend(step.practice_focus)
+
+        if focus_areas:
+            recommended_topics.extend(focus_areas)
+
+        if len(current_skills) >= 2 and profile.targetCareer:
+            confidence = "HIGH"
+        elif profile.targetCareer:
+            confidence = "MODERATE"
+        else:
+            confidence = "LOW"
+
+        summary_text = (
+            f"Structured {len(learning_sequence)}-step learning recommendation pathway "
+            f"tailored for {target} preparation, addressing {len(filtered_missing)} missing skills."
+        )
 
         return LearningRecommendationData(
             status="fallback",
-            learning_order=learning_order,
-            recommendations=recommendations,
-            estimated_focus="6-8 hours / week",
-            next_steps=[
-                "Complete foundational exercises in missing skill domains.",
-                "Implement a portfolio project demonstrating REST API & database design."
-            ],
-            summary=f"Structured 3-stage learning pathway tailored for {target} preparation."
+            target_career=target,
+            learning_priorities=priorities,
+            learning_sequence=learning_sequence,
+            recommended_topics=list(dict.fromkeys(recommended_topics)),
+            practice_focus=list(dict.fromkeys(practice_focus)),
+            learning_summary=summary_text,
+            confidence_level=confidence
         )
+

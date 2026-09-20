@@ -34,8 +34,40 @@ class SkillAnalysisRequest(BaseModel):
     targetSkills: Optional[List[str]] = Field(default_factory=list, description="Optional target skills for gap analysis")
 
 
+class SkillPriorityGap(BaseModel):
+    skill: str
+    priority: str  # HIGH, MEDIUM, LOW
+    reason: str
+
+
+# Legacy alias for backward compatibility
+SkillPriorityItem = SkillPriorityGap
+
+
+class LearningPriority(BaseModel):
+    skill: str
+    priority: str  # HIGH, MEDIUM, LOW
+    reason: str
+
+
+class LearningStep(BaseModel):
+    order: int
+    skill: str
+    topics: List[str] = Field(default_factory=list)
+    prerequisites: List[str] = Field(default_factory=list)
+    practice_focus: List[str] = Field(default_factory=list)
+    estimated_effort: str  # LOW, MEDIUM, HIGH
+
+
+# Legacy alias for backward compatibility
+LearningRecommendationItem = LearningStep
+
+
 class LearningRecommendationRequest(BaseModel):
     profile: CareerProfile
+    missingSkills: Optional[List[str]] = Field(default_factory=list, description="Missing skills from gap analysis")
+    developingSkills: Optional[List[str]] = Field(default_factory=list, description="Developing skills from gap analysis")
+    priorityGaps: Optional[List[SkillPriorityGap]] = Field(default_factory=list, description="Priority gaps from skill analysis")
     focusAreas: Optional[List[str]] = Field(default_factory=list, description="Optional focus areas for learning path")
 
 
@@ -53,16 +85,6 @@ class CareerAnalysisData(BaseModel):
     confidence_level: str = Field(description="LOW, MODERATE, or HIGH")
 
 
-class SkillPriorityGap(BaseModel):
-    skill: str
-    priority: str  # HIGH, MEDIUM, LOW
-    reason: str
-
-
-# Legacy alias for backward compatibility
-SkillPriorityItem = SkillPriorityGap
-
-
 class SkillAnalysisData(BaseModel):
     status: str = Field(description="ai_generated or fallback")
     target_career: str = Field(description="Target career role analyzed")
@@ -75,20 +97,15 @@ class SkillAnalysisData(BaseModel):
     confidence_level: str = Field(description="LOW, MODERATE, or HIGH")
 
 
-class LearningRecommendationItem(BaseModel):
-    topic: str
-    stage: str
-    estimated_hours: str
-    resources: List[str] = Field(default_factory=list)
-
-
 class LearningRecommendationData(BaseModel):
     status: str = Field(description="ai_generated or fallback")
-    learning_order: List[str] = Field(default_factory=list, description="Recommended learning stage sequence")
-    recommendations: List[LearningRecommendationItem] = Field(default_factory=list, description="Actionable learning modules")
-    estimated_focus: str = Field(description="Estimated weekly study effort")
-    next_steps: List[str] = Field(default_factory=list, description="Immediate next steps")
-    summary: str = Field(description="Overall learning roadmap summary")
+    target_career: str = Field(description="Target career role analyzed")
+    learning_priorities: List[LearningPriority] = Field(default_factory=list, description="Prioritized skill learning objectives")
+    learning_sequence: List[LearningStep] = Field(default_factory=list, description="Ordered step-by-step learning progression")
+    recommended_topics: List[str] = Field(default_factory=list, description="Structured key learning topics")
+    practice_focus: List[str] = Field(default_factory=list, description="Hands-on practice & project focus areas")
+    learning_summary: str = Field(description="Summary narrative of learning roadmap")
+    confidence_level: str = Field(description="LOW, MODERATE, or HIGH")
 
 
 class AnalysisResponse(BaseModel):

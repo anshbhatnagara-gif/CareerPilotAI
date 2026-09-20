@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from app.schemas.analyze import CareerProfile, AnalysisResponse
+from app.schemas.analyze import CareerProfile, AnalysisResponse, SkillPriorityGap
 from app.providers.gemini import GeminiProvider
 from app.services.fallback_engine import FallbackEngine
 from app.core.logging import logger
@@ -79,13 +79,22 @@ class AIService:
             data=fallback_data.model_dump()
         )
 
-    def generate_learning_recommendations(self, profile: CareerProfile, focus_areas: Optional[List[str]] = None) -> AnalysisResponse:
-        logger.info(f"Processing learning recommendations request for focus areas: {focus_areas}")
+    def generate_learning_recommendations(
+        self,
+        profile: CareerProfile,
+        focus_areas: Optional[List[str]] = None,
+        missing_skills: Optional[List[str]] = None,
+        developing_skills: Optional[List[str]] = None,
+        priority_gaps: Optional[List[SkillPriorityGap]] = None
+    ) -> AnalysisResponse:
+        logger.info(f"Processing learning recommendations request for target career: '{profile.targetCareer}'")
         
         ai_data = None
         if hasattr(self.provider, "is_configured") and self.provider.is_configured():
             try:
-                ai_data = self.provider.generate_learning_recommendations(profile, focus_areas)
+                ai_data = self.provider.generate_learning_recommendations(
+                    profile, focus_areas, missing_skills, developing_skills, priority_gaps
+                )
             except Exception as e:
                 logger.warning(f"Provider generate_learning_recommendations exception: {type(e).__name__}")
                 ai_data = None
@@ -100,7 +109,9 @@ class AIService:
                 data=data_dict
             )
 
-        fallback_data = FallbackEngine.generate_learning_recommendations(profile, focus_areas)
+        fallback_data = FallbackEngine.generate_learning_recommendations(
+            profile, focus_areas, missing_skills, developing_skills, priority_gaps
+        )
         return AnalysisResponse(
             success=True,
             service="careerpilot-ai-service",
@@ -115,3 +126,4 @@ _ai_service_instance = AIService()
 
 def get_ai_service() -> AIService:
     return _ai_service_instance
+
