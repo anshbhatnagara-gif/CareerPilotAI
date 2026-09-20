@@ -6,7 +6,8 @@ from app.schemas.analyze import (
     CareerProfile,
     CareerAnalysisData,
     SkillAnalysisData,
-    LearningRecommendationData
+    LearningRecommendationData,
+    SkillPriorityGap
 )
 from app.config import get_settings
 from app.core.logging import logger
@@ -104,11 +105,6 @@ class GeminiProvider(BaseAIProvider):
             return None
 
     def analyze_career_profile(self, profile: CareerProfile) -> Optional[CareerAnalysisData]:
-        """
-        Phase 8.9.2 Career Intelligence Generator.
-        Analyzes candidate profile (education, personal, skills, interests, goal, experienceLevel, targetCareer).
-        Preserves user target career, avoids unsupported claims, and sets confidence level (HIGH, MODERATE, LOW).
-        """
         target = self._sanitize_text(profile.targetCareer) or "Software Developer"
         exp = self._sanitize_text(profile.experienceLevel) or "Entry Level"
         goal = self._sanitize_text(profile.goal)
@@ -162,13 +158,11 @@ Interests: {', '.join(interests) if interests else 'None provided'}
             return None
 
         try:
-            # Enforce valid confidence level
             conf = str(json_data.get("confidence_level", "MODERATE")).upper()
             if conf not in ["HIGH", "MODERATE", "LOW"]:
                 conf = "MODERATE"
             json_data["confidence_level"] = conf
 
-            # Normalize career_advice to list of strings
             advice = json_data.get("career_advice", [])
             if isinstance(advice, str):
                 json_data["career_advice"] = [advice]
@@ -180,34 +174,60 @@ Interests: {', '.join(interests) if interests else 'None provided'}
             return None
 
     def generate_skill_insights(self, profile: CareerProfile, target_skills: Optional[List[str]] = None) -> Optional[SkillAnalysisData]:
-        target = self._sanitize_text(profile.targetCareer)
-        skills = [self._sanitize_text(s) for s in profile.skills[:15]]
+        """
+        Phase 8.9.3 Skill Gap Intelligence Generator.
+        Analyzes candidate skills against target career expectations and outputs structured skill classifications.
+        Preserves user target career, avoids learning roadmap generation or course recommendations,
+        and sets confidence level (HIGH, MODERATE, LOW).
+        """
+        target = self._sanitize_text(profile.targetCareer) or "Software Developer"
+        exp = self._sanitize_text(profile.experienceLevel) or "Entry Level"
+        skills = [self._sanitize_text(s) for s in profile.skills[:20]]
         targets = [self._sanitize_text(s) for s in (target_skills or [])[:10]]
 
-        prompt = f"""You are an expert technical skill evaluator AI.
-Analyze the skill profile and output ONLY valid JSON matching this schema:
+        prompt = f"""SYSTEM INSTRUCTIONS:
+You are CareerPilot AI's Skill Gap Intelligence Engine.
+Your task is to analyze the candidate's verified skills against requirements for the target career and output ONLY valid JSON matching this schema:
 {{
-  "target_career": "string",
-  "current_skills": ["string"],
-  "required_skills": ["string"],
-  "missing_skills": ["string"],
-  "skill_priorities": [
-    {{"skill": "string", "priority": "HIGH | MEDIUM | LOW", "reason": "string"}}
+  "target_career": "{target}",
+  "required_skills": ["string (Core skills commonly expected for this career role)"],
+  "matched_skills": ["string (Skills candidate has that align with this career role)"],
+  "developing_skills": ["string (Skills where candidate has basic/partial exposure or related background)"],
+  "missing_skills": ["string (Important skills commonly expected for this role that candidate currently lacks)"],
+  "priority_gaps": [
+    {{"skill": "string", "priority": "HIGH | MEDIUM | LOW", "reason": "string (Why this gap is important for the role)"}}
   ],
-  "summary": "string"
+  "skill_gap_summary": "string (Concise overview of candidate skill readiness for this career path)",
+  "confidence_level": "HIGH | MODERATE | LOW (Reflects adequacy of candidate skill data for comparison)"
 }}
 
-Candidate Data:
+CRITICAL SAFETY RULES:
+1. Preserve the candidate's selected Target Career EXACTLY: '{target}'. DO NOT replace it with another career.
+2. DO NOT fabricate user skills, certifications, internships, projects, or work history.
+3. DO NOT generate learning roadmaps, course recommendations, study schedules, or weekly study plans in this phase.
+4. DO NOT promise job placement, salary outcomes, or hiring guarantees.
+5. Use cautious language (e.g. 'commonly expected', 'generally useful for entry-level roles').
+6. If candidate skills list is minimal or empty, set confidence_level to "LOW" or "MODERATE".
+
+CANDIDATE DATA:
 Target Career: {target}
-Current Skills: {', '.join(skills)}
-Target Skills: {', '.join(targets)}
+Experience Level: {exp}
+Candidate Current Skills: {', '.join(skills) if skills else 'None provided'}
+Target Focus Skills: {', '.join(targets) if targets else 'None specified'}
 """
+
         raw_output = self._call_gemini_api(prompt)
         json_data = self._parse_json(raw_output)
         if not json_data:
             return None
 
         try:
+            json_data["target_career"] = target  # Enforce target career preservation
+            conf = str(json_data.get("confidence_level", "MODERATE")).upper()
+            if conf not in ["HIGH", "MODERATE", "LOW"]:
+                conf = "MODERATE"
+            json_data["confidence_level"] = conf
+
             json_data["status"] = "ai_generated"
             return SkillAnalysisData(**json_data)
         except Exception as err:

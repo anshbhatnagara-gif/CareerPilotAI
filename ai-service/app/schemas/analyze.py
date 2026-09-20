@@ -53,20 +53,26 @@ class CareerAnalysisData(BaseModel):
     confidence_level: str = Field(description="LOW, MODERATE, or HIGH")
 
 
-class SkillPriorityItem(BaseModel):
+class SkillPriorityGap(BaseModel):
     skill: str
     priority: str  # HIGH, MEDIUM, LOW
     reason: str
 
 
+# Legacy alias for backward compatibility
+SkillPriorityItem = SkillPriorityGap
+
+
 class SkillAnalysisData(BaseModel):
     status: str = Field(description="ai_generated or fallback")
     target_career: str = Field(description="Target career role analyzed")
-    current_skills: List[str] = Field(default_factory=list, description="Current skills verified")
     required_skills: List[str] = Field(default_factory=list, description="Core required skills for target career")
-    missing_skills: List[str] = Field(default_factory=list, description="Skills gap identified")
-    skill_priorities: List[SkillPriorityItem] = Field(default_factory=list, description="Prioritized skills list")
-    summary: str = Field(description="Overall skill gap assessment summary")
+    matched_skills: List[str] = Field(default_factory=list, description="Candidate skills aligned with target career")
+    developing_skills: List[str] = Field(default_factory=list, description="Skills where candidate has partial/basic exposure")
+    missing_skills: List[str] = Field(default_factory=list, description="Relevant skills not present in user profile")
+    priority_gaps: List[SkillPriorityGap] = Field(default_factory=list, description="Top priority skill gaps to address")
+    skill_gap_summary: str = Field(description="Overall skill gap assessment summary")
+    confidence_level: str = Field(description="LOW, MODERATE, or HIGH")
 
 
 class LearningRecommendationItem(BaseModel):

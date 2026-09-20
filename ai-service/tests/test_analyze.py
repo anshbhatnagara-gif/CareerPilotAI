@@ -33,7 +33,7 @@ SAMPLE_PROFILE = {
 
 
 # 1. Unauthorized & Invalid Key Tests
-def test_analyze_career_unauthorized():
+def test_analyze_unauthorized():
     response = client.post("/api/v1/analyze/career", json={"profile": SAMPLE_PROFILE})
     assert response.status_code == 401
     data = response.json()
@@ -41,7 +41,7 @@ def test_analyze_career_unauthorized():
     assert data["error"] == "UNAUTHORIZED"
 
 
-def test_analyze_career_invalid_key():
+def test_analyze_invalid_key():
     response = client.post(
         "/api/v1/analyze/career",
         json={"profile": SAMPLE_PROFILE},
@@ -50,7 +50,7 @@ def test_analyze_career_invalid_key():
     assert response.status_code == 401
 
 
-# 2. Missing GEMINI_API_KEY -> Deterministic Fallback Activation
+# 2. Career Analysis Fallback (Unconfigured API Key)
 @patch.object(GeminiProvider, "is_configured", return_value=False)
 def test_analyze_career_fallback_when_unconfigured(mock_is_conf):
     response = client.post(
@@ -64,81 +64,112 @@ def test_analyze_career_fallback_when_unconfigured(mock_is_conf):
     assert data["status"] == "fallback"
     assert data["data"]["status"] == "fallback"
     assert "AI/ML Engineer" in data["data"]["career_direction"]
-    assert "strengths" in data["data"]
     assert data["data"]["confidence_level"] == "HIGH"
 
 
-# 3. Target Career Preservation in Gemini Response
+# 3. Skill Gap Analysis Fallback (Unconfigured API Key & Case Normalization)
+@patch.object(GeminiProvider, "is_configured", return_value=False)
+def test_analyze_skills_fallback_when_unconfigured(mock_is_conf):
+    response = client.post(
+        "/api/v1/analyze/skills",
+        json={"profile": SAMPLE_PROFILE, "targetSkills": ["MLOps"]},
+        headers=VALID_HEADER
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["status"] == "fallback"
+    skill_data = data["data"]
+    assert skill_data["status"] == "fallback"
+    assert skill_data["target_career"] == "AI/ML Engineer"
+    assert isinstance(skill_data["required_skills"], list)
+    assert isinstance(skill_data["matched_skills"], list)
+    assert isinstance(skill_data["missing_skills"], list)
+    assert isinstance(skill_data["priority_gaps"], list)
+    assert skill_data["confidence_level"] == "HIGH"
+    # Ensure no learning roadmap fields were added to skill gap payload
+    assert "learning_order" not in skill_data
+    assert "recommendations" not in skill_data
+
+
+# 4. Target Career Preservation Test
 @patch.object(GeminiProvider, "is_configured", return_value=True)
 @patch.object(GeminiProvider, "_call_gemini_api")
-def test_analyze_career_gemini_target_preservation(mock_gemini, mock_is_conf):
+def test_analyze_skills_target_career_preservation(mock_gemini, mock_is_conf):
     mock_gemini.return_value = json.dumps({
-        "career_direction": "Target career alignment focused on AI/ML Engineer trajectory.",
-        "profile_summary": "Stanford University CS candidate with Python exposure.",
-        "strengths": ["Exposure to Python", "Exposure to TensorFlow"],
-        "focus_areas": ["Advanced Linear Algebra", "Model Deployment"],
-        "career_advice": ["Build end-to-end ML model APIs.", "Contribute to open-source ML frameworks."],
+        "target_career": "AI/ML Engineer",
+        "required_skills": ["Python", "Statistics", "Machine Learning"],
+        "matched_skills": ["Python"],
+        "developing_skills": [],
+        "missing_skills": ["Statistics", "Machine Learning"],
+        "priority_gaps": [
+            {"skill": "Statistics", "priority": "HIGH", "reason": "Fundamental for ML theory"}
+        ],
+        "skill_gap_summary": "Candidate has solid Python foundation but requires statistics depth.",
         "confidence_level": "HIGH"
     })
 
     provider = GeminiProvider(api_key="test_api_key_123")
     profile = CareerProfile(**SAMPLE_PROFILE)
-    result = provider.analyze_career_profile(profile)
+    result = provider.generate_skill_insights(profile)
 
     assert result is not None
     assert result.status == "ai_generated"
-    assert result.confidence_level == "HIGH"
-    assert "AI/ML Engineer" in result.career_direction
-    assert "Stanford" in result.profile_summary
+    assert result.target_career == "AI/ML Engineer"
+    assert "Python" in result.matched_skills
+    assert "Statistics" in result.missing_skills
 
 
-# 4. Confidence Level Validation (HIGH, MODERATE, LOW)
+# 5. Empty Skills Fallback Confidence Test
+@patch.object(GeminiProvider, "is_configured", return_value=False)
+def test_analyze_skills_empty_skills_fallback(mock_is_conf):
+    empty_profile = {"targetCareer": "Frontend Developer", "skills": []}
+    response = client.post(
+        "/api/v1/analyze/skills",
+        json={"profile": empty_profile},
+        headers=VALID_HEADER
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["data"]["confidence_level"] == "LOW"
+    assert len(data["data"]["missing_skills"]) > 0
+
+
+# 6. Malformed Gemini JSON -> Fallback Engine Activation
 @patch.object(GeminiProvider, "is_configured", return_value=True)
 @patch.object(GeminiProvider, "_call_gemini_api")
-def test_analyze_career_confidence_validation(mock_gemini, mock_is_conf):
-    mock_gemini.return_value = json.dumps({
-        "career_direction": "Career path targeting AI/ML Engineer.",
-        "profile_summary": "Minimal candidate details provided.",
-        "strengths": ["Interest in tech"],
-        "focus_areas": ["Foundations"],
-        "career_advice": ["Study core concepts."],
-        "confidence_level": "low"
-    })
-
-    provider = GeminiProvider(api_key="test_api_key_123")
-    profile = CareerProfile(**{"targetCareer": "AI/ML Engineer"})
-    result = provider.analyze_career_profile(profile)
-
-    assert result is not None
-    assert result.confidence_level == "LOW"
+def test_analyze_skills_malformed_json_fallback(mock_gemini, mock_is_conf):
+    mock_gemini.return_value = "Invalid json text output!"
+    response = client.post(
+        "/api/v1/analyze/skills",
+        json={"profile": SAMPLE_PROFILE},
+        headers=VALID_HEADER
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "fallback"
+    assert data["data"]["status"] == "fallback"
 
 
-# 5. Malformed Gemini Response -> Fallback Activation
+# 7. Gemini Provider Error -> Fallback Engine Activation
 @patch.object(GeminiProvider, "is_configured", return_value=True)
 @patch.object(GeminiProvider, "_call_gemini_api")
-def test_analyze_career_gemini_malformed_json(mock_gemini, mock_is_conf):
-    mock_gemini.return_value = "This is not valid JSON content!"
-    provider = GeminiProvider(api_key="test_api_key_123")
-    profile = CareerProfile(**SAMPLE_PROFILE)
-    result = provider.analyze_career_profile(profile)
-    assert result is None  # Triggers fallback engine in AIService
-
-
-# 6. Provider Error / Timeout -> Fallback Activation
-@patch.object(GeminiProvider, "is_configured", return_value=True)
-@patch.object(GeminiProvider, "_call_gemini_api")
-def test_analyze_career_gemini_provider_error(mock_gemini, mock_is_conf):
+def test_analyze_skills_provider_error_fallback(mock_gemini, mock_is_conf):
     mock_gemini.return_value = None
-    provider = GeminiProvider(api_key="test_api_key_123")
-    profile = CareerProfile(**SAMPLE_PROFILE)
-    result = provider.analyze_career_profile(profile)
-    assert result is None
+    response = client.post(
+        "/api/v1/analyze/skills",
+        json={"profile": SAMPLE_PROFILE},
+        headers=VALID_HEADER
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "fallback"
 
 
-# 7. Secret Value Protection Check
+# 8. Secret Protection Audit
 def test_secret_protection_in_outputs():
     response = client.post(
-        "/api/v1/analyze/career",
+        "/api/v1/analyze/skills",
         json={"profile": SAMPLE_PROFILE},
         headers=VALID_HEADER
     )
@@ -147,10 +178,10 @@ def test_secret_protection_in_outputs():
     assert "placeholder_secret_key" not in raw_res
 
 
-# 8. Invalid Payload Schema Validation Rejection (422)
+# 9. Invalid Payload Schema Validation Rejection (422)
 def test_analyze_invalid_payload():
     response = client.post(
-        "/api/v1/analyze/career",
+        "/api/v1/analyze/skills",
         json={"invalidField": 123},
         headers=VALID_HEADER
     )

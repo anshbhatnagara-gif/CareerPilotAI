@@ -1,12 +1,67 @@
-from typing import Optional, List
+from typing import Optional, List, Dict, Set
 from app.schemas.analyze import (
     CareerProfile,
     CareerAnalysisData,
     SkillAnalysisData,
     LearningRecommendationData,
-    SkillPriorityItem,
+    SkillPriorityGap,
     LearningRecommendationItem
 )
+
+
+# Deterministic career skill specifications map for common technical careers
+CAREER_SKILL_SPECS: Dict[str, List[str]] = {
+    "AI/ML Engineer": [
+        "Python", "Statistics & Probability", "Machine Learning", "Data Handling (Pandas/NumPy)",
+        "SQL", "Model Evaluation & Metrics", "Deep Learning Frameworks", "ML Pipeline Design"
+    ],
+    "Frontend Developer": [
+        "HTML5 & CSS3", "JavaScript (ES6+)", "DOM Manipulation", "Responsive Web Design",
+        "Frontend Framework (React)", "TypeScript", "REST API Consumption", "Web Performance Optimization"
+    ],
+    "Backend Developer": [
+        "Server-Side Programming", "RESTful API Design", "Database Management (SQL/NoSQL)",
+        "Authentication & Security", "HTTP Protocols & Caching", "System Architecture", "Git & Version Control"
+    ],
+    "Software Engineer": [
+        "Programming Fundamentals", "Data Structures & Algorithms", "Object-Oriented Design",
+        "Git & Version Control", "Database Fundamentals", "Testing & Debugging", "Software Architecture"
+    ],
+    "Data Scientist": [
+        "Python / R", "Statistics & Linear Algebra", "Data Analysis (Pandas)", "Data Visualization",
+        "SQL & Querying", "Machine Learning Algorithms", "Exploratory Data Analysis"
+    ],
+    "DevOps Engineer": [
+        "Linux Administration", "CI/CD Pipelines", "Containerization (Docker)", "Cloud Infrastructure (GCP/AWS)",
+        "Kubernetes & Orchestration", "Shell Scripting", "Infrastructure as Code"
+    ],
+    "Full Stack Developer": [
+        "HTML/CSS & JavaScript", "Frontend Framework (React)", "Node.js & Express", "Database Design (SQL)",
+        "REST API Development", "Git & Version Control", "Authentication & Web Security"
+    ],
+    "Mobile App Developer": [
+        "Mobile UI Design", "App Lifecycle Management", "Cross-Platform Framework (React Native/Flutter)",
+        "REST API Integration", "Local Data Persistence", "State Management"
+    ],
+    "Data Engineer": [
+        "Advanced SQL", "Data Warehousing (BigQuery/Snowflake)", "ETL/ELT Pipeline Design",
+        "Python / Scala", "Data Modeling", "Cloud Storage & Data Lakes"
+    ],
+    "Cybersecurity Specialist": [
+        "Network Security & Protocols", "Vulnerability Assessment", "Linux Administration",
+        "Encryption & Cryptography", "Identity & Access Management (IAM)", "Security Auditing"
+    ],
+    "Cloud Engineer": [
+        "Cloud Architecture (GCP/AWS)", "Networking & VPC", "Identity & Access Management (IAM)",
+        "Serverless Computing", "Cloud Storage & Security", "Monitoring & Logging"
+    ]
+}
+
+# Generic fallback skill spec for unlisted target careers
+DEFAULT_SKILL_SPEC = [
+    "Domain Programming", "Data Structures & Algorithms", "Database Management",
+    "Version Control (Git)", "API Integration", "Testing & Quality Assurance"
+]
 
 
 class FallbackEngine:
@@ -18,13 +73,17 @@ class FallbackEngine:
     """
 
     @staticmethod
+    def _normalize_skill(skill: str) -> str:
+        """Case-insensitive skill name normalization."""
+        return skill.strip().lower() if skill else ""
+
+    @staticmethod
     def analyze_career_profile(profile: CareerProfile) -> CareerAnalysisData:
         target = profile.targetCareer or "Software Developer"
         exp = profile.experienceLevel or "Entry Level"
         skills = profile.skills if profile.skills else []
         interests = profile.interests if profile.interests else []
 
-        # Education summary
         edu_desc = ""
         if profile.education and (profile.education.degree or profile.education.branch):
             deg = profile.education.degree or "Degree"
@@ -33,7 +92,6 @@ class FallbackEngine:
 
         loc_desc = f" based in {profile.personal.location}" if profile.personal and profile.personal.location else ""
 
-        # Determine strengths based strictly on profile skills
         strengths = []
         if skills:
             strengths = [f"Exposure to {s}" for s in skills[:4]]
@@ -55,7 +113,6 @@ class FallbackEngine:
             "Practice technical communication and domain-specific problem solving."
         ]
 
-        # Calculate confidence level based on profile completeness
         has_skills = len(skills) > 0
         has_edu = bool(profile.education and (profile.education.degree or profile.education.branch))
         has_target = bool(profile.targetCareer)
@@ -77,35 +134,76 @@ class FallbackEngine:
             confidence_level=confidence
         )
 
-    @staticmethod
-    def generate_skill_insights(profile: CareerProfile, target_skills: Optional[List[str]] = None) -> SkillAnalysisData:
+    @classmethod
+    def generate_skill_insights(cls, profile: CareerProfile, target_skills: Optional[List[str]] = None) -> SkillAnalysisData:
         target = profile.targetCareer or "Software Developer"
-        current = profile.skills if profile.skills else ["Programming Basics"]
+        current_skills = profile.skills if profile.skills else []
 
-        standard_required = ["Data Structures & Algorithms", "Git", "REST APIs", "Database Management"]
+        # Find matching skill spec or fallback to default
+        expected_skills = CAREER_SKILL_SPECS.get(target, DEFAULT_SKILL_SPEC)
         if target_skills:
-            required = list(dict.fromkeys(standard_required + target_skills))
-        else:
-            required = standard_required
+            expected_skills = list(dict.fromkeys(expected_skills + target_skills))
 
-        missing = [s for s in required if s not in current]
+        # Case-insensitive normalization maps
+        user_norm_map: Set[str] = {cls._normalize_skill(s) for s in current_skills if s}
 
-        priorities = []
-        for s in missing:
-            priorities.append(SkillPriorityItem(
-                skill=s,
-                priority="HIGH" if "Data Structures" in s or "Git" in s else "MEDIUM",
-                reason=f"Essential core competency for {target} role."
+        matched_skills: List[str] = []
+        developing_skills: List[str] = []
+        missing_skills: List[str] = []
+
+        for req in expected_skills:
+            req_norm = cls._normalize_skill(req)
+            # Direct or substring match check
+            matched = False
+            for u_skill in current_skills:
+                u_norm = cls._normalize_skill(u_skill)
+                if req_norm == u_norm or (len(u_norm) > 2 and u_norm in req_norm):
+                    matched = True
+                    break
+            
+            if matched:
+                matched_skills.append(req)
+            else:
+                missing_skills.append(req)
+
+        # Include user skills not explicitly in expected list as developing/current
+        for u_skill in current_skills:
+            if u_skill not in matched_skills:
+                developing_skills.append(u_skill)
+
+        # Build priority gaps list
+        priority_gaps: List[SkillPriorityGap] = []
+        for i, m_skill in enumerate(missing_skills[:5]):
+            p_level = "HIGH" if i < 2 else "MEDIUM"
+            priority_gaps.append(SkillPriorityGap(
+                skill=m_skill,
+                priority=p_level,
+                reason=f"Commonly expected technical competency for entry-level {target} roles."
             ))
+
+        # Confidence assessment
+        if len(current_skills) >= 3 and profile.targetCareer:
+            confidence = "HIGH"
+        elif len(current_skills) >= 1 and profile.targetCareer:
+            confidence = "MODERATE"
+        else:
+            confidence = "LOW"
+
+        summary_msg = (
+            f"Candidate matches {len(matched_skills)} of {len(expected_skills)} core skills for {target}. "
+            f"Identified {len(missing_skills)} primary skill gap areas."
+        )
 
         return SkillAnalysisData(
             status="fallback",
             target_career=target,
-            current_skills=current,
-            required_skills=required,
-            missing_skills=missing,
-            skill_priorities=priorities,
-            summary=f"Identified {len(missing)} priority skill gap areas for {target} readiness."
+            required_skills=expected_skills,
+            matched_skills=matched_skills,
+            developing_skills=developing_skills,
+            missing_skills=missing_skills,
+            priority_gaps=priority_gaps,
+            skill_gap_summary=summary_msg,
+            confidence_level=confidence
         )
 
     @staticmethod
