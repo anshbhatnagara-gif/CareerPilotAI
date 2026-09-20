@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CareerPilot AI - Career Readiness & Skill Gap Analysis">
-  <title>Career Readiness — CareerPilot AI</title>
+  <meta name="description" content="CareerPilot AI - Career Readiness & AI Dashboard">
+  <title>Career Readiness & AI Dashboard — CareerPilot AI</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -30,28 +30,44 @@
 
   <!-- Main Layout Container -->
   <main class="main-wrapper">
-    <div class="onboarding-container" style="max-width: 900px;">
+    <div class="onboarding-container" style="max-width: 980px;">
       
+      <!-- Top Application Navigation Bar -->
+      <div class="tool-tabs-bar" style="margin-bottom: 1.5rem;">
+        <a href="readiness.html" class="tool-tab-btn active" style="text-decoration: none;">
+          📊 READINESS & AI DASHBOARD
+        </a>
+        <a href="roadmap.html" class="tool-tab-btn" style="text-decoration: none;">
+          🗺️ LEARNING ROADMAP
+        </a>
+        <a href="projects.html" class="tool-tab-btn" style="text-decoration: none;">
+          📁 PROJECTS TRACKER
+        </a>
+        <a href="interview.html" class="tool-tab-btn" style="text-decoration: none;">
+          🎤 INTERVIEW & CAREER TOOLS
+        </a>
+      </div>
+
       <!-- Hero Header -->
       <div class="assessment-hero-header">
         <div class="status-badge-wrapper">
-          <span class="status-indicator-dot"></span>
-          <span class="status-badge-text">READINESS ANALYZED</span>
+          <span id="ai-status-indicator-dot" class="status-indicator-dot"></span>
+          <span id="ai-status-badge-text" class="status-badge-text">AI INTELLIGENCE ONLINE</span>
         </div>
         
         <h1 class="hero-title" style="font-size: 2.75rem; margin-top: 0.5rem;">
-          CAREER <span class="highlight-red">READINESS</span>
+          CAREER READINESS & <span class="highlight-red">AI DASHBOARD</span>
         </h1>
         
-        <p class="hero-subtitle" style="max-width: 650px; margin-top: 0.25rem;">
-          "Measure how closely your current profile matches the skills required for your target career."
+        <p class="hero-subtitle" style="max-width: 720px; margin-top: 0.25rem;">
+          "Measure your career readiness score, analyze AI-driven skill gaps, and explore your personalized AI learning path."
         </p>
       </div>
 
-      <!-- Calculation Loading Card (Simulated Transition) -->
+      <!-- Calculation Loading Card -->
       <div id="calculating-card" class="onboarding-card" style="display: none; text-align: center; padding: 3rem 2rem;">
         <h2 style="font-size: 1.35rem; color: var(--accent-red-bright); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem;">
-          CALCULATING CAREER READINESS...
+          ANALYZING CAREER PROFILE & AI INTELLIGENCE...
         </h2>
         
         <div class="analyzing-checklist">
@@ -69,16 +85,16 @@
           </div>
           <div id="calc-step-4" class="check-step">
             <span class="check-mark">○</span>
-            <span>Skill gaps calculated</span>
+            <span>AI Career Analysis generated</span>
           </div>
           <div id="calc-step-5" class="check-step">
             <span class="check-mark">○</span>
-            <span>Readiness analyzed</span>
+            <span>Skill Gap & AI Learning Plan generated</span>
           </div>
         </div>
       </div>
 
-      <!-- Readiness Results Section -->
+      <!-- Readiness & AI Results Section -->
       <div id="readiness-results-wrapper" style="display: block;">
         
         <!-- Locked Phase 5 Notice Alert -->
@@ -101,29 +117,52 @@
           </div>
         </div>
 
-        <!-- 2. READINESS SUMMARY -->
-        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
-          <div class="review-section-header">READINESS SUMMARY</div>
-          <p id="res-readiness-summary" class="assessment-paragraph-text"></p>
+        <!-- =========================================================================
+             SECTION A: AI CAREER ANALYSIS
+             ========================================================================= -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--accent-red-bright);">
+          <div class="review-section-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <span style="color: var(--accent-red-bright);">★ AI CAREER ANALYSIS</span>
+            <span id="ai-confidence-badge" class="alignment-badge alignment-badge-high">HIGH CONFIDENCE</span>
+          </div>
+
+          <div style="margin-top: 0.75rem;">
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">AI CAREER SUMMARY</div>
+            <p id="ai-career-summary" class="assessment-paragraph-text" style="font-size: 0.95rem; margin: 0 0 1rem 0;">Analyzing profile context...</p>
+          </div>
+
+          <div class="form-grid-2" style="gap: 1.25rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">VERIFIED STRENGTHS</div>
+              <div id="ai-strengths-list" class="tags-container"></div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">TARGET FOCUS AREAS</div>
+              <div id="ai-focus-areas-list" class="tags-container"></div>
+            </div>
+          </div>
         </div>
 
-        <!-- 3. SKILL COVERAGE & 4. CURRENT SKILLS -->
+        <!-- 2. READINESS SUMMARY & SKILL COVERAGE -->
         <div class="form-grid-2" style="margin-bottom: 1.5rem; gap: 1.5rem;">
           <div class="onboarding-card">
-            <div class="review-section-header">SKILL COVERAGE</div>
-            <div id="res-skill-coverage" class="stat-highlight-text">0 / 0 REQUIRED SKILLS COVERED</div>
+            <div class="review-section-header">READINESS SUMMARY</div>
+            <p id="res-readiness-summary" class="assessment-paragraph-text" style="font-size: 0.9rem; margin: 0.5rem 0 0 0;"></p>
           </div>
 
           <div class="onboarding-card">
-            <div class="review-section-header">CURRENT SKILLS (MET)</div>
-            <div id="res-met-skills-list" class="tags-container" style="margin-top: 0.5rem;"></div>
+            <div class="review-section-header">SKILL COVERAGE</div>
+            <div id="res-skill-coverage" class="stat-highlight-text" style="margin-top: 0.5rem;">0 / 0 REQUIRED SKILLS COVERED</div>
           </div>
         </div>
 
-        <!-- 5. SKILL GAP ANALYSIS -->
+        <!-- =========================================================================
+             SECTION B & C: SKILL GAP INTELLIGENCE (4 BUCKET CATEGORIZATION)
+             ========================================================================= -->
         <div class="onboarding-card" style="margin-bottom: 1.5rem;">
           <div class="review-section-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-            <span>SKILL GAP ANALYSIS</span>
+            <span>SKILL GAP INTELLIGENCE</span>
             <div class="priority-summary-counts">
               <span class="count-pill priority-high">HIGH: <span id="res-high-count">0</span></span>
               <span class="count-pill priority-medium">MEDIUM: <span id="res-med-count">0</span></span>
@@ -131,46 +170,73 @@
             </div>
           </div>
 
-          <div id="res-skill-gaps-container" class="gaps-stack" style="margin-top: 1rem;"></div>
-        </div>
+          <!-- 4 Buckets Grid -->
+          <div class="form-grid-2" style="gap: 1rem; margin-top: 1rem;">
+            <div class="onboarding-card" style="padding: 1rem; background: rgba(20, 83, 45, 0.15); border-color: rgba(34, 197, 94, 0.3);">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #22c55e; text-transform: uppercase; margin-bottom: 0.5rem;">✓ MATCHED SKILLS (MASTERED)</div>
+              <div id="ai-matched-skills" class="tags-container"></div>
+            </div>
 
-        <!-- 6. FIRST FOCUS AREAS -->
-        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
-          <div class="review-section-header">YOUR FIRST FOCUS</div>
-          <div id="res-first-focus-list" class="focus-areas-grid"></div>
-        </div>
+            <div class="onboarding-card" style="padding: 1rem; background: rgba(217, 119, 6, 0.15); border-color: rgba(245, 158, 11, 0.3);">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; margin-bottom: 0.5rem;">◐ DEVELOPING SKILLS (IN PROGRESS)</div>
+              <div id="ai-developing-skills" class="tags-container"></div>
+            </div>
 
-        <!-- 7. CAREER ALIGNMENT & 8. CAREER ADVICE -->
-        <div class="form-grid-2" style="margin-bottom: 1.5rem; gap: 1.5rem;">
-          <div class="onboarding-card">
-            <div class="review-section-header">CAREER ALIGNMENT</div>
-            <div style="margin-top: 0.5rem;">
-              <span id="res-alignment-val" class="alignment-badge alignment-badge-high">HIGH ALIGNMENT</span>
+            <div class="onboarding-card" style="padding: 1rem; background: rgba(185, 28, 28, 0.15); border-color: rgba(239, 68, 68, 0.3);">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; margin-bottom: 0.5rem;">× MISSING SKILLS (REQUIRED GAPS)</div>
+              <div id="ai-missing-skills" class="tags-container"></div>
+            </div>
+
+            <div class="onboarding-card" style="padding: 1rem; background: rgba(30, 41, 59, 0.4); border-color: rgba(148, 163, 184, 0.3);">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; margin-bottom: 0.5rem;">• REQUIRED ROLE EXPECTATIONS</div>
+              <div id="ai-required-skills" class="tags-container"></div>
             </div>
           </div>
+        </div>
 
-          <div class="onboarding-card">
-            <div class="review-section-header">CAREER ADVICE</div>
-            <p id="res-career-advice" class="assessment-paragraph-text" style="font-size: 0.9rem;"></p>
+        <!-- =========================================================================
+             SECTION D: PRIORITY SKILL GAPS
+             ========================================================================= -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header">PRIORITY SKILL GAPS</div>
+          <div id="ai-priority-gaps-container" class="gaps-stack" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- =========================================================================
+             SECTION E & F: AI LEARNING PLAN & LEARNING SEQUENCE
+             ========================================================================= -->
+        <div class="onboarding-card" style="margin-bottom: 1.5rem;">
+          <div class="review-section-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <span>AI LEARNING PLAN & SEQUENCE</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">RECOMMENDED ORDER</span>
+          </div>
+
+          <p id="ai-learning-summary" class="assessment-paragraph-text" style="font-size: 0.95rem; margin: 0.5rem 0 1rem 0;"></p>
+
+          <!-- Sequence Steps Container -->
+          <div id="ai-learning-sequence-container" class="stages-stack" style="margin-bottom: 1rem;"></div>
+
+          <div style="padding: 0.75rem 1rem; background: rgba(30, 41, 59, 0.4); border-radius: 4px; font-size: 0.8rem; color: var(--text-secondary);">
+            <strong>Note:</strong> AI Learning Sequence provides structured skill recommendations ordered by prerequisites, complementing your active <a href="roadmap.html" style="color: var(--accent-red-bright); text-decoration: underline;">Personalized Learning Roadmap</a>.
           </div>
         </div>
 
-        <!-- 9. NEXT STEP -->
+        <!-- =========================================================================
+             SECTION G: PRACTICE FOCUS
+             ========================================================================= -->
         <div class="onboarding-card" style="margin-bottom: 2rem;">
-          <div class="review-section-header">NEXT STEP</div>
-          <p class="assessment-paragraph-text" style="color: var(--text-primary); font-weight: 600;">
-            "Focus on closing highest-priority skill gaps before advancing."
-          </p>
+          <div class="review-section-header">PRACTICE FOCUS & HANDS-ON DIRECTION</div>
+          <div id="ai-practice-focus-container" class="focus-areas-grid" style="margin-top: 0.75rem;"></div>
         </div>
 
-        <!-- Action Buttons Footer Bar -->
+        <!-- Action Navigation Buttons Bar -->
         <div class="step-nav-bar" style="margin-top: 1rem;">
           <button type="button" id="review-profile-btn" class="btn btn-secondary" style="width: auto; padding: 0.8rem 1.75rem;">
             ← REVIEW PROFILE
           </button>
 
           <button type="button" id="continue-phase5-btn" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">
-            CONTINUE →
+            CONTINUE TO ROADMAP →
           </button>
         </div>
 

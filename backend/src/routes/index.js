@@ -68,6 +68,7 @@ const roadmapRoutes = require('./roadmap.routes');
 const projectsRoutes = require('./projects.routes');
 const interviewRoutes = require('./interview.routes');
 const careerToolsRoutes = require('./career-tools.routes');
+const aiRoutes = require('./ai.routes');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -78,6 +79,8 @@ router.use('/roadmap', roadmapRoutes);
 router.use('/projects', projectsRoutes);
 router.use('/interview', interviewRoutes);
 router.use('/career-tools', careerToolsRoutes);
+router.use('/ai', aiRoutes);
 
 module.exports = router;
+
 
