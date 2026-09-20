@@ -133,6 +133,7 @@ const ProfileService = {
         personal: { fullName: user.full_name || user.fullName || '', email: user.email || '', location: '' },
         education: { college: '', degree: '', branch: '', currentYear: '', graduationYear: '' },
         skills: [],
+
         interests: [],
         careerGoal: { targetCareer: '', experienceLevel: '', goal: '' },
         completed: false
@@ -285,7 +286,7 @@ const ProfileService = {
   async deleteTestProfile(userId) {
     if (!userId) return;
     if (this.isDbConfigured()) {
-      await pool.query('DELETE FROM profiles WHERE user_id = ?', [userId]).catch(() => {});
+      await pool.query('DELETE FROM profiles WHERE user_id = ?', [userId]).catch(() => { });
     } else {
       mockProfiles.delete(Number(userId));
     }

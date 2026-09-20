@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <title>Register — CareerPilot AI</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- Cinematic Background Layer -->
@@ -24,7 +26,7 @@
   <!-- Main Layout -->
   <main class="main-wrapper">
     <div class="auth-container">
-      
+
       <!-- Left Column: Hero Horror Heading -->
       <div class="hero-text-block">
         <h1 class="hero-title">
@@ -36,58 +38,34 @@
 
       <!-- Right Column: Authentication Card -->
       <div class="auth-card">
-        
+
         <!-- Error Alert Banner -->
         <div id="error-alert" class="alert alert-danger" style="display: none;" role="alert"></div>
 
         <form id="register-form" class="auth-form" novalidate>
-          
+
           <div class="form-group">
             <label for="fullName" class="form-label">Full Name</label>
-            <input 
-              type="text" 
-              id="fullName" 
-              class="form-input" 
-              placeholder="Ansh Bhatnagar" 
-              required
-              autocomplete="name"
-            >
+            <input type="text" id="fullName" class="form-input" placeholder="Ansh Bhatnagar" required
+              autocomplete="name">
           </div>
 
           <div class="form-group">
             <label for="email" class="form-label">Email Address</label>
-            <input 
-              type="email" 
-              id="email" 
-              class="form-input" 
-              placeholder="ansh@gmail.com" 
-              required
-              autocomplete="email"
-            >
+            <input type="email" id="email" class="form-input" placeholder="ansh@gmail.com" required
+              autocomplete="email">
           </div>
 
           <div class="form-group">
             <label for="password" class="form-label">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              class="form-input" 
-              placeholder="Minimum 8 characters" 
-              required
-              autocomplete="new-password"
-            >
+            <input type="password" id="password" class="form-input" placeholder="Minimum 8 characters" required
+              autocomplete="new-password">
           </div>
 
           <div class="form-group">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              class="form-input" 
-              placeholder="Re-enter your password" 
-              required
-              autocomplete="new-password"
-            >
+            <input type="password" id="confirmPassword" class="form-input" placeholder="Re-enter your password" required
+              autocomplete="new-password">
           </div>
 
           <button type="submit" class="btn btn-primary">REGISTER</button>
@@ -140,4 +118,5 @@
     });
   </script>
 </body>
+
 </html>
