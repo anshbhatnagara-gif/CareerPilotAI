@@ -6,7 +6,7 @@
  * GET /api/profile and PUT /api/profile.
  */
 
-const getApiBaseUrl = () => {
+var getApiBaseUrl = (typeof window !== 'undefined' && window.getApiBaseUrl) ? window.getApiBaseUrl : function () {
   if (typeof window !== 'undefined' && window.location) {
     const hostname = window.location.hostname;
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
@@ -16,7 +16,7 @@ const getApiBaseUrl = () => {
   return 'http://localhost:5000/api';
 };
 
-const API_BASE_URL = getApiBaseUrl();
+var API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : getApiBaseUrl();
 const PROFILE_STORAGE_KEY = 'careerPilotProfile';
 
 const OnboardingApp = {
@@ -299,14 +299,8 @@ const OnboardingApp = {
     this.clearAlerts();
 
     if (stepNumber === 1) {
-      const name = document.getElementById('step1-fullName').value.trim();
       const location = document.getElementById('step1-location').value.trim();
 
-      if (!name) {
-        this.showError('Please enter your full name.');
-        document.getElementById('step1-fullName').focus();
-        return false;
-      }
       if (!location) {
         this.showError('Please enter your location.');
         document.getElementById('step1-location').focus();

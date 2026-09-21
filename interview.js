@@ -10,7 +10,7 @@
  * - GET  /api/career-tools/passport
  */
 
-const getApiBaseUrl = () => {
+var getApiBaseUrl = (typeof window !== 'undefined' && window.getApiBaseUrl) ? window.getApiBaseUrl : function () {
   if (typeof window !== 'undefined' && window.location) {
     const hostname = window.location.hostname;
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
@@ -20,7 +20,7 @@ const getApiBaseUrl = () => {
   return 'http://localhost:5000/api';
 };
 
-const API_BASE_URL = getApiBaseUrl();
+var API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : getApiBaseUrl();
 
 const InterviewApp = {
   profile: null,
