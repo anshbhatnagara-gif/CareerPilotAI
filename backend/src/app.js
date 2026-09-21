@@ -18,6 +18,7 @@ app.use(helmet());
 // Allowed origins for CORS with credentials support
 const allowedOrigins = [
   config.FRONTEND_URL,
+  ...(config.CORS_ALLOWED_ORIGINS || []),
   'http://localhost:5500',
   'http://127.0.0.1:5500',
   'http://localhost:5501',
@@ -74,7 +75,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: config.NODE_ENV === 'production',
+    secure: config.SECURE_COOKIE,
     sameSite: 'lax',
     maxAge: config.SESSION_MAX_AGE_MS
   }

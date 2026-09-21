@@ -19,8 +19,12 @@ var getApiBaseUrl = (typeof window !== 'undefined' && window.getApiBaseUrl) ? wi
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
       return `${window.location.protocol}//${hostname}:5000/api`;
     }
+    if (window.CAREERPILOT_API_BASE_URL) {
+      return window.CAREERPILOT_API_BASE_URL;
+    }
+    return `${window.location.protocol}//${window.location.host}/api`;
   }
-  return 'http://localhost:5000/api';
+  return (typeof process !== 'undefined' && process.env && process.env.API_BASE_URL) || '/api';
 };
 
 var API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : getApiBaseUrl();

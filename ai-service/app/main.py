@@ -9,13 +9,14 @@ from app.core.logging import logger
 from app.api.routes import health_router, analyze_router
 
 settings = get_settings()
+is_prod = settings.ENVIRONMENT.lower() in ["production", "prod"]
 
 app = FastAPI(
     title=settings.SERVICE_NAME,
     version=settings.SERVICE_VERSION,
     description="CareerPilot AI Modular Microservice",
-    docs_url="/docs",
-    redoc_url="/redoc"
+    docs_url=None if is_prod else "/docs",
+    redoc_url=None if is_prod else "/redoc"
 )
 
 
