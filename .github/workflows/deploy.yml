@@ -1,0 +1,29 @@
+name: CareerPilot AI Production Deployment (Phase 9.4)
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for triggering production deployment'
+        required: false
+        default: 'Manual production deployment trigger'
+
+jobs:
+  deploy-preparation-check:
+    name: Production Deployment Preparation Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output Deployment Target Status
+        run: |
+          echo "=================================================="
+          echo "CAREERPILOT AI — PRODUCTION DEPLOYMENT WORKFLOW"
+          echo "=================================================="
+          echo "Target Runtimes:"
+          echo "  - Frontend: Cloudflare Pages"
+          echo "  - Backend: Render Web Service (Node.js)"
+          echo "  - AI Service: Render Web Service (FastAPI)"
+          echo "  - Database: TiDB Cloud"
+          echo ""
+          echo "Deployment trigger reason: ${{ github.event.inputs.reason }}"
+          echo "Automated deployment triggers will execute in Phase 9.4."
+          echo "=================================================="
