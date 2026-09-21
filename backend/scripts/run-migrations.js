@@ -25,11 +25,17 @@ async function runMigrations() {
       console.log(`\nExecuting migration: ${file}...`);
       const sqlContent = fs.readFileSync(filePath, 'utf8');
 
-      // Split SQL statements by semicolon while ignoring comments and empty statements
-      const statements = sqlContent
+      // Strip SQL line comments
+      const cleanSql = sqlContent
+        .split('\n')
+        .filter(line => !line.trim().startsWith('--'))
+        .join('\n');
+
+      // Split SQL statements by semicolon while ignoring empty statements
+      const statements = cleanSql
         .split(';')
         .map(stmt => stmt.trim())
-        .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+        .filter(stmt => stmt.length > 0);
 
       let count = 0;
       for (const statement of statements) {
