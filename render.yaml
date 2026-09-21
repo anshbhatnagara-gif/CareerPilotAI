@@ -1,0 +1,67 @@
+services:
+  # 1. FastAPI AI Microservice (Render Native Python Web Service)
+  - type: web
+    name: careerpilot-ai-service
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: cd ai-service && pip install -r requirements.txt
+    startCommand: cd ai-service && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_TIMEOUT_MS
+        value: "10000"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AI_SERVICE_SECRET
+        sync: false
+
+  # 2. Node.js Express Backend (Render Native Node Web Service)
+  - type: web
+    name: careerpilot-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: careerpilot-ai-service
+          property: host
+      - key: FRONTEND_URL
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: TIDB_HOST
+        sync: false
+      - key: TIDB_PORT
+        value: "4000"
+      - key: TIDB_USER
+        sync: false
+      - key: TIDB_PASSWORD
+        sync: false
+      - key: TIDB_DATABASE
+        value: careerpilot
+      - key: TIDB_ENABLE_SSL
+        value: "true"
+      - key: SESSION_SECRET
+        sync: false
+      - key: SESSION_COOKIE_NAME
+        value: careerpilot.sid
+      - key: SESSION_MAX_AGE_MS
+        value: "86400000"
+      - key: SECURE_COOKIE
+        value: "true"
+      - key: AI_SERVICE_SECRET
+        sync: false
+      - key: AI_SERVICE_TIMEOUT_MS
+        value: "5000"

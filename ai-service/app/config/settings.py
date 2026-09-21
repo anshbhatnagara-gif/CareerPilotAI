@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,8 +11,8 @@ class Settings(BaseSettings):
     SERVICE_NAME: str = "careerpilot-ai-service"
     SERVICE_VERSION: str = "1.0.0"
     ENVIRONMENT: str = "development"
-    AI_SERVICE_PORT: int = 8001
-    AI_SERVICE_HOST: str = "0.0.0.0"
+    AI_SERVICE_PORT: int = int(os.environ.get("PORT", os.environ.get("AI_SERVICE_PORT", "8001")))
+    AI_SERVICE_HOST: str = os.environ.get("HOST", "0.0.0.0")
     AI_SERVICE_SECRET: str = "placeholder_secret_key_change_in_production"
 
     # Gemini AI Provider Configuration
@@ -33,4 +34,5 @@ def get_settings() -> Settings:
         if not s.AI_SERVICE_SECRET or s.AI_SERVICE_SECRET == "placeholder_secret_key_change_in_production":
             raise ValueError("[FATAL CONFIG ERROR] Insecure AI_SERVICE_SECRET used in production environment.")
     return s
+
 
