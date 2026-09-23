@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://careerpilotai-ly8b.onrender.com/api/:path*"
+    }
+  ]
+}
