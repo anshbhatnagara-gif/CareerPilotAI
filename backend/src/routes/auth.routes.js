@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 const AuthController = require('../controllers/auth.controller');
 const { requireAuth } = require('../middleware/auth.middleware');
+const securityLogger = require('../utils/securityLogger');
 
 const router = express.Router();
 
@@ -12,9 +13,12 @@ const authLimiter = rateLimit({
   max: 30, // Allow up to 30 authentication requests per 15-min window
   standardHeaders: true,
   legacyHeaders: false,
-  message: {
-    success: false,
-    message: 'Too many authentication attempts, please try again later.'
+  handler: (req, res) => {
+    securityLogger.logAuthRateLimited(req);
+    res.status(429).json({
+      success: false,
+      message: 'Too many authentication attempts, please try again later.'
+    });
   }
 });
 

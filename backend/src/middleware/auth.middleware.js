@@ -1,4 +1,5 @@
 const AuthService = require('../services/auth.service');
+const securityLogger = require('../utils/securityLogger');
 
 /**
  * Authentication Middleware: Ensures route is accessed by an authenticated user with valid session
@@ -6,6 +7,7 @@ const AuthService = require('../services/auth.service');
 async function requireAuth(req, res, next) {
   try {
     if (!req.session || !req.session.userId) {
+      securityLogger.logUnauthorized(req, 'Missing active session');
       return res.status(401).json({
         success: false,
         message: 'Authentication required'

@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const AuthService = require('../services/auth.service');
 const config = require('../config/env');
+const securityLogger = require('../utils/securityLogger');
 
 const AuthController = {
   /**
@@ -11,6 +12,7 @@ const AuthController = {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        securityLogger.logInvalidRequest(req, 'Registration payload validation failed');
         return res.status(400).json({
           success: false,
           message: 'Validation failed',
@@ -23,6 +25,10 @@ const AuthController = {
       // Check for existing account with same email
       const existingUser = await AuthService.findUserByEmail(email);
       if (existingUser) {
+        securityLogger.logEvent(securityLogger.CATEGORIES.AUTH_REGISTER, securityLogger.LEVELS.WARN, req, {
+          email,
+          reason: 'Duplicate registration attempt'
+        });
         return res.status(409).json({
           success: false,
           message: 'An account with this email address already exists.'
@@ -39,6 +45,8 @@ const AuthController = {
 
         req.session.userId = safeUser.id;
         req.session.user = safeUser;
+
+        securityLogger.logRegister(req, safeUser.id, safeUser.email);
 
         return res.status(201).json({
           success: true,
@@ -59,6 +67,7 @@ const AuthController = {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        securityLogger.logInvalidRequest(req, 'Login payload validation failed');
         return res.status(400).json({
           success: false,
           message: 'Validation failed',
@@ -73,9 +82,7 @@ const AuthController = {
 
       const user = await AuthService.findUserByEmail(email);
       if (!user || user.status !== 'ACTIVE') {
-        if (config.NODE_ENV === 'development') {
-          console.warn(`[SECURITY WARN] Failed login attempt for non-existent or inactive user: ${email} from IP: ${req.ip}`);
-        }
+        securityLogger.logLoginFailed(req, email, 'User not found or inactive');
         return res.status(401).json({
           success: false,
           message: genericFailMessage
@@ -84,9 +91,7 @@ const AuthController = {
 
       const isPasswordValid = await AuthService.verifyPassword(password, user.password_hash);
       if (!isPasswordValid) {
-        if (config.NODE_ENV === 'development') {
-          console.warn(`[SECURITY WARN] Failed login attempt (invalid password) for user: ${email} from IP: ${req.ip}`);
-        }
+        securityLogger.logLoginFailed(req, email, 'Invalid password');
         return res.status(401).json({
           success: false,
           message: genericFailMessage
@@ -104,9 +109,7 @@ const AuthController = {
 
         await AuthService.updateLastLogin(safeUser.id).catch(() => {});
 
-        if (config.NODE_ENV === 'development') {
-          console.log(`[SECURITY INFO] Successful authentication for user_id: ${safeUser.id}`);
-        }
+        securityLogger.logLoginSuccess(req, safeUser.id, safeUser.email);
 
         return res.status(200).json({
           success: true,
@@ -125,12 +128,16 @@ const AuthController = {
    */
   async logout(req, res, next) {
     try {
+      const currentUserId = req.session ? req.session.userId : null;
       req.session.destroy((err) => {
         res.clearCookie(config.SESSION_COOKIE_NAME, {
           httpOnly: true,
           secure: config.SECURE_COOKIE,
           sameSite: 'lax'
         });
+        if (currentUserId) {
+          securityLogger.logLogout(req, currentUserId);
+        }
         return res.status(200).json({
           success: true,
           message: 'Logout successful'

@@ -47,6 +47,10 @@ const aiClient = {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
+        if (response.status === 401) {
+          const securityLogger = require('../utils/securityLogger');
+          securityLogger.logAIServiceAuthFailure(null, 'FastAPI microservice rejected X-AI-Service-Key header');
+        }
         return {
           success: false,
           error: data.error || `HTTP_${response.status}`,

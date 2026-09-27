@@ -219,6 +219,35 @@ async function runSecurityTests() {
     assert(!rawHealthText.includes('TIDB_PASSWORD'), 'No TIDB_PASSWORD in response');
     logPass('Response output completely omits all system secrets and credentials');
 
+    // ----------------------------------------------------
+    // TEST 8: Structured Security Monitoring & Log Injection Defense
+    // ----------------------------------------------------
+    console.log('\nTest 8: Structured Security Event Monitoring & Log Injection Defense');
+    const securityLogger = require('../src/utils/securityLogger');
+    
+    // Log Injection Sanitization Test
+    const dirtyInput = "user@example.com\r\n[SECURITY][INFO] INJECTED LOG ENTRY";
+    const cleanInput = securityLogger.sanitize(dirtyInput);
+    assert(!cleanInput.includes('\n') && !cleanInput.includes('\r'), 'CRLF log injection stripped');
+    logPass('securityLogger.sanitize strips CRLF log injection characters');
+
+    // Email Redaction Test
+    const redactedEmail = securityLogger.redactEmail('testuser123@careerpilot.ai');
+    assert(redactedEmail.includes('***') && !redactedEmail.includes('testuser123'), 'Email redacted safely');
+    logPass('securityLogger.redactEmail redacts user email PII');
+
+    // Security Event Emission Payload Test
+    const sampleEvent = securityLogger.logEvent(
+      securityLogger.CATEGORIES.AUTH_LOGIN_FAILED,
+      securityLogger.LEVELS.WARN,
+      { method: 'POST', originalUrl: '/api/auth/login', ip: '127.0.0.1' },
+      { email: 'admin@careerpilot.ai', reason: 'Invalid password' }
+    );
+    assert(sampleEvent.category === 'AUTH_LOGIN_FAILED', 'Event category matches');
+    assert(sampleEvent.meta.email.includes('***'), 'Event email metadata is redacted');
+    assert(!JSON.stringify(sampleEvent).includes('password_hash'), 'Event payload excludes password hashes');
+    logPass('securityLogger constructs valid, safe security event payload');
+
   } catch (err) {
     console.error('Unhandled Test Execution Error:', err);
     testFails++;

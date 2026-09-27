@@ -4,6 +4,7 @@ const router = express.Router();
 const { requireAuth } = require('../middleware/auth.middleware');
 const ProfileService = require('../services/profile.service');
 const aiClient = require('../services/aiClient');
+const securityLogger = require('../utils/securityLogger');
 
 // Dedicated rate limiter for AI endpoints (max 30 requests per 15-min window)
 const aiLimiter = rateLimit({
@@ -11,9 +12,12 @@ const aiLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  message: {
-    success: false,
-    message: 'Too many AI requests, please try again later.'
+  handler: (req, res) => {
+    securityLogger.logAIRateLimited(req);
+    res.status(429).json({
+      success: false,
+      message: 'Too many AI requests, please try again later.'
+    });
   }
 });
 
