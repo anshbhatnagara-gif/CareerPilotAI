@@ -92,11 +92,13 @@ jobs:
           npm run test:career-tools
           npm run test:ai
           npm run test:security
+          npm run test:ai-security
 
       - name: Run AI Dashboard & Frontend Integration Test Suites
         run: |
           cd backend
           node scripts/test-ai-dashboard.js
+          node scripts/test-ai-security.js
           node scripts/frontend-auth-test.js
           node scripts/frontend-profile-test.js
           node scripts/frontend-assessment-readiness-test.js

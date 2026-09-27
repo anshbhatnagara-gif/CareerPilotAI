@@ -3,24 +3,24 @@ from typing import List, Optional, Dict, Any
 
 
 class PersonalInfo(BaseModel):
-    fullName: Optional[str] = Field(default=None, description="Full name of user")
-    location: Optional[str] = Field(default=None, description="Location of user")
+    fullName: Optional[str] = Field(default=None, max_length=120, description="Full name of user")
+    location: Optional[str] = Field(default=None, max_length=160, description="Location of user")
 
 
 class EducationInfo(BaseModel):
-    college: Optional[str] = Field(default=None, description="College or university")
-    degree: Optional[str] = Field(default=None, description="Degree program")
-    branch: Optional[str] = Field(default=None, description="Field of study or branch")
-    currentYear: Optional[str] = Field(default=None, description="Current academic year")
-    graduationYear: Optional[str] = Field(default=None, description="Expected graduation year")
+    college: Optional[str] = Field(default=None, max_length=200, description="College or university")
+    degree: Optional[str] = Field(default=None, max_length=100, description="Degree program")
+    branch: Optional[str] = Field(default=None, max_length=160, description="Field of study or branch")
+    currentYear: Optional[str] = Field(default=None, max_length=50, description="Current academic year")
+    graduationYear: Optional[str] = Field(default=None, max_length=50, description="Expected graduation year")
 
 
 class CareerProfile(BaseModel):
-    targetCareer: Optional[str] = Field(default=None, description="Target career role")
-    experienceLevel: Optional[str] = Field(default=None, description="Experience level (e.g. Student, Entry Level)")
-    goal: Optional[str] = Field(default=None, description="Primary career goal")
-    skills: List[str] = Field(default_factory=list, description="List of user skills")
-    interests: List[str] = Field(default_factory=list, description="List of user career interests")
+    targetCareer: Optional[str] = Field(default=None, max_length=120, description="Target career role")
+    experienceLevel: Optional[str] = Field(default=None, max_length=50, description="Experience level (e.g. Student, Entry Level)")
+    goal: Optional[str] = Field(default=None, max_length=1000, description="Primary career goal")
+    skills: List[str] = Field(default_factory=list, max_length=50, description="List of user skills")
+    interests: List[str] = Field(default_factory=list, max_length=50, description="List of user career interests")
     personal: Optional[PersonalInfo] = Field(default=None, description="Personal information")
     education: Optional[EducationInfo] = Field(default=None, description="Education background")
 
@@ -31,13 +31,13 @@ class CareerAnalysisRequest(BaseModel):
 
 class SkillAnalysisRequest(BaseModel):
     profile: CareerProfile
-    targetSkills: Optional[List[str]] = Field(default_factory=list, description="Optional target skills for gap analysis")
+    targetSkills: Optional[List[str]] = Field(default_factory=list, max_length=50, description="Optional target skills for gap analysis")
 
 
 class SkillPriorityGap(BaseModel):
-    skill: str
-    priority: str  # HIGH, MEDIUM, LOW
-    reason: str
+    skill: str = Field(max_length=120)
+    priority: str = Field(max_length=20)  # HIGH, MEDIUM, LOW
+    reason: str = Field(max_length=500)
 
 
 # Legacy alias for backward compatibility
@@ -45,18 +45,18 @@ SkillPriorityItem = SkillPriorityGap
 
 
 class LearningPriority(BaseModel):
-    skill: str
-    priority: str  # HIGH, MEDIUM, LOW
-    reason: str
+    skill: str = Field(max_length=120)
+    priority: str = Field(max_length=20)  # HIGH, MEDIUM, LOW
+    reason: str = Field(max_length=500)
 
 
 class LearningStep(BaseModel):
     order: int
-    skill: str
-    topics: List[str] = Field(default_factory=list)
-    prerequisites: List[str] = Field(default_factory=list)
-    practice_focus: List[str] = Field(default_factory=list)
-    estimated_effort: str  # LOW, MEDIUM, HIGH
+    skill: str = Field(max_length=120)
+    topics: List[str] = Field(default_factory=list, max_length=20)
+    prerequisites: List[str] = Field(default_factory=list, max_length=20)
+    practice_focus: List[str] = Field(default_factory=list, max_length=20)
+    estimated_effort: str = Field(max_length=20)  # LOW, MEDIUM, HIGH
 
 
 # Legacy alias for backward compatibility
@@ -65,10 +65,10 @@ LearningRecommendationItem = LearningStep
 
 class LearningRecommendationRequest(BaseModel):
     profile: CareerProfile
-    missingSkills: Optional[List[str]] = Field(default_factory=list, description="Missing skills from gap analysis")
-    developingSkills: Optional[List[str]] = Field(default_factory=list, description="Developing skills from gap analysis")
-    priorityGaps: Optional[List[SkillPriorityGap]] = Field(default_factory=list, description="Priority gaps from skill analysis")
-    focusAreas: Optional[List[str]] = Field(default_factory=list, description="Optional focus areas for learning path")
+    missingSkills: Optional[List[str]] = Field(default_factory=list, max_length=50, description="Missing skills from gap analysis")
+    developingSkills: Optional[List[str]] = Field(default_factory=list, max_length=50, description="Developing skills from gap analysis")
+    priorityGaps: Optional[List[SkillPriorityGap]] = Field(default_factory=list, max_length=50, description="Priority gaps from skill analysis")
+    focusAreas: Optional[List[str]] = Field(default_factory=list, max_length=50, description="Optional focus areas for learning path")
 
 
 # --------------------------------------------------
