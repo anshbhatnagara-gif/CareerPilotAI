@@ -73,6 +73,9 @@ const AuthController = {
 
       const user = await AuthService.findUserByEmail(email);
       if (!user || user.status !== 'ACTIVE') {
+        if (config.NODE_ENV === 'development') {
+          console.warn(`[SECURITY WARN] Failed login attempt for non-existent or inactive user: ${email} from IP: ${req.ip}`);
+        }
         return res.status(401).json({
           success: false,
           message: genericFailMessage
@@ -81,6 +84,9 @@ const AuthController = {
 
       const isPasswordValid = await AuthService.verifyPassword(password, user.password_hash);
       if (!isPasswordValid) {
+        if (config.NODE_ENV === 'development') {
+          console.warn(`[SECURITY WARN] Failed login attempt (invalid password) for user: ${email} from IP: ${req.ip}`);
+        }
         return res.status(401).json({
           success: false,
           message: genericFailMessage
@@ -97,6 +103,10 @@ const AuthController = {
         req.session.user = safeUser;
 
         await AuthService.updateLastLogin(safeUser.id).catch(() => {});
+
+        if (config.NODE_ENV === 'development') {
+          console.log(`[SECURITY INFO] Successful authentication for user_id: ${safeUser.id}`);
+        }
 
         return res.status(200).json({
           success: true,
@@ -116,7 +126,11 @@ const AuthController = {
   async logout(req, res, next) {
     try {
       req.session.destroy((err) => {
-        res.clearCookie(config.SESSION_COOKIE_NAME);
+        res.clearCookie(config.SESSION_COOKIE_NAME, {
+          httpOnly: true,
+          secure: config.SECURE_COOKIE,
+          sameSite: 'lax'
+        });
         return res.status(200).json({
           success: true,
           message: 'Logout successful'

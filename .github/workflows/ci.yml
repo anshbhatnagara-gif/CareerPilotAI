@@ -91,6 +91,7 @@ jobs:
           npm run test:interview
           npm run test:career-tools
           npm run test:ai
+          npm run test:security
 
       - name: Run AI Dashboard & Frontend Integration Test Suites
         run: |
