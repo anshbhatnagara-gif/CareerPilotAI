@@ -58,7 +58,7 @@ jobs:
       - name: Execute Pytest Suite
         run: |
           cd ai-service
-          pytest
+          python -m pytest
 
   test-node-backend-and-integration:
     name: Node.js Backend & Integration Test Suite
