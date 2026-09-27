@@ -272,7 +272,7 @@ careerpilot-ai/
 
 ## 🔗 Documentation Links
 
-- [ARCHITECTURE.md](file:///c:/career%20pilot%20ai%202.0/careerpilot-ai/ARCHITECTURE.md) — Comprehensive System Architecture & Data Flow Diagrams
-- [ROADMAP.md](file:///c:/career%20pilot%20ai%202.0/careerpilot-ai/ROADMAP.md) — Project Roadmap & Stage Tracking
-- [CHANGELOG.md](file:///c:/career%20pilot%20ai%202.0/careerpilot-ai/CHANGELOG.md) — Full Commit History & Phase Evolution Ledger
-- [DEPLOYMENT.md](file:///c:/career%20pilot%20ai%202.0/careerpilot-ai/DEPLOYMENT.md) — Native Cloud Deployment Guide
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — Comprehensive System Architecture & Data Flow Diagrams
+- [ROADMAP.md](./ROADMAP.md) — Project Roadmap & Stage Tracking
+- [CHANGELOG.md](./CHANGELOG.md) — Full Commit History & Phase Evolution Ledger
+- [DEPLOYMENT.md](./DEPLOYMENT.md) — Native Cloud Deployment Guide
