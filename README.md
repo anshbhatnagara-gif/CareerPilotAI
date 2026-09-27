@@ -84,20 +84,6 @@ flowchart TD
 
 ---
 
-## 📊 Development Progress
-
-| Phase | Feature | Status | Implemented Functionality & Important Files | Primary Git Commit(s) | Test Status |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Phase 1** | Authentication | ✅ Complete | User registration, login, logout, session management, horror UI design system (`auth.js`, `login.html`, `register.html`, `auth.routes.js`) | [`06f4b8d`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/06f4b8d), [`999e15f`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/999e15f) | Verified (`test-auth.js`) |
-| **Phase 2** | Onboarding & Profile | ✅ Complete | 6-Step interactive onboarding builder, personal details, education, skills, interests, career goal (`onboarding.js`, `onboarding.html`, `profile.routes.js`) | [`23c27ea`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/23c27ea), [`5999b8e`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/5999b8e) | Verified (`test-profile.js`) |
-| **Phase 3** | AI Career Assessment | ✅ Complete | Qualitative profile alignment assessment, strengths, focus areas, career guidance (`assessment.js`, `assessment.html`, `assessment.routes.js`) | [`5630508`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/5630508), [`eae361d`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/eae361d) | Verified (`test-assessment.js`) |
-| **Phase 4** | Career Readiness & Skill Gap | ✅ Complete | Quantitative 0–100 weighted readiness scoring, requirement matrix, skill gap categorization (`readiness.js`, `readiness.html`, `readiness.routes.js`) | [`4ce0b4d`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/4ce0b4d), [`eae361d`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/eae361d) | Verified (`test-readiness.js`) |
-| **Phase 5** | Personalized Roadmap | ✅ Complete | 5-Stage personalized learning path generator, prerequisite graph, effort estimation (`roadmap.js`, `roadmap.html`, `roadmap.routes.js`) | [`98d5108`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/98d5108), [`ed799f9`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/ed799f9) | Verified (`test-roadmap.js`) |
-| **Phase 6** | Projects & Project Tracker | ✅ Complete | Domain project catalog, gap matching, project status workflow tracking (`projects.js`, `projects.html`, `projects.routes.js`) | [`d60d9a3`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/d60d9a3), [`ed799f9`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/ed799f9) | Verified (`test-projects.js`) |
-| **Phase 7** | Interview Simulator & Career Tools | ✅ Complete | STAR method technical interview simulator, multi-dimensional scoring, ATS resume preview, evidence tracker (`interview.js`, `interview.html`, `interview.routes.js`) | [`d4cc867`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/d4cc867), [`a1ac8b4`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/a1ac8b4) | Verified (`test-interview.js`, `test-career-tools.js`) |
-| **Phase 8** | Backend, Database & AI Microservice | ✅ Complete | Express API layer, TiDB Cloud MySQL migrations, persistent session store, Python FastAPI microservice, Gemini AI integration & fallback (`backend/src`, `ai-service/app`, `migrations`) | [`6ae67d2`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/6ae67d2), [`9ffca3d`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/9ffca3d), [`87cd520`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/87cd520), [`7540eb4`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/7540eb4) | Verified (Full backend test suite & `test-ai-dashboard.js`) |
-| **Phase 9** | Cloud Infrastructure & Production Deployment | ✅ Complete | Vercel rewrite configuration, Render Node web service, Render FastAPI web service, TiDB Cloud staging/prod integration, GitHub Actions CI (`vercel.json`, `render.yaml`, `.github/workflows`) | [`39562c6`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/39562c6), [`48505f2`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/48505f2), [`84e3dff`](https://github.com/anshbhatnagara-gif/CareerPilotAI/commit/84e3dff) | Verified (Live Cloud Verification) |
-
 ---
 
 ## 🌐 Current Production Status
@@ -156,70 +142,13 @@ erDiagram
 
 ---
 
-## ⚡ Backend API Reference
 
-### Health & Monitoring
-- `GET /api/health`: Public system health status.
-- `GET /api/health/db`: TiDB Cloud database connection health check.
-- `GET /api/health/ai`: FastAPI AI microservice connectivity health check.
-
-### Authentication (`/api/auth`)
-- `POST /api/auth/register`: Public (Rate-limited). Creates a new user account with hashed password.
-- `POST /api/auth/login`: Public (Rate-limited). Authenticates credentials and issues an HTTP-Only session cookie.
-- `POST /api/auth/logout`: Auth Required. Destroys active server session and clears cookie.
-- `GET /api/auth/me`: Auth Required. Returns currently authenticated user context.
-- `GET /api/auth/protected-test`: Auth Required. Route protection sanity test.
-
-### Career Profile (`/api/profile`)
-- `GET /api/profile`: Auth Required. Retrieves full profile, skills, and interests.
-- `PUT /api/profile`: Auth Required. Validates and saves profile updates.
-
-### Assessment & Readiness (`/api/assessment`, `/api/readiness`)
-- `GET /api/assessment`: Auth Required. Generates/fetches qualitative career assessment report.
-- `GET /api/readiness`: Auth Required. Calculates 0–100 weighted readiness score and skill gap breakdown.
-
-### Learning Roadmap (`/api/roadmap`)
-- `GET /api/roadmap`: Auth Required. Returns personalized 5-stage learning roadmap.
-
-### Projects (`/api/projects`)
-- `GET /api/projects`: Auth Required. Retrieves domain-matched portfolio projects and user progress.
-- `PATCH /api/projects/:id`: Auth Required. Updates project status (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`).
-
-### Interview Practice (`/api/interview`)
-- `GET /api/interview/questions`: Auth Required. Fetches questions for requested session mode (QUICK: 5, STANDARD: 10, DEEP: 15).
-- `POST /api/interview/evaluate`: Auth Required. Evaluates session answers and records multi-dimensional scores.
-- `GET /api/interview/history`: Auth Required. Retrieves past interview session performance history.
-
-### Career Tools (`/api/career-tools`)
-- `GET /api/career-tools/evidence`: Auth Required. Fetches user portfolio proof links.
-- `POST /api/career-tools/evidence`: Auth Required. Saves/updates candidate GitHub repo and live deployment URLs.
-- `GET /api/career-tools/passport`: Auth Required. Dynamically compiles full candidate Career Evidence Passport.
-
-### AI Intelligence (`/api/ai`)
-- `GET /api/ai/dashboard`: Auth Required. Executes parallel AI analysis calls for career, skills, and learning insights.
-- `POST /api/ai/career`: Auth Required. Direct career path AI analysis.
-- `POST /api/ai/skills`: Auth Required. Direct skill gap AI analysis.
-- `POST /api/ai/learning`: Auth Required. Direct learning roadmap AI recommendation.
 
 ---
 
 ## 🤖 AI Architecture
 
-CareerPilot AI operates a dedicated **Python 3.11 / FastAPI** microservice backed by **Google Gemini REST API (`gemini-2.5-flash`)**.
 
-- **Model Provider**: Google Gemini API (`v1beta/models/gemini-2.5-flash:generateContent`).
-- **Communication Protocol**: Server-to-server HTTP requests from Express Node backend to FastAPI microservice using header authentication (`X-AI-Service-Key`).
-- **Resilience & Fallback Engine**: If Gemini is unconfigured, rate-limited, or times out (>10,000ms), the microservice automatically routes payload execution to a deterministic local rule engine (`fallback_engine.py`).
-- **AI Endpoints**:
-  - `POST /api/v1/analyze/career` (Server Auth)
-  - `POST /api/v1/analyze/skills` (Server Auth)
-  - `POST /api/v1/analyze/learning` (Server Auth)
-  - `GET /health` (Public)
-  - `GET /health/dependencies` (Public)
-
-*Note: CareerPilot AI utilizes an external LLM provider with fallback intelligence; it does not claim to run a custom-trained or fine-tuned model.*
-
----
 
 ## 🔒 Security Architecture
 
@@ -232,17 +161,6 @@ CareerPilot AI operates a dedicated **Python 3.11 / FastAPI** microservice backe
 
 ---
 
-## 🧪 Testing Infrastructure
-
-The repository maintains automated test suites across all tiers:
-
-- **CI Pipeline (`.github/workflows/ci.yml`)**:
-  - Security audit for untracked `.env` files.
-  - Strict No-Docker compliance verification (enforcing native cloud runtimes).
-  - Static JavaScript syntax validation across all frontend scripts.
-  - Python Pytest suite for FastAPI AI microservice (`pytest` in `ai-service/tests`).
-  - Node.js backend unit & integration tests (`npm run test:auth`, `test:profile`, `test:assessment`, `test:readiness`, `test:roadmap`, `test:projects`, `test:interview`, `test:career-tools`, `test:ai`).
-  - End-to-end integration test suite (`test-ai-dashboard.js`, `frontend-auth-test.js`, etc.).
 
 ---
 
@@ -292,32 +210,7 @@ Found under `.github/workflows/`:
 
 ---
 
-## 🔮 Future Development Roadmap
 
-### Phase 10 — Production Hardening (Planned)
-- Advanced IP rate limiting & Web Application Firewall rules.
-- Production Sentry/Datadog error tracking and observability.
-- Automated database backup & point-in-time recovery verification.
-
-### Phase 11 — AI Intelligence Expansion (Planned)
-- Direct LLM STAR response analysis with audio speech-to-text transcript processing.
-- Vector embedding matching for job description to skill gap alignment.
-- Personalized AI mentor chat agent.
-
-### Phase 12 — Student Experience (Planned)
-- Interactive learning milestone analytics dashboard.
-- Achievement badges & streak motivation system.
-- Email digest notifications for roadmap step deadlines.
-
-### Phase 13 — Career Ecosystem (Planned)
-- Automated ATS resume parser and gap optimizer.
-- Match engine for active internship and entry-level job postings.
-- Recruiter share links for verified Career Evidence Passports.
-
-### Phase 14 — Scaling & Performance (Planned)
-- Redis cache layer for AI responses and static project catalogs.
-- Background worker queues (BullMQ/Celery) for heavy batch calculations.
-- Multi-region database replication and CDN edge response optimization.
 
 ---
 
