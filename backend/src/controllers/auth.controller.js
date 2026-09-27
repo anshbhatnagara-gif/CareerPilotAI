@@ -33,14 +33,18 @@ const AuthController = {
       const newUser = await AuthService.createUser({ fullName, email, password });
       const safeUser = AuthService.toSafeUser(newUser);
 
-      // Establish authenticated session
-      req.session.userId = safeUser.id;
-      req.session.user = safeUser;
+      // Regenerate session to prevent session fixation attacks
+      req.session.regenerate((err) => {
+        if (err) return next(err);
 
-      return res.status(201).json({
-        success: true,
-        message: 'Registration successful',
-        user: safeUser
+        req.session.userId = safeUser.id;
+        req.session.user = safeUser;
+
+        return res.status(201).json({
+          success: true,
+          message: 'Registration successful',
+          user: safeUser
+        });
       });
     } catch (error) {
       next(error);

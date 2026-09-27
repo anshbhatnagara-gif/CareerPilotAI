@@ -12,8 +12,33 @@ const app = express();
 // Trust reverse proxy if running behind Nginx or Cloud load balancer
 app.set('trust proxy', 1);
 
-// Security middleware
-app.use(helmet());
+// Security middleware & HTTP security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: [
+        "'self'",
+        "http://localhost:*",
+        "ws://localhost:*",
+        "http://127.0.0.1:*",
+        "https://*.vercel.app",
+        "https://*.onrender.com"
+      ],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"]
+    }
+  },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  hsts: config.NODE_ENV === 'production' ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false
+}));
 
 // Allowed origins for CORS with credentials support
 const allowedOrigins = [
