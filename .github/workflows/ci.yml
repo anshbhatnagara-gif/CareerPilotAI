@@ -52,10 +52,12 @@ jobs:
       - name: Install FastAPI Dependencies & Pytest
         run: |
           python -m pip install --upgrade pip
-          pip install -r ai-service/requirements.txt
-          pip install pytest httpx
+          python -m pip install -r ai-service/requirements.txt
+          python -m pip install pytest httpx
 
       - name: Execute Pytest Suite
+        env:
+          PYTHONPATH: ai-service:.
         run: |
           cd ai-service
           python -m pytest
