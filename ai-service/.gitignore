@@ -13,6 +13,11 @@ venv.bak/
 
 # Environment Variables
 .env
+.env.*
+*.env
+.env.local
+.env.development
+.env.production
 
 # Pytest
 .pytest_cache/

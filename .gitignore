@@ -6,7 +6,11 @@ env/
 
 # Environment Variables
 .env
+.env.*
 *.env
+.env.local
+.env.development
+.env.production
 
 # Cache & Logs
 __pycache__/

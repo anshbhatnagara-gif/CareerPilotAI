@@ -248,6 +248,24 @@ async function runSecurityTests() {
     assert(!JSON.stringify(sampleEvent).includes('password_hash'), 'Event payload excludes password hashes');
     logPass('securityLogger constructs valid, safe security event payload');
 
+    // ----------------------------------------------------
+    // TEST 9: Production Secret Validation & Fail-Safe Defense
+    // ----------------------------------------------------
+    console.log('\nTest 9: Production Secret Validation & Fail-Safe Startup');
+    const { execSync } = require('child_process');
+    
+    // Test that production fails to start with weak or default SESSION_SECRET
+    try {
+      execSync('node -e "require(\'./src/config/env\');"', {
+        cwd: path.join(__dirname, '..'),
+        env: { ...process.env, NODE_ENV: 'production', SESSION_SECRET: 'short_secret' },
+        stdio: 'pipe'
+      });
+      logFail('Production startup should have thrown error on short SESSION_SECRET');
+    } catch (err) {
+      logPass('Production environment strictly rejects short/insecure SESSION_SECRET');
+    }
+
   } catch (err) {
     console.error('Unhandled Test Execution Error:', err);
     testFails++;

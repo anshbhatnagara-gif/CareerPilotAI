@@ -31,8 +31,15 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     s = Settings()
     if s.ENVIRONMENT.lower() in ["production", "prod"]:
-        if not s.AI_SERVICE_SECRET or s.AI_SERVICE_SECRET == "placeholder_secret_key_change_in_production":
-            raise ValueError("[FATAL CONFIG ERROR] Insecure AI_SERVICE_SECRET used in production environment.")
+        is_weak_secret = (
+            not s.AI_SERVICE_SECRET or
+            s.AI_SERVICE_SECRET == "placeholder_secret_key_change_in_production" or
+            len(s.AI_SERVICE_SECRET) < 16 or
+            "placeholder" in s.AI_SERVICE_SECRET or
+            "change_in_production" in s.AI_SERVICE_SECRET
+        )
+        if is_weak_secret:
+            raise ValueError("[FATAL CONFIG ERROR] Insecure or insufficient length AI_SERVICE_SECRET in production (must be >= 16 characters and non-default).")
     return s
 
 

@@ -79,6 +79,11 @@ jobs:
           cd backend
           npm ci
 
+      - name: Dependency Supply-Chain Audit
+        run: |
+          cd backend
+          npm audit --audit-level=high
+
       - name: Run Backend Unit Test Suites
         run: |
           cd backend

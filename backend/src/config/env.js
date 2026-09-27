@@ -40,12 +40,23 @@ if (config.NODE_ENV === 'production') {
   const DEFAULT_DEV_SECRET = 'careerpilot-default-secret-dev-only-change-in-prod';
   const DEFAULT_AI_SECRET = 'placeholder_secret_key_change_in_production';
 
-  if (!process.env.SESSION_SECRET || config.SESSION_SECRET === DEFAULT_DEV_SECRET) {
-    throw new Error('[FATAL CONFIG ERROR] Insecure SESSION_SECRET used in production environment.');
+  const isWeakSessionSecret = !process.env.SESSION_SECRET ||
+    config.SESSION_SECRET === DEFAULT_DEV_SECRET ||
+    config.SESSION_SECRET.length < 32 ||
+    config.SESSION_SECRET.includes('dev-only') ||
+    config.SESSION_SECRET.includes('change-in-prod');
+
+  if (isWeakSessionSecret) {
+    throw new Error('[FATAL CONFIG ERROR] Insecure or insufficient length SESSION_SECRET in production (must be >= 32 characters and non-default).');
   }
 
-  if (!process.env.AI_SERVICE_SECRET || config.AI_SERVICE_SECRET === DEFAULT_AI_SECRET) {
-    throw new Error('[FATAL CONFIG ERROR] Insecure AI_SERVICE_SECRET used in production environment.');
+  const isWeakAiSecret = !process.env.AI_SERVICE_SECRET ||
+    config.AI_SERVICE_SECRET === DEFAULT_AI_SECRET ||
+    config.AI_SERVICE_SECRET.length < 16 ||
+    config.AI_SERVICE_SECRET.includes('placeholder_secret_key');
+
+  if (isWeakAiSecret) {
+    throw new Error('[FATAL CONFIG ERROR] Insecure or insufficient length AI_SERVICE_SECRET in production (must be >= 16 characters and non-default).');
   }
 }
 
