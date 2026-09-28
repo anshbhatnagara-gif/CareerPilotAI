@@ -58,7 +58,8 @@ jobs:
       - name: Execute Pytest Suite
         run: |
           cd ai-service
-          python -m pytest -o pythonpath=.
+          python -m pytest -o pythonpath=. -v > /tmp/pytest.log 2>&1 || (echo "### Pytest Output" >> $GITHUB_STEP_SUMMARY && echo '```' >> $GITHUB_STEP_SUMMARY && cat /tmp/pytest.log >> $GITHUB_STEP_SUMMARY && echo '```' >> $GITHUB_STEP_SUMMARY && cat /tmp/pytest.log && exit 1)
+          cat /tmp/pytest.log
 
   test-node-backend-and-integration:
     name: Node.js Backend & Integration Test Suite
