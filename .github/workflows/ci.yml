@@ -57,10 +57,13 @@ jobs:
 
       - name: Execute Pytest Suite
         env:
-          PYTHONPATH: ai-service:.
+          PYTHONPATH: .
         run: |
           cd ai-service
-          python -m pytest
+          python -m pytest -v --tb=short 2>&1 | tee /tmp/pytest_out.txt || (echo '```' >> $GITHUB_STEP_SUMMARY && cat /tmp/pytest_out.txt >> $GITHUB_STEP_SUMMARY && echo '```' >> $GITHUB_STEP_SUMMARY && exit 1)
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/pytest_out.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
   test-node-backend-and-integration:
     name: Node.js Backend & Integration Test Suite
