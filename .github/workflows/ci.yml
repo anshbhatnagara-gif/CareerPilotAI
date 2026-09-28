@@ -56,11 +56,9 @@ jobs:
           python -m pip install pytest httpx
 
       - name: Execute Pytest Suite
-        env:
-          PYTHONPATH: .
         run: |
           cd ai-service
-          python -m pytest
+          python -m pytest -o pythonpath=.
 
   test-node-backend-and-integration:
     name: Node.js Backend & Integration Test Suite
