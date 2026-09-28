@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Set
+from typing import Optional, List, Dict, Set, Any
 from app.schemas.analyze import (
     CareerProfile,
     CareerAnalysisData,
