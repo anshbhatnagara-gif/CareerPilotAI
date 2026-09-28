@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict, Any
-from app.schemas.analyze import CareerProfile, CareerAnalysisData, SkillAnalysisData, LearningRecommendationData
+from app.schemas.analyze import (
+    CareerProfile,
+    CareerAnalysisData,
+    SkillAnalysisData,
+    LearningRecommendationData,
+    SkillPriorityGap
+)
 
 
 class BaseAIProvider(ABC):

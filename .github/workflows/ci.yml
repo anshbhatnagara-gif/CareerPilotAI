@@ -58,13 +58,7 @@ jobs:
       - name: Execute Pytest Suite
         run: |
           cd ai-service
-          OUT=$(python -m pytest 2>&1) || {
-            CLEAN_OUT=$(echo "$OUT" | tr '\r\n' ' ')
-            echo "::error::$CLEAN_OUT"
-            echo "$OUT"
-            exit 1
-          }
-          echo "$OUT"
+          python -m pytest
 
   test-node-backend-and-integration:
     name: Node.js Backend & Integration Test Suite
