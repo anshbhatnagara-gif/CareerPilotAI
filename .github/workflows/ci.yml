@@ -56,10 +56,11 @@ jobs:
           python -m pip install pytest httpx
 
       - name: Execute Pytest Suite
+        env:
+          PYTHONPATH: .
         run: |
           cd ai-service
-          python -m pytest -o pythonpath=. -v > /tmp/pytest.log 2>&1 || (echo "### Pytest Output" >> $GITHUB_STEP_SUMMARY && echo '```' >> $GITHUB_STEP_SUMMARY && cat /tmp/pytest.log >> $GITHUB_STEP_SUMMARY && echo '```' >> $GITHUB_STEP_SUMMARY && cat /tmp/pytest.log && exit 1)
-          cat /tmp/pytest.log
+          python -m pytest
 
   test-node-backend-and-integration:
     name: Node.js Backend & Integration Test Suite
