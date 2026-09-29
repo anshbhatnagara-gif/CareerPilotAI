@@ -18,12 +18,29 @@ router.get('/health', (req, res) => {
   });
 });
 
+const config = require('../config/env');
+
 /**
  * GET /api/health/db
  * Database health check endpoint
  */
 router.get('/health/db', async (req, res) => {
   try {
+    if (!config.TIDB_HOST || config.TIDB_HOST.trim() === '') {
+      if (config.NODE_ENV === 'production') {
+        return res.status(503).json({
+          success: false,
+          message: 'Database is not configured in production',
+          database: 'unconfigured'
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: 'Database is running in local development memory mode',
+        database: 'mock'
+      });
+    }
+
     await pool.query('SELECT 1');
     res.status(200).json({
       success: true,

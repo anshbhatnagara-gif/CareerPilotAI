@@ -3,6 +3,7 @@ const session = require('express-session');
 const router = require('../src/routes');
 const ProfileService = require('../src/services/profile.service');
 const InterviewService = require('../src/services/interview.service');
+const AuthService = require('../src/services/auth.service');
 const { seedInterviewQuestions, careerQuestionCatalog } = require('./seed-interview-questions');
 
 const app = express();
@@ -72,17 +73,19 @@ async function runTests() {
 
       // Setup User 1 (Frontend Developer)
       console.log('\nSetting up User 1 auth & profile...');
+      const email1 = `alex_${Date.now()}@example.com`;
       const reg1 = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Alex Rivera', email: 'alex.iv@example.com', password: 'Password123!' }
+        body: { fullName: 'Alex Rivera', email: email1, password: 'Password123!' }
       });
       const authCookie1 = reg1.cookie;
+      const user1Id = reg1.body.user.id;
 
       await request('/profile', {
         method: 'PUT',
         headers: { Cookie: authCookie1 },
         body: {
-          personal: { fullName: 'Alex Rivera', email: 'alex.iv@example.com' },
+          personal: { fullName: 'Alex Rivera', email: email1 },
           education: { degree: 'Computer Science' },
           skills: ['JavaScript', 'React', 'CSS'],
           careerGoal: { targetCareer: 'Frontend Developer', experienceLevel: 'Intermediate' }
@@ -139,7 +142,7 @@ async function runTests() {
 
       // Test 9: Personalization uses actual user profile inputs
       console.log('\nTest 9: Question selection uses user profile target career');
-      const seQRes = await InterviewService.getQuestions(1, 'QUICK');
+      const seQRes = await InterviewService.getQuestions(user1Id, 'QUICK');
       assert(seQRes.targetCareer === 'Frontend Developer', 'Selection dynamically uses user target career');
 
       // Test 10: Valid answers evaluate successfully
@@ -215,9 +218,10 @@ async function runTests() {
 
       // Test 19: History returns correct user only
       console.log('\nTest 19: History returns correct user session only');
+      const email2 = `jordan_${Date.now()}@example.com`;
       const reg2 = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Jordan Lee', email: 'jordan.iv@example.com', password: 'Password123!' }
+        body: { fullName: 'Jordan Lee', email: email2, password: 'Password123!' }
       });
       const authCookie2 = reg2.cookie;
 
@@ -278,6 +282,10 @@ async function runTests() {
       // Test 26 - 31: Verify regression across prior test suites
       console.log('\nTest 26 - 31: Regression check across all prior phases (Auth, Profile, Assessment, Readiness, Roadmap, Projects)');
       assert(true, 'Auth, Profile, Assessment, Readiness, Roadmap, and Projects regression preserved');
+
+      // Cleanup test users
+      await AuthService.deleteTestUserByEmail(email1).catch(() => {});
+      await AuthService.deleteTestUserByEmail(email2).catch(() => {});
 
       console.log('\n--------------------------------------------------');
       console.log(`TEST SUMMARY: ${testPasses} Passed, ${testFails} Failed`);

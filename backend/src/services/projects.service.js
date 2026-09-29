@@ -182,6 +182,9 @@ const ProjectsService = {
         };
       });
     } else {
+      if (config.NODE_ENV === 'production') {
+        throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+      }
       rawCatalog.forEach(p => {
         const key = `${userId}_${p.id}`;
         if (mockUserProjects.has(key)) {
@@ -319,6 +322,10 @@ const ProjectsService = {
       );
 
       return this.getProjects(userId);
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     // In-memory fallback

@@ -239,8 +239,8 @@ const RoadmapService = {
     const str = JSON.stringify({
       p: profile.personal,
       e: profile.education,
-      s: profile.skills,
-      i: profile.interests,
+      s: Array.isArray(profile.skills) ? profile.skills.slice().sort() : profile.skills,
+      i: Array.isArray(profile.interests) ? profile.interests.slice().sort() : profile.interests,
       c: profile.careerGoal
     });
     let hash = 0;
@@ -253,11 +253,17 @@ const RoadmapService = {
 
   generateReadinessFingerprint(readiness) {
     if (!readiness) return '';
+    const normalizedGaps = Array.isArray(readiness.skillGaps)
+      ? readiness.skillGaps.map(g => `${g.skill || ''}:${g.priority || ''}:${g.reason || ''}`).sort()
+      : [];
+    const normalizedMet = Array.isArray(readiness.metSkills)
+      ? readiness.metSkills.slice().sort()
+      : [];
     const str = JSON.stringify({
       t: readiness.targetCareer,
       s: readiness.score,
-      g: readiness.skillGaps,
-      m: readiness.metSkills
+      g: normalizedGaps,
+      m: normalizedMet
     });
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -624,6 +630,10 @@ const RoadmapService = {
       }
 
       return generated;
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     // In-memory fallback

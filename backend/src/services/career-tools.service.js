@@ -54,6 +54,10 @@ const CareerToolsService = {
       }));
     }
 
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+    }
+
     const list = mockPortfolioEvidence.get(Number(userId)) || [];
     return list.map(item => ({ ...item }));
   },
@@ -148,6 +152,10 @@ const CareerToolsService = {
         }
       }
       return savedList;
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     // In-memory fallback

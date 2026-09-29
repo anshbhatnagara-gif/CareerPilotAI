@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const router = require('../src/routes');
 const InterviewService = require('../src/services/interview.service');
+const AuthService = require('../src/services/auth.service');
 
 const app = express();
 app.use(express.json());
@@ -65,9 +66,10 @@ async function runTests() {
 
       // Setup User 1
       console.log('\nSetting up User 1 auth & profile...');
+      const email1 = `morgan_${Date.now()}@example.com`;
       const reg1 = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Morgan Croft', email: 'morgan.ct@example.com', password: 'Password123!' }
+        body: { fullName: 'Morgan Croft', email: email1, password: 'Password123!' }
       });
       const authCookie1 = reg1.cookie;
 
@@ -75,7 +77,7 @@ async function runTests() {
         method: 'PUT',
         headers: { Cookie: authCookie1 },
         body: {
-          personal: { fullName: 'Morgan Croft', email: 'morgan.ct@example.com' },
+          personal: { fullName: 'Morgan Croft', email: email1 },
           education: { degree: 'Software Engineering' },
           skills: ['Python', 'Django', 'PostgreSQL'],
           careerGoal: { targetCareer: 'Backend Developer', experienceLevel: 'Intermediate' }
@@ -161,9 +163,10 @@ async function runTests() {
 
       // Test 8 & 9: User isolation & userId cannot be spoofed
       console.log('\nTest 8 & 9: Verify user isolation & client userId spoofing prevention');
+      const email2 = `taylor_${Date.now()}@example.com`;
       const reg2 = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Taylor Vance', email: 'taylor.tv@example.com', password: 'Password123!' }
+        body: { fullName: 'Taylor Vance', email: email2, password: 'Password123!' }
       });
       const authCookie2 = reg2.cookie;
 
@@ -207,7 +210,7 @@ async function runTests() {
       // Test 14: Passport returns authenticated user data
       console.log('\nTest 14: Passport returns authenticated user profile & readiness data');
       assert(passportRes.status === 200, 'Returns 200 OK');
-      assert(passportRes.body.data.user.email === 'morgan.ct@example.com', 'Returns authenticated user email');
+      assert(passportRes.body.data.user.email === email1, 'Returns authenticated user email');
       assert(passportRes.body.data.profile.targetCareer === 'Backend Developer', 'Returns user target career');
 
       // Test 15: Latest interview score appears dynamically
@@ -227,6 +230,10 @@ async function runTests() {
       // Test 18 - 21: Existing auth, profile, assessment, readiness, roadmap, projects tests pass
       console.log('\nTest 18 - 21: All prior test suites regression check');
       assert(true, 'All prior phases regression tests preserved');
+
+      // Cleanup test users
+      await AuthService.deleteTestUserByEmail(email1).catch(() => {});
+      await AuthService.deleteTestUserByEmail(email2).catch(() => {});
 
       console.log('\n--------------------------------------------------');
       console.log(`TEST SUMMARY: ${testPasses} Passed, ${testFails} Failed`);

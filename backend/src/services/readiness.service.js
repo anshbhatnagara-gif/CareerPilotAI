@@ -393,6 +393,10 @@ const ReadinessService = {
       return newReadiness;
     }
 
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+    }
+
     // In-memory fallback
     const cached = mockReadiness.get(Number(userId));
     if (cached && cached.profileFingerprint === fingerprint) {

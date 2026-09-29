@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const router = require('../src/routes');
 const ProfileService = require('../src/services/profile.service');
+const AuthService = require('../src/services/auth.service');
 
 // Configure test Express app
 const app = express();
@@ -62,14 +63,15 @@ async function runTests() {
       assert(unauth.body.success === false, 'success is false');
 
       // Register & Login User A
+      const emailA = `roadmapA_${Date.now()}@example.com`;
       console.log('\nSetting up User A...');
       const regA = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Roadmap User A', email: 'roadmapA@example.com', password: 'Password123!' }
+        body: { fullName: 'Roadmap User A', email: emailA, password: 'Password123!' }
       });
       const loginA = await request('/auth/login', {
         method: 'POST',
-        body: { email: 'roadmapA@example.com', password: 'Password123!' }
+        body: { email: emailA, password: 'Password123!' }
       });
       const sessionCookieA = loginA.cookie;
       const userAId = loginA.body.user.id;
@@ -83,7 +85,7 @@ async function runTests() {
       // Complete Profile User A without target career
       console.log('\nUpdating User A profile (missing target career)...');
       await ProfileService.updateProfile(userAId, {
-        personal: { fullName: 'Roadmap User A', email: 'roadmapA@example.com', location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
+        personal: { fullName: 'Roadmap User A', email: emailA, location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
         skills: ['JavaScript', 'HTML', 'Git'],
         interests: ['Web Development'],
         careerGoal: { targetCareer: '', experienceLevel: 'Beginner', goal: 'Become a Software Engineer' }
@@ -98,7 +100,7 @@ async function runTests() {
       // Update Profile User A with complete target career (Software Engineer)
       console.log('\nUpdating User A profile with target career (Software Engineer)...');
       await ProfileService.updateProfile(userAId, {
-        personal: { fullName: 'Roadmap User A', email: 'roadmapA@example.com', location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
+        personal: { fullName: 'Roadmap User A', email: emailA, location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
         skills: ['Programming', 'Git'],
         interests: ['Software Engineering'],
         careerGoal: { targetCareer: 'Software Engineer', experienceLevel: 'Beginner', goal: 'Become a Software Engineer' }
@@ -107,7 +109,6 @@ async function runTests() {
       // Test 4: Authenticated complete profile -> 200
       console.log('\nTest 4: Authenticated complete profile GET /api/roadmap');
       const roadmapRes1 = await request('/roadmap', { headers: { Cookie: sessionCookieA } });
-      console.log('TEST 4 DEBUG:', roadmapRes1.status, JSON.stringify(roadmapRes1.body));
       assert(roadmapRes1.status === 200, 'Returns HTTP 200 OK');
       assert(roadmapRes1.body.success === true, 'success is true');
 
@@ -169,7 +170,7 @@ async function runTests() {
       // Test 16: Profile/Readiness change regenerates roadmap
       console.log('\nTest 16: Profile change regenerates roadmap');
       await ProfileService.updateProfile(userAId, {
-        personal: { fullName: 'Roadmap User A', email: 'roadmapA@example.com', location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
+        personal: { fullName: 'Roadmap User A', email: emailA, location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
         skills: ['Programming', 'Git', 'Data Structures & Algorithms'],
         interests: ['Software Engineering'],
         careerGoal: { targetCareer: 'Software Engineer', experienceLevel: 'Intermediate', goal: 'Become a Software Engineer' }
@@ -182,20 +183,21 @@ async function runTests() {
 
       // Test 17: User isolation
       console.log('\nTest 17: User isolation');
+      const emailB = `roadmapB_${Date.now()}@example.com`;
       console.log('Setting up User B...');
       const regB = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Roadmap User B', email: 'roadmapB@example.com', password: 'Password123!' }
+        body: { fullName: 'Roadmap User B', email: emailB, password: 'Password123!' }
       });
       const loginB = await request('/auth/login', {
         method: 'POST',
-        body: { email: 'roadmapB@example.com', password: 'Password123!' }
+        body: { email: emailB, password: 'Password123!' }
       });
       const sessionCookieB = loginB.cookie;
       const userBId = loginB.body.user.id;
 
       await ProfileService.updateProfile(userBId, {
-        personal: { fullName: 'Roadmap User B', email: 'roadmapB@example.com', location: 'Mumbai', college: 'VJTI', degree: 'BTech', branch: 'IT', currentYear: '3rd Year', graduationYear: 2027 },
+        personal: { fullName: 'Roadmap User B', email: emailB, location: 'Mumbai', college: 'VJTI', degree: 'BTech', branch: 'IT', currentYear: '3rd Year', graduationYear: 2027 },
         skills: ['HTML', 'CSS'],
         interests: ['Frontend'],
         careerGoal: { targetCareer: 'Frontend Developer', experienceLevel: 'Beginner', goal: 'Frontend Developer' }
@@ -210,6 +212,10 @@ async function runTests() {
       console.log('\nTest 18-19: Security checks (no password/hash in response)');
       const rawStr = JSON.stringify(roadmapResB.body);
       assert(!rawStr.includes('password') && !rawStr.includes('password_hash'), 'No password or password_hash fields in API response');
+
+      // Cleanup test users
+      await AuthService.deleteTestUserByEmail(emailA).catch(() => {});
+      await AuthService.deleteTestUserByEmail(emailB).catch(() => {});
 
       server.close();
       console.log('\n==================================================');

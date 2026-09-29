@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const router = require('../src/routes');
 const ProfileService = require('../src/services/profile.service');
+const AuthService = require('../src/services/auth.service');
 const { seedProjectCatalog, careerProjectCatalog } = require('./seed-project-catalog');
 
 // Configure test Express app
@@ -73,19 +74,20 @@ async function runTests() {
 
       // Setup User A
       console.log('\nSetting up User A...');
+      const emailA = `projectsA_${Date.now()}@example.com`;
       const regA = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Projects User A', email: 'projectsA@example.com', password: 'Password123!' }
+        body: { fullName: 'Projects User A', email: emailA, password: 'Password123!' }
       });
       const loginA = await request('/auth/login', {
         method: 'POST',
-        body: { email: 'projectsA@example.com', password: 'Password123!' }
+        body: { email: emailA, password: 'Password123!' }
       });
       const sessionCookieA = loginA.cookie;
       const userAId = loginA.body.user.id;
 
       await ProfileService.updateProfile(userAId, {
-        personal: { fullName: 'Projects User A', email: 'projectsA@example.com', location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
+        personal: { fullName: 'Projects User A', email: emailA, location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
         skills: ['Programming', 'Git'],
         interests: ['Software Engineering'],
         careerGoal: { targetCareer: 'Software Engineer', experienceLevel: 'Beginner', goal: 'Become a Software Engineer' }
@@ -164,20 +166,21 @@ async function runTests() {
 
       // Test 12: User isolation
       console.log('\nTest 12: User isolation');
+      const emailB = `projectsB_${Date.now()}@example.com`;
       console.log('Setting up User B...');
       const regB = await request('/auth/register', {
         method: 'POST',
-        body: { fullName: 'Projects User B', email: 'projectsB@example.com', password: 'Password123!' }
+        body: { fullName: 'Projects User B', email: emailB, password: 'Password123!' }
       });
       const loginB = await request('/auth/login', {
         method: 'POST',
-        body: { email: 'projectsB@example.com', password: 'Password123!' }
+        body: { email: emailB, password: 'Password123!' }
       });
       const sessionCookieB = loginB.cookie;
       const userBId = loginB.body.user.id;
 
       await ProfileService.updateProfile(userBId, {
-        personal: { fullName: 'Projects User B', email: 'projectsB@example.com', location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
+        personal: { fullName: 'Projects User B', email: emailB, location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
         skills: ['Programming'],
         interests: ['Software Engineering'],
         careerGoal: { targetCareer: 'Software Engineer', experienceLevel: 'Beginner', goal: 'Software Engineer' }
@@ -196,7 +199,7 @@ async function runTests() {
       // Test 14: Regeneration preserves status
       console.log('\nTest 14: Regeneration preserves tracker status');
       await ProfileService.updateProfile(userAId, {
-        personal: { fullName: 'Projects User A', email: 'projectsA@example.com', location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
+        personal: { fullName: 'Projects User A', email: emailA, location: 'Delhi', college: 'IIT', degree: 'BTech', branch: 'CSE', currentYear: '4th Year', graduationYear: 2026 },
         skills: ['Programming', 'Git', 'Data Structures & Algorithms'],
         interests: ['Software Engineering'],
         careerGoal: { targetCareer: 'Software Engineer', experienceLevel: 'Intermediate', goal: 'Become a Software Engineer' }
@@ -226,6 +229,10 @@ async function runTests() {
       console.log('\nTest 19 & 20: Security checks');
       assert(projResA3.body.password === undefined, 'password property omitted from response');
       assert(projResA3.body.password_hash === undefined, 'password_hash property omitted from response');
+
+      // Cleanup test users
+      await AuthService.deleteTestUserByEmail(emailA).catch(() => {});
+      await AuthService.deleteTestUserByEmail(emailB).catch(() => {});
 
       server.close();
       console.log('\n==================================================');

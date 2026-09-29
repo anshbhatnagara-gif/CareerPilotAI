@@ -122,6 +122,10 @@ const ProfileService = {
       return profileObj;
     }
 
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+    }
+
     // In-memory fallback
     const AuthService = require('./auth.service');
     const user = await AuthService.findUserById(userId);
@@ -259,6 +263,10 @@ const ProfileService = {
       }
 
       return await this.getProfile(userId);
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     // In-memory fallback

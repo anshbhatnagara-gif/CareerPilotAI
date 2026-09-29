@@ -23,7 +23,20 @@ const AuthController = {
       const { fullName, email, password } = req.body;
 
       // Check for existing account with same email
-      const existingUser = await AuthService.findUserByEmail(email);
+      let existingUser;
+      try {
+        existingUser = await AuthService.findUserByEmail(email);
+      } catch (dbError) {
+        securityLogger.logEvent(securityLogger.CATEGORIES.AUTH_REGISTER, securityLogger.LEVELS.ERROR, req, {
+          email,
+          reason: 'Database error during registration check'
+        });
+        return res.status(503).json({
+          success: false,
+          message: 'Registration service temporarily unavailable. Please try again later.'
+        });
+      }
+
       if (existingUser) {
         securityLogger.logEvent(securityLogger.CATEGORIES.AUTH_REGISTER, securityLogger.LEVELS.WARN, req, {
           email,
@@ -36,7 +49,20 @@ const AuthController = {
       }
 
       // Create new user record
-      const newUser = await AuthService.createUser({ fullName, email, password });
+      let newUser;
+      try {
+        newUser = await AuthService.createUser({ fullName, email, password });
+      } catch (dbError) {
+        securityLogger.logEvent(securityLogger.CATEGORIES.AUTH_REGISTER, securityLogger.LEVELS.ERROR, req, {
+          email,
+          reason: 'Database error during user creation'
+        });
+        return res.status(503).json({
+          success: false,
+          message: 'Registration service temporarily unavailable. Please try again later.'
+        });
+      }
+
       const safeUser = AuthService.toSafeUser(newUser);
 
       // Regenerate session to prevent session fixation attacks
@@ -80,7 +106,20 @@ const AuthController = {
       // Generic authentication failure message to avoid account enumeration
       const genericFailMessage = 'Invalid email or password.';
 
-      const user = await AuthService.findUserByEmail(email);
+      let user;
+      try {
+        user = await AuthService.findUserByEmail(email);
+      } catch (dbError) {
+        securityLogger.logEvent(securityLogger.CATEGORIES.AUTH_LOGIN, securityLogger.LEVELS.ERROR, req, {
+          email,
+          reason: 'Database error during authentication'
+        });
+        return res.status(503).json({
+          success: false,
+          message: 'Authentication service temporarily unavailable. Please try again later.'
+        });
+      }
+
       if (!user || user.status !== 'ACTIVE') {
         securityLogger.logLoginFailed(req, email, 'User not found or inactive');
         return res.status(401).json({
@@ -89,7 +128,16 @@ const AuthController = {
         });
       }
 
-      const isPasswordValid = await AuthService.verifyPassword(password, user.password_hash);
+      let isPasswordValid = false;
+      try {
+        isPasswordValid = await AuthService.verifyPassword(password, user.password_hash);
+      } catch (pwError) {
+        return res.status(500).json({
+          success: false,
+          message: 'Authentication processing error'
+        });
+      }
+
       if (!isPasswordValid) {
         securityLogger.logLoginFailed(req, email, 'Invalid password');
         return res.status(401).json({

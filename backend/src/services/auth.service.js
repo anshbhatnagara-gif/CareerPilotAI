@@ -44,6 +44,10 @@ const AuthService = {
       return rows.length > 0 ? rows[0] : null;
     }
 
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+    }
+
     return mockUsers.get(cleanEmail) || null;
   },
 
@@ -60,6 +64,10 @@ const AuthService = {
         [numericId]
       );
       return rows.length > 0 ? rows[0] : null;
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     for (const user of mockUsers.values()) {
@@ -113,6 +121,10 @@ const AuthService = {
       } finally {
         connection.release();
       }
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     // In-memory fallback

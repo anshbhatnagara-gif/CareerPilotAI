@@ -225,6 +225,10 @@ const AssessmentService = {
       return newAssessment;
     }
 
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+    }
+
     // In-memory fallback
     const cached = mockAssessments.get(Number(userId));
     if (cached && cached.profileFingerprint === fingerprint) {

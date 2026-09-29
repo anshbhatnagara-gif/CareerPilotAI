@@ -379,6 +379,10 @@ const InterviewService = {
       }
     }
 
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
+    }
+
     // In-memory fallback persistence for test suites
     const sessionId = nextMockSessionId++;
     const sessionObj = {
@@ -442,6 +446,10 @@ const InterviewService = {
         createdAt: r.created_at,
         completedAt: r.completed_at
       }));
+    }
+
+    if (config.NODE_ENV === 'production') {
+      throw new Error('[DATABASE ERROR] TiDB database is not configured in production environment.');
     }
 
     // In-memory fallback

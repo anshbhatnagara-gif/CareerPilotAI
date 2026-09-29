@@ -18,7 +18,16 @@ async function requireAuth(req, res, next) {
     if (req.session.user) {
       req.user = AuthService.toSafeUser(req.session.user);
     } else {
-      const dbUser = await AuthService.findUserById(req.session.userId);
+      let dbUser;
+      try {
+        dbUser = await AuthService.findUserById(req.session.userId);
+      } catch (dbErr) {
+        return res.status(503).json({
+          success: false,
+          message: 'Authentication service temporarily unavailable'
+        });
+      }
+
       if (!dbUser || dbUser.status !== 'ACTIVE') {
         req.session.destroy(() => {});
         return res.status(401).json({
@@ -32,9 +41,9 @@ async function requireAuth(req, res, next) {
 
     next();
   } catch (error) {
-    return res.status(401).json({
+    return res.status(500).json({
       success: false,
-      message: 'Authentication required'
+      message: 'Internal authentication error'
     });
   }
 }

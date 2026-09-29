@@ -58,6 +58,20 @@ if (config.NODE_ENV === 'production') {
   if (isWeakAiSecret) {
     throw new Error('[FATAL CONFIG ERROR] Insecure or insufficient length AI_SERVICE_SECRET in production (must be >= 16 characters and non-default).');
   }
+
+  const isMissingTiDB = !process.env.TIDB_HOST ||
+    !config.TIDB_HOST ||
+    config.TIDB_HOST.trim() === '' ||
+    !process.env.TIDB_USER ||
+    !config.TIDB_USER ||
+    config.TIDB_USER.trim() === '' ||
+    !process.env.TIDB_PASSWORD ||
+    !config.TIDB_PASSWORD ||
+    config.TIDB_PASSWORD.trim() === '';
+
+  if (isMissingTiDB) {
+    throw new Error('[FATAL CONFIG ERROR] Missing required TiDB Cloud database configuration in production (TIDB_HOST, TIDB_USER, TIDB_PASSWORD).');
+  }
 }
 
 module.exports = config;
