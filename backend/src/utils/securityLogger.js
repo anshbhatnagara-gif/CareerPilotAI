@@ -15,6 +15,9 @@ const CATEGORIES = {
   AUTH_RATE_LIMITED: 'AUTH_RATE_LIMITED',
   AI_RATE_LIMITED: 'AI_RATE_LIMITED',
   AI_SERVICE_AUTH_FAILURE: 'AI_SERVICE_AUTH_FAILURE',
+  HEALTH_API_FAILURE: 'HEALTH_API_FAILURE',
+  HEALTH_DATABASE_FAILURE: 'HEALTH_DATABASE_FAILURE',
+  HEALTH_AI_FAILURE: 'HEALTH_AI_FAILURE',
   INVALID_REQUEST: 'INVALID_REQUEST',
   SERVER_ERROR: 'SERVER_ERROR'
 };
@@ -130,6 +133,18 @@ const securityLogger = {
 
   logAIServiceAuthFailure(req, errorMsg) {
     return logEvent(CATEGORIES.AI_SERVICE_AUTH_FAILURE, LEVELS.WARN, req, { statusCode: 503, error: errorMsg });
+  },
+
+  logHealthAPIFailure(req, errorMsg) {
+    return logEvent(CATEGORIES.HEALTH_API_FAILURE, LEVELS.ERROR, req, { statusCode: 503, error: errorMsg });
+  },
+
+  logHealthDatabaseFailure(req, errorMsg) {
+    return logEvent(CATEGORIES.HEALTH_DATABASE_FAILURE, LEVELS.WARN, req, { statusCode: 503, error: errorMsg });
+  },
+
+  logHealthAIFailure(req, errorMsg) {
+    return logEvent(CATEGORIES.HEALTH_AI_FAILURE, LEVELS.WARN, req, { statusCode: 503, error: errorMsg });
   },
 
   logInvalidRequest(req, reason) {

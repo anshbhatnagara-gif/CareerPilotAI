@@ -16,7 +16,12 @@
   - `helmet` (HTTP security headers)
 
 ## Core API Endpoints
-All protected endpoints require active session authentication (`requireAuth` middleware):
+All protected endpoints require active session authentication (`requireAuth` middleware). Health endpoints are public:
+
+- `GET /api/health` — Basic API service availability check. Returns HTTP 200 OK.
+- `GET /api/health/db` — Database connectivity check (`SELECT 1`). Returns HTTP 200 OK when connected/mock, HTTP 503 when disconnected/unconfigured in production.
+- `GET /api/health/ai` — Server-to-server Python FastAPI AI microservice availability check. Returns HTTP 200 OK when online, HTTP 503 when unreachable.
+- `GET /api/health/full` — Unified system health status (`api`, `database`, `ai`). Returns HTTP 200 OK with `"status": "healthy"` if all dependencies are healthy, or HTTP 503 Service Unavailable with `"status": "degraded"` if any dependency fails.
 
 - `GET /api/interview/questions` — Select personalized interview questions based on mode (`QUICK`: 5Q, `STANDARD`: 10Q, `DEEP`: 15Q).
   - Uses authenticated user identity (`req.user.id`).
@@ -56,6 +61,10 @@ All protected endpoints require active session authentication (`requireAuth` mid
 - `npm run test:projects` — Execute 39-point automated projects API test suite
 - `npm run test:interview` — Execute 29-point automated interview API test suite
 - `npm run test:career-tools` — Execute 24-point automated career tools API test suite
+- `npm run test:ai` — Execute Node.js AI client test suite
+- `npm run test:security` — Execute security audit test suite
+- `npm run test:ai-security` — Execute AI security test suite
+- `npm run test:health` — Execute production health monitoring test suite
 
 ## Database Schema Tables
 1. `users` — User credentials (`fullName` and `email` canonical identity source)

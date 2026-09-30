@@ -21,7 +21,8 @@
     "test:career-tools": "node scripts/test-career-tools.js",
     "test:ai": "node scripts/test-ai-client.js",
     "test:security": "node scripts/test-security.js",
-    "test:ai-security": "node scripts/test-ai-security.js"
+    "test:ai-security": "node scripts/test-ai-security.js",
+    "test:health": "node scripts/test-health.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

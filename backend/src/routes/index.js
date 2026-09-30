@@ -18,7 +18,9 @@ router.get('/health', (req, res) => {
   });
 });
 
+const securityLogger = require('../utils/securityLogger');
 const config = require('../config/env');
+const aiClient = require('../services/aiClient');
 
 /**
  * GET /api/health/db
@@ -28,6 +30,7 @@ router.get('/health/db', async (req, res) => {
   try {
     if (!config.TIDB_HOST || config.TIDB_HOST.trim() === '') {
       if (config.NODE_ENV === 'production') {
+        securityLogger.logHealthDatabaseFailure(req, 'Database is not configured in production');
         return res.status(503).json({
           success: false,
           message: 'Database is not configured in production',
@@ -48,6 +51,7 @@ router.get('/health/db', async (req, res) => {
       database: 'connected'
     });
   } catch (error) {
+    securityLogger.logHealthDatabaseFailure(req, 'Database connection is unavailable');
     res.status(503).json({
       success: false,
       message: 'Database connection is unavailable',
@@ -55,8 +59,6 @@ router.get('/health/db', async (req, res) => {
     });
   }
 });
-
-const aiClient = require('../services/aiClient');
 
 /**
  * GET /api/health/ai
@@ -72,6 +74,7 @@ router.get('/health/ai', async (req, res) => {
       details: result.data
     });
   } else {
+    securityLogger.logHealthAIFailure(req, result.error || 'AI microservice is unavailable');
     res.status(503).json({
       success: false,
       message: 'AI microservice is unavailable',
@@ -79,6 +82,58 @@ router.get('/health/ai', async (req, res) => {
       error: result.error
     });
   }
+});
+
+/**
+ * GET /api/health/full
+ * Unified production health monitoring status for API, Database, and AI service
+ */
+router.get('/health/full', async (req, res) => {
+  let dbHealthy = false;
+  let dbStatus = 'disconnected';
+
+  try {
+    if (!config.TIDB_HOST || config.TIDB_HOST.trim() === '') {
+      if (config.NODE_ENV === 'production') {
+        dbHealthy = false;
+        dbStatus = 'unconfigured';
+      } else {
+        dbHealthy = true;
+        dbStatus = 'mock';
+      }
+    } else {
+      await pool.query('SELECT 1');
+      dbHealthy = true;
+      dbStatus = 'healthy';
+    }
+  } catch (err) {
+    dbHealthy = false;
+    dbStatus = 'disconnected';
+    securityLogger.logHealthDatabaseFailure(req, 'Database query failed in full health check');
+  }
+
+  const aiResult = await aiClient.checkHealth();
+  const aiHealthy = aiResult.success;
+  const aiStatus = aiHealthy ? 'healthy' : 'disconnected';
+  if (!aiHealthy) {
+    securityLogger.logHealthAIFailure(req, aiResult.error || 'AI microservice unreachable in full health check');
+  }
+
+  const overallHealthy = dbHealthy && aiHealthy;
+
+  const payload = {
+    success: overallHealthy,
+    status: overallHealthy ? 'healthy' : 'degraded',
+    service: 'careerpilot-api',
+    timestamp: new Date().toISOString(),
+    services: {
+      api: 'healthy',
+      database: dbStatus,
+      ai: aiStatus
+    }
+  };
+
+  return res.status(overallHealthy ? 200 : 503).json(payload);
 });
 
 const roadmapRoutes = require('./roadmap.routes');
